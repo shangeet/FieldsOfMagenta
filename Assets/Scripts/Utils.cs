@@ -5,6 +5,8 @@ using UnityEngine;
 public class Utils {
 
     public static List<Node> getViableNodesPaths(int mov, Node startNode, Dictionary<Vector3Int, Node> nodeDict) {
+        Debug.Log(mov);
+        Debug.Log(startNode.getPlayerInfo());
         List<Node> visitedNodes = new List<Node>();
         List<Node> validNodes = new List<Node>();
         Queue<Node> queue = new Queue<Node>();
@@ -16,6 +18,7 @@ public class Utils {
         while (queue.Count != 0) {
             iterations += 1;
             if (iterations > 100) {
+                Debug.Log("Detected Problem. Infinite loop");
                 return null;
             }
             Node currentNode = queue.Dequeue();
@@ -34,6 +37,7 @@ public class Utils {
             }
             visitedNodes.Add(currentNode);
         }
+        Debug.Log(validNodes.Count);
         return validNodes;
     }    
 
@@ -255,6 +259,7 @@ public class Utils {
         }
         return optimalPath;
     }
+
     public static void printPositionToConsole(Vector3Int position) {
         Debug.Log("Current position: " + "(" + position.x + "," + position.y + ")");
     }

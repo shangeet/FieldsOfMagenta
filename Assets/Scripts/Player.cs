@@ -14,6 +14,7 @@ public class Player : MonoBehaviour
     public int sortingOrder = 3;
     public Texture2D texture;
     private Sprite playerSprite;
+    public Sprite playerPortrait {get; set;}
     public SpriteRenderer spriteRenderer;
 
 
@@ -26,11 +27,23 @@ public class Player : MonoBehaviour
         textureRefPath = info.getTextureRefPath();
         isEnemy = info.getIsEnemy();
         texture = Resources.Load<Texture2D>(textureRefPath);
+        Texture2D portraitTexture = Resources.Load<Texture2D>(info.portraitRefPath);
+        playerPortrait = Sprite.Create(portraitTexture, new Rect(0.0f, 0.0f, portraitTexture.width, portraitTexture.height), new Vector2(0.5f, 0.5f));
         print(texture);
+        print(playerPortrait);
     }
 
     public void AddSpriteToTile(Tilemap tileMap, Vector3Int pos) {
         transform.position = tileMap.GetCellCenterWorld(pos);
+        spriteRenderer.color = new Color(0.9f, 0.9f, 0.9f, 1.0f);
+        playerSprite =  Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+        spriteRenderer.sprite = playerSprite;
+        spriteRenderer.sortingOrder = sortingOrder;
+        spriteRenderer.sortingLayerName = LAYER_NAME;
+    }
+
+    public void AddPlayerToParallax(Vector3 pos) {
+        transform.position = pos;
         spriteRenderer.color = new Color(0.9f, 0.9f, 0.9f, 1.0f);
         playerSprite =  Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f));
         spriteRenderer.sprite = playerSprite;

@@ -13,7 +13,7 @@ TagManager:
   - UI
   - Sprite
   - Tile
-  - 
+  - Highlighters
   - 
   - 
   - 
@@ -41,9 +41,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Tile
-    uniqueID: 2267987215
+  - name: HealthBar
+    uniqueID: 18635799
     locked: 0
-  - name: Sprite
-    uniqueID: 3093882979
+  - name: Parallax
+    uniqueID: 361834097
     locked: 0

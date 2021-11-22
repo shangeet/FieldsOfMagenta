@@ -12,9 +12,6 @@ enum GameState
     ShowItemMenuState,
     UseItemState,
     AttackState,
-    ShowAttackBattleUIState,
     TurnEndState,
     EnemyTurnState
-
-
 }

@@ -18,7 +18,7 @@ public class Heuristic
 
     public static int BasicEnemyAIPlayerChoiceHeuristic(Node enemy, Node player) {
         PlayerInfo playerInfo = player.getPlayerInfo();
-        return NodeDistanceHeuristic(enemy, player) + playerInfo.getHealth();
+        return NodeDistanceHeuristic(enemy, player) + playerInfo.currentHealth;
     }
 
 }
