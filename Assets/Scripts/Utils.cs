@@ -5,8 +5,8 @@ using UnityEngine;
 public class Utils {
 
     public static List<Node> getViableNodesPaths(int mov, Node startNode, Dictionary<Vector3Int, Node> nodeDict) {
-        Debug.Log(mov);
-        Debug.Log(startNode.getPlayerInfo());
+        //Debug.Log(mov);
+        //Debug.Log(startNode.getPlayerInfo());
         List<Node> visitedNodes = new List<Node>();
         List<Node> validNodes = new List<Node>();
         Queue<Node> queue = new Queue<Node>();
@@ -18,7 +18,7 @@ public class Utils {
         while (queue.Count != 0) {
             iterations += 1;
             if (iterations > 100) {
-                Debug.Log("Detected Problem. Infinite loop");
+                //Debug.Log("Detected Problem. Infinite loop");
                 return null;
             }
             Node currentNode = queue.Dequeue();
@@ -37,7 +37,7 @@ public class Utils {
             }
             visitedNodes.Add(currentNode);
         }
-        Debug.Log(validNodes.Count);
+        //Debug.Log(validNodes.Count);
         return validNodes;
     }    
 
@@ -88,18 +88,18 @@ public class Utils {
             iterations += 1;
             Node currentNode = getLowestCostNodeMap(costMap, openList);
             if (iterations >= 100) {
-                Debug.Log("Detected Problem. Infinite loop");
+                //Debug.Log("Detected Problem. Infinite loop");
                 return null;
             }
             if (currentNode == end) {
-                Debug.Log("Got path!");
+                //Debug.Log("Got path!");
                 //printDictionaryToConsole(costMap);          
                 List<Node> optimalPath = Utils.derivePath(costMap, start, end, nodeDict);
-                string pathToPrint = "Path: ";
-                foreach(Node node in optimalPath) {
-                    pathToPrint += "(" + node.getPosition().x + "," + node.getPosition().y + ") ";
-                }
-                Debug.Log(pathToPrint); 
+                // string pathToPrint = "Path: ";
+                // foreach(Node node in optimalPath) {
+                //     pathToPrint += "(" + node.getPosition().x + "," + node.getPosition().y + ") ";
+                // }
+                // Debug.Log(pathToPrint); 
                 return optimalPath;
             }
             openList.Remove(currentNode);
@@ -212,14 +212,14 @@ public class Utils {
     }
 
     public static Node findEnemyNode(string playerId, Dictionary<Vector3Int, Node> nodeDict) { //TODO optimize this using a class dictionary var
-        Debug.Log("Looking for id: " + playerId);
+        //Debug.Log("Looking for id: " + playerId);
         foreach(Node n in nodeDict.Values) {
             if (n.getPlayerInfo() != null && n.getPlayerInfo().getPlayerId() == playerId) {
-                Debug.Log("Returned a node!");
+                //Debug.Log("Returned a node!");
                 return n;
             }
         }
-        Debug.Log("returned null...");
+        //Debug.Log("returned null...");
         return null;
     }
 
@@ -228,8 +228,8 @@ public class Utils {
         Node lastNode = startNode;
         int iterations = 0;
         printDictionaryToConsole(fMap);
-        Debug.Log("START NODE: " + "(" + startNode.getPosition().x + "," + startNode.getPosition().y + ")");
-        Debug.Log("GOAL NODE: " + "(" + goalNode.getPosition().x + "," + goalNode.getPosition().y + ")");
+       //Debug.Log("START NODE: " + "(" + startNode.getPosition().x + "," + startNode.getPosition().y + ")");
+       //Debug.Log("GOAL NODE: " + "(" + goalNode.getPosition().x + "," + goalNode.getPosition().y + ")");
         while(!optimalPath.Contains(goalNode)) {
             iterations += 1;
             //Debug.Log("LAST NODE: " + "(" + lastNode.getPosition().x + "," + lastNode.getPosition().y + ")");

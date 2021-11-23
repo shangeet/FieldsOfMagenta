@@ -227,54 +227,60 @@ public class GameMaster : MonoBehaviour {
     void calculateBattleEventDisplayBattleUI(Node attackerNode, Node defenderNode) {
         PlayerInfo attackerPI = attackerNode.getPlayerInfo();
         PlayerInfo defenderPI = defenderNode.getPlayerInfo();
-        int attackerHealth = attackerNode.getPlayerInfo().currentHealth;
-        int defenderHealth = defenderNode.getPlayerInfo().currentHealth;
-        int attackerAtk = attackerNode.getPlayerInfo().baseAttack;
-        int defenderAtk = attackerNode.getPlayerInfo().baseAttack;
-        int attackerDef = defenderNode.getPlayerInfo().baseDefense;
-        int defenderDef = defenderNode.getPlayerInfo().baseDefense;
+        PlayerInfo newAttackerPI = attackerPI;
+        PlayerInfo newDefenderPI = defenderPI;
+        int attackerHealth = attackerPI.currentHealth;
+        int defenderHealth = defenderPI.currentHealth;
+        int attackerAtk = attackerPI.baseAttack;
+        int defenderAtk = defenderPI.baseAttack;
+        int attackerDef = attackerPI.baseDefense;
+        int defenderDef = defenderPI.baseDefense;
 
-        print("TODO show new screen and display the sprites");
-
+        //attacker attacks defender
         int dmgDoneToDefender = attackerAtk - defenderDef;
-        defenderPI.currentHealth = defenderHealth - dmgDoneToDefender;
-        if (defenderPI.currentHealth <= 0) {
-            defenderPI.currentHealth = 0;
-            print("TODO Show defender death animation");
-            defenderNode.setPlayerInfo(null);
-            if (defenderPI.getIsEnemy()) {
-                retreatedEnemies.Add(defenderPI.getPlayerId());
+        newDefenderPI.currentHealth = defenderHealth - dmgDoneToDefender;
+        if (newDefenderPI.currentHealth <= 0) {
+            newDefenderPI.currentHealth = 0;
+            if (newDefenderPI.getIsEnemy()) {
+                retreatedEnemies.Add(newDefenderPI.getPlayerId());
             } else {
-                retreatedPlayers.Add(defenderPI.getPlayerId());
+                retreatedPlayers.Add(newDefenderPI.getPlayerId());
             }
             //destroy the gameobject
-            GameObject playerToDestroy = GameObject.Find(defenderPI.getPlayerId());
+            GameObject playerToDestroy = GameObject.Find(newDefenderPI.getPlayerId());
             playerToDestroy.SetActive(false);
             //show the actual battle on-screen
-            StartCoroutine(openBattleEventScreen(attackerPI, defenderPI, true, false, attackerPI.currentHealth, attackerPI.currentHealth, defenderHealth, defenderPI.currentHealth));
+            print("Attacker " + newAttackerPI.getPlayerId() + "has health " + newAttackerPI.currentHealth);
+            print("Defender " + newDefenderPI.getPlayerId() + "has health " + newAttackerPI.currentHealth);
+            attackerNode.setPlayerInfo(newAttackerPI);
+            defenderNode.setPlayerInfo(null);
         } else {
             int dmgDoneToAttacker = defenderAtk - attackerDef;
-            attackerPI.currentHealth = attackerHealth - dmgDoneToAttacker;
-            if (attackerPI.currentHealth <= 0) {
-                attackerPI.currentHealth = 0;
-                attackerNode.setPlayerInfo(null);
-                if (attackerPI.getIsEnemy()) {
-                    retreatedEnemies.Add(attackerPI.getPlayerId());
+            newAttackerPI.currentHealth = attackerHealth - dmgDoneToAttacker;    
+            if (newAttackerPI.currentHealth <= 0) {
+                newAttackerPI.currentHealth = 0;
+                if (newAttackerPI.getIsEnemy()) {
+                    retreatedEnemies.Add(newAttackerPI.getPlayerId());
                 } else {
-                    retreatedPlayers.Add(attackerPI.getPlayerId());
+                    retreatedPlayers.Add(newAttackerPI.getPlayerId());
                 }
-                GameObject playerToDestroy = GameObject.Find(attackerPI.getPlayerId());
+                GameObject playerToDestroy = GameObject.Find(newAttackerPI.getPlayerId());
                 playerToDestroy.SetActive(false);
+                //update node dict's player info
+                print("Attacker " + newAttackerPI.getPlayerId() + "has health " + attackerPI.currentHealth);
+                print("Defender " + newAttackerPI.getPlayerId() + "has health " + defenderPI.currentHealth);
+                attackerNode.setPlayerInfo(null);
+                defenderNode.setPlayerInfo(newDefenderPI);
+            } else {
+                print("Attacker " + newAttackerPI.getPlayerId() + "has health " + attackerPI.currentHealth);
+                print("Defender " + newAttackerPI.getPlayerId() + "has health " + defenderPI.currentHealth);
+                attackerNode.setPlayerInfo(newAttackerPI);
+                defenderNode.setPlayerInfo(newDefenderPI);
             }
-            StartCoroutine(openBattleEventScreen(attackerPI, defenderPI, true, true, attackerHealth, attackerPI.currentHealth, defenderHealth, defenderPI.currentHealth));
-        }
-        //update node dict's player info
-        print("Attacker " + attackerPI.getPlayerId() + "has health " + attackerPI.currentHealth);
-        print("Defender " + defenderPI.getPlayerId() + "has health " + defenderPI.currentHealth);
-        attackerNode.setPlayerInfo(attackerPI);
-        defenderNode.setPlayerInfo(defenderPI);
+        } 
+        StartCoroutine(openBattleEventScreen(attackerPI, defenderPI, newAttackerPI, newDefenderPI, true, true));
         nodeDict[attackerNode.getPosition()] = attackerNode;
-        nodeDict[defenderNode.getPosition()] = defenderNode;
+        nodeDict[defenderNode.getPosition()] = defenderNode; 
     }
     void processTurnEndState() {
         //record end of unit's turn in dict
@@ -301,20 +307,21 @@ public class GameMaster : MonoBehaviour {
                 Node enemyNode = Utils.findEnemyNode(enemy.getPlayerId(), nodeDict);
                 List<Node> nodeRange = Utils.getViableNodesPaths(enemyNode.getPlayerInfo().mov, enemyNode, nodeDict);
                 Node candidatePlayerNode = Utils.findPlayerNodeNearEnemy(enemyNode, enemyNode.getPlayerInfo().mov, nodeDict);
-                print(candidatePlayerNode);
                 if (candidatePlayerNode != null) {            
                     //TODO Attack logic
                     //check if we have to move or not
-                    if (Utils.getNearbyNodes(enemyNode, nodeDict).Contains(candidatePlayerNode)) { //just attack
-                        print("Just attack.");
-                    } else { //move and attack
+                    Node attackerNode = enemyNode;
+                    if (!Utils.getNearbyNodes(enemyNode, nodeDict).Contains(candidatePlayerNode)) { //move and attack else just attack
+                         //move and attack
                         List<Node> pathToMove = Utils.getShortestPathNodes(enemyNode, candidatePlayerNode, nodeRange, Heuristic.NodeDistanceHeuristic, nodeDict);
                         Player enemyToMove = GameObject.Find(enemy.getPlayerId()).GetComponent<Player>();
                         pathToMove.RemoveAt(pathToMove.Count - 1); //remove the last element since that's the player
                         enemyToMove.MoveEnemyNextToPlayer(tileMap, pathToMove);
-                        swapNodeInfoOnSpriteMove(enemyNode, pathToMove[pathToMove.Count - 1]); //swap node data with new tile                        
+                        swapNodeInfoOnSpriteMove(enemyNode, pathToMove[pathToMove.Count - 1]); //swap node data with new tile   
+                        attackerNode = pathToMove[pathToMove.Count - 1]; //update the attackerNode                     
                         print("Move and attack.");
                     }
+                    calculateBattleEventDisplayBattleUI(attackerNode, candidatePlayerNode);
                 } else { //if not in line of sight, wait
                     print("No player found.");
                 }
@@ -478,7 +485,7 @@ public class GameMaster : MonoBehaviour {
         unitInfoMenuDisplayed = false;
     }
 
-    IEnumerator openBattleEventScreen(PlayerInfo atkPI, PlayerInfo defPI, bool atkHit, bool defHit, int atkHPCurrent, int atkHPNew, int defHPCurrent, int defHPNew) {
+    IEnumerator openBattleEventScreen(PlayerInfo atkPI, PlayerInfo defPI, PlayerInfo newAtkPI, PlayerInfo newDefPI, bool atkHit, bool defHit) {
         //re-enable the battle event screen
         battleEventScreen.SetActive(true);
         //get attacker and defender position values
@@ -486,47 +493,44 @@ public class GameMaster : MonoBehaviour {
         GameObject defenderHealthBarGameObj = battleEventScreen.transform.GetChild(2).gameObject;
         Vector3 attackerPos = new Vector3(-1.5f, attackerHealthBarGameObj.transform.position.y - 1, 0.0f);
         Vector3 defenderPos = new Vector3(1.5f, defenderHealthBarGameObj.transform.position.y - 1, 0.0f);
-        //setup attacker
-        string atkPlayerId = atkPI.getPlayerId() + "-temp";
-        GameObject attackerToSpawn = new GameObject(atkPlayerId);
-        Player attackerPlayer = attackerToSpawn.AddComponent<Player>() as Player;
-        attackerPlayer.Setup(atkPI);
-        attackerPlayer.name = atkPlayerId;
-        if (attackerPlayer) {
-            attackerPlayer.AddPlayerToParallax(attackerPos);
-        }        
-        print("Sprite added at position: " + attackerPos.x + "," + attackerPos.y);
-        //setup defender
-        string defPlayerId = defPI.getPlayerId() + "-temp";
-        GameObject defenderToSpawn = new GameObject(defPlayerId);
-        Player defenderPlayer = defenderToSpawn.AddComponent<Player>() as Player;
-        defenderPlayer.Setup(defPI);
-        defenderPlayer.name = defPlayerId;
-        if (defenderPlayer) {
-            defenderPlayer.AddPlayerToParallax(defenderPos);
-        }        
-        print("Sprite added at position: " + defenderPos.x + "," + defenderPos.y);
-        attackerToSpawn.transform.parent = battleEventScreen.transform;
-        defenderToSpawn.transform.parent = battleEventScreen.transform;
-        attackerPlayer.spriteRenderer.sortingOrder = 5;
-        defenderPlayer.spriteRenderer.sortingOrder = 5;
+        //setup attacker w/ original stats
+        Player attackerPlayer = addPlayerToBattleEventScreen(atkPI.getPlayerId(), attackerPos, atkPI);
+        //setup defender w/ original stats
+        Player defenderPlayer = addPlayerToBattleEventScreen(defPI.getPlayerId(), defenderPos, defPI);
+
         //setup healthbar fill values
-        float attackerFillInit = ((float)atkHPCurrent) / atkPI.baseHealth;
-        float defenderFillInit = ((float)defHPCurrent) / defPI.baseHealth;
-        attackerHealthBarGameObj.GetComponent<HealthBar>().SetHealth(attackerFillInit);
-        defenderHealthBarGameObj.GetComponent<HealthBar>().SetHealth(defenderFillInit);
-        yield return new WaitForSeconds(1);
+        setHealthBarOnBattleEventScreen(attackerHealthBarGameObj, atkPI.currentHealth, atkPI.baseHealth);
+        setHealthBarOnBattleEventScreen(defenderHealthBarGameObj, defPI.currentHealth, defPI.baseHealth);
+        yield return new WaitForSeconds(2);
         //update healthbar final values
-        float attackerFillFin = ((float) atkHPNew) / atkPI.baseHealth;
-        float defenderFillFin = ((float) defHPNew) / defPI.baseHealth;
-        print(attackerFillFin);
-        attackerHealthBarGameObj.GetComponent<HealthBar>().SetHealth(attackerFillFin);
-        defenderHealthBarGameObj.GetComponent<HealthBar>().SetHealth(defenderFillFin);  
-        yield return new WaitForSeconds(1);  
+        setHealthBarOnBattleEventScreen(attackerHealthBarGameObj, newAtkPI.currentHealth, newAtkPI.baseHealth);
+        setHealthBarOnBattleEventScreen(defenderHealthBarGameObj, newDefPI.currentHealth, newDefPI.baseHealth); 
+        yield return new WaitForSeconds(2);  
         //TODO apply animation logic for attacks
         Destroy(attackerPlayer);
         Destroy(defenderPlayer);
         battleEventScreen.SetActive(false);
+    }
+
+    Player addPlayerToBattleEventScreen(string playerId, Vector3 position, PlayerInfo playerInfo) {
+        playerId += "-temp";
+        GameObject playerToSpawn = new GameObject(playerId);
+        Player player = playerToSpawn.AddComponent<Player>() as Player;
+        player.Setup(playerInfo);
+        player.name = playerId;
+        if (player) {
+            player.AddPlayerToParallax(position);
+        }
+        playerToSpawn.transform.parent = battleEventScreen.transform;
+        player.spriteRenderer.sortingOrder = 5;        
+        print("Sprite added at position: " + position.x + "," + position.y);
+        return player;
+    }
+
+    void setHealthBarOnBattleEventScreen(GameObject healthBar, int currentHP, int baseHP) {
+        float value = ((float) currentHP) / baseHP;
+        healthBar.GetComponent<HealthBar>().SetHealth(value);
+        print("Health bar value set to: " + value);
     }
 
     void openPlayerBattleMenu() {       
