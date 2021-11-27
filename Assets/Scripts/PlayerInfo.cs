@@ -25,12 +25,14 @@ public class PlayerInfo
     public int currentHealth {get; set;}
     //private List<Status> statusList {get; set;}
     public string portraitRefPath {get; set;}
+    public PlayerAnimator animator {get; set;}
 
     public PlayerInfo(string id, string textureRefPath, bool isEnemy, BattleClass battleClass) {
        this.id = id;
        this.textureRefPath = textureRefPath;
        this.isEnemy = isEnemy;
        this.battleClass = battleClass;
+       this.animator = null;
     }
 
     public void setupBaseStats() {

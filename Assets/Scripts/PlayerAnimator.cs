@@ -5,7 +5,7 @@ using UnityEngine.Tilemaps;
 using UnityEngine;
 
 //This class handles animations 
-public class Player : MonoBehaviour
+public class PlayerAnimator : MonoBehaviour
 {
     public string id;
     public string textureRefPath;
@@ -16,7 +16,6 @@ public class Player : MonoBehaviour
     private Sprite playerSprite;
     public Sprite playerPortrait {get; set;}
     public SpriteRenderer spriteRenderer;
-
 
     void Awake() {
         spriteRenderer = gameObject.AddComponent<SpriteRenderer>() as SpriteRenderer;
