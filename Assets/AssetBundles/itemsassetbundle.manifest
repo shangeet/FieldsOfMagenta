@@ -1,0 +1,22 @@
+ManifestFileVersion: 0
+CRC: 4023340159
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 6df3a5726e465c5d69ca0f23b929f82f
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 0f345f4f3ef4f683fffe2d5a678153ec
+HashAppended: 0
+ClassTypes:
+- Class: 114
+  Script: {fileID: 11500000, guid: d10cd06dca8462847b7dd6ceb708e57a, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 3ea4fcf9986fd054faa4556311b5d566, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Resources/Items/LeatherVest.asset
+- Assets/Resources/Items/MinorHealthPotion.asset
+Dependencies: []

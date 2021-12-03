@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine.Tilemaps;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
+using UnityEngine.EventSystems;
 
 //Responsible for handling the entire game state, turn management, commands to move/animate sprite, create subwindow battle and destroy it
 public class GameMaster : MonoBehaviour {
@@ -10,41 +12,35 @@ public class GameMaster : MonoBehaviour {
     private Dictionary<Vector2, PlayerInfo> pawnInfoDict;
     private Dictionary<Vector3Int, Node> nodeDict = new Dictionary<Vector3Int, Node>();
     [SerializeField] private List<Vector2> obstaclesList;
-    Tilemap tileMap;
-    List<Node> clickedNodePath;
-    Node clickedPlayerNode;
-    Node previousClickedNode;
-    Node clickedNode;
+    public Tilemap tileMap;
+    public List<Node> clickedNodePath;
+    public Node clickedPlayerNode;
+    public Node previousClickedNode;
+    public Node clickedNode;
     private Dictionary<string, bool> playerTurnEndedDict = new Dictionary<string, bool>();
     private Dictionary<string, bool> enemyTurnEndedDict = new Dictionary<string, bool>();
     private List<string> retreatedPlayers = new List<string>();
     private List<string> retreatedEnemies = new List<string>(); 
 
     // UI elements and state tracking
-    GameState currentState;
-    GameObject playerBattleMenu;
-    GameObject unitInfoMenu; 
-    GameObject battleEventScreen;
-    GameObject playerPhaseTransitionImage;
-    GameObject enemyPhaseTransitionImage;
-
-    bool battleEventScreenDisplayed;
-    bool playerBattleMenuDisplayed;
-    bool isPhaseTransitionRunning;
-    bool startedTranslation;
-    bool allEnemiesHaveMoved;
+    public GameState currentState;
+    public GameUIHandler uiHandler;
+    public bool startedTranslation;
 
     void Awake() {
         //Setup: We will delete this after we have a way to transfer info a file/read from file
         populateGridSetupData();
         //Setup the UI's. Disable them at start
-        setupUIElements();
+        //setupUIElements();
         //Keep track of player turn ends. Reset this all to false; 
         resetPlayerTurnEndedDict();
         resetEnemyTurnEndedDict();
         currentState = GameState.PlayerTurnStart;
     }
-    void Start() {}
+
+    void Start() {
+        uiHandler = gameObject.AddComponent<GameUIHandler>();        
+    }
 
     // Update is called once per frame
     void Update() {
@@ -68,9 +64,6 @@ public class GameMaster : MonoBehaviour {
             case GameState.ShowItemMenuState:
                 processShowItemMenuState();
                 break;
-            case GameState.UseItemState:
-                processUseItemState();
-                break;
             case GameState.AttackState:
                 processAttackState(currentClickNode);
                 break;
@@ -90,15 +83,15 @@ public class GameMaster : MonoBehaviour {
             clickedNode = currentClickedNode;
             if (Utils.nodeClickedIsEnemy(clickedNode) || (Utils.nodeClickedIsPlayer(clickedNode) && playerTurnEndedDict[clickedNode.getPlayerInfo().getPlayerId()] == true)) {
                 PlayerInfo pInfo = currentClickedNode.getPlayerInfo();
-                openUnitInfoMenu(pInfo);
-                currentState = GameState.ShowUnitInfoState;
+                uiHandler.openUnitInfoMenu(pInfo);
+                ChangeState(GameState.ShowUnitInfoState);
             } else if (Utils.nodeClickedIsPlayer(clickedNode) && playerTurnEndedDict[clickedNode.getPlayerInfo().getPlayerId()] == false) {
-                clickedNodePath = Utils.getViableNodesPaths(clickedNode.getPlayerInfo().mov, clickedNode, nodeDict);
+                clickedNodePath = Utils.getViableNodesPaths(clickedNode.getPlayerInfo().currentMov, clickedNode, nodeDict);
                 clickedPlayerNode = clickedNode;
                 foreach (Node node in clickedNodePath) {
                     tileMap.SetColor(node.getPosition(), Color.blue);
                 }
-                currentState = GameState.MovePlayerStartState;
+                ChangeState(GameState.MovePlayerStartState);
             }
         }
         //else nothing happens
@@ -109,19 +102,19 @@ public class GameMaster : MonoBehaviour {
             if (Utils.nodeClickedIsPlayer(currentClickedNode) && playerTurnEndedDict[currentClickedNode.getPlayerInfo().getPlayerId()] == true) { //Player clicked already ended turn, just show details
                 //update UI with new details
                 PlayerInfo pInfo = currentClickedNode.getPlayerInfo();
-                openUnitInfoMenu(pInfo);
-                currentState = GameState.ShowUnitInfoState;
+                uiHandler.openUnitInfoMenu(pInfo);
+                ChangeState(GameState.ShowUnitInfoState);
             } else if(Utils.nodeClickedIsEnemy(currentClickedNode)) { //Player clicked is an enemy. Just show details
                 //update UI with new details
                 PlayerInfo pInfo = currentClickedNode.getPlayerInfo();
-                openUnitInfoMenu(pInfo);
-                currentState = GameState.ShowUnitInfoState;
+                uiHandler.openUnitInfoMenu(pInfo);
+                ChangeState(GameState.ShowUnitInfoState);
             } else if(Utils.nodeClickedIsPlayer(currentClickedNode)) { //Player clicked is a player and they haven't ended their turn. Start move state
-                closeUnitInfoMenu();
+                uiHandler.closeUnitInfoMenu();
                 processPlayerTurnStartState(currentClickedNode);
             } else { //Node wasn't a player or enemy. Disable UI element and go back to Start state
-                closeUnitInfoMenu();
-                currentState = GameState.PlayerTurnStart;
+                uiHandler.closeUnitInfoMenu();
+                ChangeState(GameState.PlayerTurnStart);
             }  
         }
         //else we stay in this state
@@ -134,9 +127,9 @@ public class GameMaster : MonoBehaviour {
             foreach (Node node in clickedNodePath) {
                 tileMap.SetColor(node.getPosition(), node.getOriginalColor());
             }
-            currentState = GameState.PlayerTurnStart;
+            ChangeState(GameState.PlayerTurnStart);
         } else if (currentClickedNode == clickedNode) { //player node clicked on again, open battle menu and reset colors
-            currentState = GameState.ShowBattleMenuState;
+            ChangeState(GameState.ShowBattleMenuState);
             foreach (Node node in clickedNodePath) {
                 tileMap.SetColor(node.getPosition(), node.getOriginalColor());
             }
@@ -155,12 +148,12 @@ public class GameMaster : MonoBehaviour {
                 foreach (Node node in clickedNodePath) {
                     tileMap.SetColor(node.getPosition(), node.getOriginalColor());
                 }
-                currentState = GameState.ShowBattleMenuState; 
+                ChangeState(GameState.ShowBattleMenuState); 
             } else { //outside node. go back to turn start state and reset info
                 foreach (Node node in clickedNodePath) {
                     tileMap.SetColor(node.getPosition(), node.getOriginalColor());
                 }            
-                currentState = GameState.PlayerTurnStart;
+                ChangeState(GameState.PlayerTurnStart);
                 resetTurnStateData();
             }
         }
@@ -168,26 +161,28 @@ public class GameMaster : MonoBehaviour {
     }
 
     void processShowItemMenuState() {
-        openItemMenu();
-    }
 
-    void processUseItemState() {
-        print("TODO: Process Use Item State");
-    }
-    void openItemMenu() {
-        print("TODO Implement Item Menu");
+        if (!uiHandler.IsItemMenuDisplayed()) {
+            print("Opened item menu");
+            uiHandler.openPlayerItemMenu();
+        }
+
+        if (Input.GetMouseButtonDown(1)) { //cancel movement and track back
+            uiHandler.closePlayerItemMenu();
+            ChangeState(GameState.ShowBattleMenuState);
+        }
     }
 
     void processShowBattleMenuState() {
-        if (!playerBattleMenuDisplayed) {
-            openPlayerBattleMenu();            
+        if (!uiHandler.IsPlayerBattleMenuDisplayed()) {
+            uiHandler.openPlayerBattleMenu();            
         }
 
         if (Input.GetMouseButtonDown(1)) { //cancel movement and track back
             cancelPlayerMove();
-            closePlayerBattleMenu();
+            uiHandler.closePlayerBattleMenu();
             resetTurnStateData();
-            currentState = GameState.PlayerTurnStart;
+            ChangeState(GameState.PlayerTurnStart);
         }
     }
 
@@ -195,8 +190,8 @@ public class GameMaster : MonoBehaviour {
         if (previousClickedNode != null) {
             PlayerAnimator playerToAnimate = clickedNode.getPlayerInfo().animator;
             //move player
-            print(clickedPlayerNode.getPosition().x + "," + clickedPlayerNode.getPosition().y);
-            print(previousClickedNode.getPosition().x + "," + previousClickedNode.getPosition().y);
+            //print(clickedPlayerNode.getPosition().x + "," + clickedPlayerNode.getPosition().y);
+            //print(previousClickedNode.getPosition().x + "," + previousClickedNode.getPosition().y);
             List<Node> pathToTake = new List<Node> {clickedPlayerNode, previousClickedNode};
             playerToAnimate.MovePlayerToTile(tileMap, pathToTake);
             //update player information in nodes
@@ -204,7 +199,7 @@ public class GameMaster : MonoBehaviour {
         }
     }
 
-    void preProcessAttackState() {
+    public void preProcessAttackState() {
         int playerAttackRange = 1; //TODO Implement this based on player's class
         List<Node> validAttackNodes = Utils.getViableAttackNodes(playerAttackRange, clickedPlayerNode, nodeDict);
         foreach (Node node in validAttackNodes) {
@@ -227,18 +222,22 @@ public class GameMaster : MonoBehaviour {
             //display battle
             calculateBattleEventDisplayBattleUI(playerAttacking, enemyNodeToAttack);
             //turn is over for player
-            currentState = GameState.TurnEndState;
-        } 
-
-        if (Input.GetMouseButtonDown(1) && !battleEventScreenDisplayed) { //cancel movement and track back
+            ChangeState(GameState.TurnEndState);
+        } else if (currentClickedNode != null && !validAttackNodes.Contains(currentClickedNode)) {
+            //Remove the red highlight and go back to battle menu state
+            foreach (Node node in validAttackNodes) {
+                tileMap.SetColor(node.getPosition(), node.getOriginalColor());
+            }
+            ChangeState(GameState.ShowBattleMenuState);       
+        } else if (Input.GetMouseButtonDown(1) && !uiHandler.IsBattleEventScreenDisplayed()) { //cancel movement and track back
             //Remove the red highlight
             foreach (Node node in validAttackNodes) {
                 tileMap.SetColor(node.getPosition(), node.getOriginalColor());
             }
             cancelPlayerMove();
-            closePlayerBattleMenu();
+            uiHandler.closePlayerBattleMenu();
             resetTurnStateData();
-            currentState = GameState.PlayerTurnStart;
+            ChangeState(GameState.PlayerTurnStart);
         }
         //Didn't click on anything. Stay in state
     }
@@ -250,15 +249,16 @@ public class GameMaster : MonoBehaviour {
         PlayerInfo newDefenderPI = defenderPI;
         int attackerHealth = attackerPI.currentHealth;
         int defenderHealth = defenderPI.currentHealth;
-        int attackerAtk = attackerPI.baseAttack;
-        int defenderAtk = defenderPI.baseAttack;
-        int attackerDef = attackerPI.baseDefense;
-        int defenderDef = defenderPI.baseDefense;
+        int attackerAtk = attackerPI.currentAttack;
+        int defenderAtk = defenderPI.currentAttack;
+        int attackerDef = attackerPI.currentDefense;
+        int defenderDef = defenderPI.currentDefense;
 
         //attacker attacks defender
         print("Attacker " + attackerPI.getPlayerId() + "attacks " + defenderPI.getPlayerId());
         int dmgDoneToDefender = attackerAtk - defenderDef;
-        newDefenderPI.currentHealth = defenderHealth - dmgDoneToDefender;
+        print("Dmg Done to Defender: " + dmgDoneToDefender.ToString());
+        newDefenderPI.currentHealth = defenderHealth - Mathf.Max(0, dmgDoneToDefender);
         if (newDefenderPI.currentHealth <= 0) {
             print("Defender has no health!");
             newDefenderPI.currentHealth = 0;
@@ -280,7 +280,7 @@ public class GameMaster : MonoBehaviour {
         } else {
             print("Defender still has health!");
             int dmgDoneToAttacker = defenderAtk - attackerDef;
-            newAttackerPI.currentHealth = attackerHealth - dmgDoneToAttacker;    
+            newAttackerPI.currentHealth = attackerHealth - Mathf.Max(0, dmgDoneToAttacker);    
             if (newAttackerPI.currentHealth <= 0) {
                 print("Attacker has no health!");
                 newAttackerPI.currentHealth = 0;
@@ -305,7 +305,7 @@ public class GameMaster : MonoBehaviour {
                 defenderNode.setPlayerInfo(newDefenderPI);
             }
         } 
-        StartCoroutine(openBattleEventScreen(attackerPI, defenderPI, newAttackerPI, newDefenderPI, true, true));
+        StartCoroutine(uiHandler.openBattleEventScreen(attackerPI, defenderPI, newAttackerPI, newDefenderPI, true, true));
         nodeDict[attackerNode.getPosition()] = attackerNode;
         nodeDict[defenderNode.getPosition()] = defenderNode; 
     }
@@ -316,14 +316,14 @@ public class GameMaster : MonoBehaviour {
         }
         
         //auto turn-end if all units are done
-        if (!playerTurnEndedDict.ContainsValue(false) && !isPhaseTransitionRunning && !battleEventScreenDisplayed) {
+        if (!playerTurnEndedDict.ContainsValue(false) && !uiHandler.IsPhaseTransitionRunning() && !uiHandler.IsBattleEventScreenDisplayed()) {
             print("Player Turn ended");
             resetPlayerTurnEndedDict();
-            StartCoroutine(translatePhaseImage("EnemyPhase"));
-            currentState = GameState.EnemyTurnState;
+            StartCoroutine(uiHandler.translatePhaseImage("EnemyPhase"));
+            ChangeState(GameState.EnemyTurnState);
             resetTurnStateData();
-        } else if (!isPhaseTransitionRunning && !battleEventScreenDisplayed) { //else we go back to the player turn start state, but wait for transition to not run
-            currentState = GameState.PlayerTurnStart;         
+        } else if (!uiHandler.IsPhaseTransitionRunning() && !uiHandler.IsBattleEventScreenDisplayed()) { //else we go back to the player turn start state, but wait for transition to not run
+            ChangeState(GameState.PlayerTurnStart);         
             //reset turn state data
             resetTurnStateData();
         }    
@@ -332,16 +332,16 @@ public class GameMaster : MonoBehaviour {
     //Enemy logic handling// Do NOT move this to external class
     void processEnemyTurnState() {
         //process action for each enemy only if someone else is not attacking and we have a valid enemy that hasn't ended their turn
-        if (!battleEventScreenDisplayed && !allEnemiesHaveMoved && !isPhaseTransitionRunning) {
+        if (!uiHandler.IsBattleEventScreenDisplayed() && !uiHandler.HaveAllEnemiesHaveMoved() && !uiHandler.IsPhaseTransitionRunning()) {
             PlayerInfo enemy = pickAvailableEnemy();
 
             if (enemy == null) { //no available enemy. All enemies have moved.
-                allEnemiesHaveMoved = true;
+                uiHandler.SetAllEnemiesHaveMoved(true);
             } else {
                 //if player in line of sight, move and attack
                 Node enemyNode = Utils.findEnemyNode(enemy.getPlayerId(), nodeDict);
-                List<Node> nodeRange = Utils.getViableNodesPaths(enemyNode.getPlayerInfo().mov, enemyNode, nodeDict);
-                Node candidatePlayerNode = Utils.findPlayerNodeNearEnemy(enemyNode, enemyNode.getPlayerInfo().mov, nodeDict);
+                List<Node> nodeRange = Utils.getViableNodesPaths(enemyNode.getPlayerInfo().currentMov, enemyNode, nodeDict);
+                Node candidatePlayerNode = Utils.findPlayerNodeNearEnemy(enemyNode, enemyNode.getPlayerInfo().currentMov, nodeDict);
                 if (candidatePlayerNode != null) {            
                     //check if we have to move or not
                     Node attackerNode = enemyNode;
@@ -362,15 +362,15 @@ public class GameMaster : MonoBehaviour {
                     enemyTurnEndedDict[enemy.getPlayerId()] = true;
                 }
             }
-        } else if (!isPhaseTransitionRunning && !startedTranslation && allEnemiesHaveMoved) {
+        } else if (!uiHandler.IsPhaseTransitionRunning() && !startedTranslation && uiHandler.HaveAllEnemiesHaveMoved() && !uiHandler.IsBattleEventScreenDisplayed()) {
             print("Started coroutine");
             startedTranslation = true;
-            StartCoroutine(translatePhaseImage("PlayerPhase")); 
-        } else if (!isPhaseTransitionRunning && startedTranslation) { //done processing, end turn
+            StartCoroutine(uiHandler.translatePhaseImage("PlayerPhase")); 
+        } else if (!uiHandler.IsPhaseTransitionRunning() && startedTranslation) { //done processing, end turn
             resetEnemyTurnEndedDict();
             startedTranslation = false;
-            allEnemiesHaveMoved = false;
-            currentState = GameState.PlayerTurnStart;
+            uiHandler.SetAllEnemiesHaveMoved(false);
+            ChangeState(GameState.PlayerTurnStart);
         } //else the translation is still moving/isn't ready to be moved yet. Wait for the next frame.
     }
 
@@ -383,15 +383,15 @@ public class GameMaster : MonoBehaviour {
         return null; 
     }
 
-
     // Critical information handling // Do NOT move this to an external class
     void populateGridSetupData() {
         pawnInfoDict = new Dictionary<Vector2, PlayerInfo>();
         PlayerInfo testOne = new PlayerInfo("fakeid", "images/sprites/SampleSprite", false, BattleClass.Warrior);
         PlayerInfo testTwo = new PlayerInfo("fakeid2", "images/sprites/SampleSprite", false, BattleClass.Warrior);
-        testOne.setupBaseStats();
+        List<int> stats = new List<int> {1, 10, 10, 8, 10, 10, 10, 10, 2, 0};
+        testOne.setupBaseStats(stats);
         testOne.setupBattleStats();
-        testTwo.setupBaseStats();
+        testTwo.setupBaseStats(stats);
         testTwo.setupBattleStats();
         testOne.portraitRefPath = "images/portraits/test_face";
         testTwo.portraitRefPath = "images/portraits/test_face";
@@ -399,12 +399,26 @@ public class GameMaster : MonoBehaviour {
         pawnInfoDict[new Vector2(3,4)] = testTwo;
         PlayerInfo enemyOne = new PlayerInfo("fakeenemyid", "images/sprites/SampleSprite", true, BattleClass.Warrior);
         PlayerInfo enemyTwo = new PlayerInfo("fakeenemyid2", "images/sprites/SampleSprite", true, BattleClass.Warrior);
-        enemyOne.setupBaseStats();
+        enemyOne.setupBaseStats(stats);
         enemyOne.setupBattleStats();
-        enemyTwo.setupBaseStats();
+        enemyTwo.setupBaseStats(stats);
         enemyTwo.setupBattleStats();
         enemyOne.portraitRefPath = "images/portraits/test_face";
         enemyTwo.portraitRefPath = "images/portraits/test_face";
+        //setup items
+        ConsumableItem healthPotion = (ConsumableItem) AssetDatabase.LoadAssetAtPath("Assets/Resources/Items/MinorHealthPotion.asset", typeof(ConsumableItem));
+        healthPotion.itemSprite = (Sprite) AssetDatabase.LoadAssetAtPath("Assets/Resources/images/ui/Icons/HealthPotionIcon.png", typeof(Sprite));
+        EquipmentItem vest = (EquipmentItem) AssetDatabase.LoadAssetAtPath("Assets/Resources/Items/LeatherVest.asset", typeof(EquipmentItem));
+        testOne.equipmentItemManager = new EquipmentItemManager();
+        testOne.consumableItemManager = new ConsumableItemManager();
+        List<ConsumableItem> cIList = new List<ConsumableItem> {healthPotion, healthPotion};
+        EquipmentItem[] eIList = new EquipmentItem[System.Enum.GetNames(typeof(EquipType)).Length];
+        eIList[(int) vest.equipType] = vest;
+        testOne.LoadItems(cIList, eIList);
+        testTwo.equipmentItemManager = new EquipmentItemManager();
+        testTwo.consumableItemManager = new ConsumableItemManager();
+        testTwo.LoadItems(new List<ConsumableItem>(){}, new EquipmentItem[System.Enum.GetNames(typeof(EquipType)).Length]);
+        //set enemy locations
         pawnInfoDict[new Vector2(2,2)] = enemyOne;
         pawnInfoDict[new Vector2(-3,-3)] = enemyTwo;
         Vector2 obstaclePos = new Vector2(0,1);
@@ -497,195 +511,7 @@ public class GameMaster : MonoBehaviour {
         return null;
     }
 
-    void setupUIElements() {
-        // player battle menu
-        playerBattleMenu = GameObject.Find("PlayerBattleMenu");
-        Button attackButton = GameObject.Find("AttackButton").GetComponent<Button>() as Button;
-        Button itemButton = GameObject.Find("ItemButton").GetComponent<Button>() as Button;
-        Button waitButton = GameObject.Find("WaitButton").GetComponent<Button>() as Button;
-        attackButton.onClick.AddListener(onAttackButtonClick);
-        itemButton.onClick.AddListener(onItemButtonClick);
-        waitButton.onClick.AddListener(onWaitButtonClick);
-        playerBattleMenu.SetActive(false);
-        playerBattleMenuDisplayed = false;
-
-        //unit info menu
-        unitInfoMenu = GameObject.Find("UnitInfoMenu");
-        unitInfoMenu.SetActive(false);
-
-        battleEventScreen = GameObject.Find("BattleEventScreen");
-        battleEventScreenDisplayed = false;
-
-        //Convert the screenpoint to ui rectangle local point
-        moveCanvasToGlobalPoint(battleEventScreen, new Vector3(0,0,0));
-        battleEventScreen.SetActive(false);
-
-        //Set player/enemy phase transition images in the right place, turn them off for now
-        playerPhaseTransitionImage = GameObject.Find("PlayerPhaseImg");
-        enemyPhaseTransitionImage = GameObject.Find("EnemyPhaseImg");
-        Vector2 leftMostScreenPosition = Camera.main.ScreenToWorldPoint(new Vector2 (Camera.main.pixelWidth, Camera.main.pixelHeight/2));
-        leftMostScreenPosition.x *= -1;
-        playerPhaseTransitionImage.transform.position = leftMostScreenPosition;
-        enemyPhaseTransitionImage.transform.position = leftMostScreenPosition;
-        playerPhaseTransitionImage.SetActive(false);
-        enemyPhaseTransitionImage.SetActive(false);
-        isPhaseTransitionRunning = false;
-        allEnemiesHaveMoved = false;
+    public void ChangeState(GameState state) {
+        currentState = state;
     }
-
-    IEnumerator translatePhaseImage(string phase) {
-        isPhaseTransitionRunning = true;
-        if (phase == "PlayerPhase") {
-            yield return new WaitForSeconds(1);
-            Vector2 rightMostScreenPosition = Camera.main.ScreenToWorldPoint(new Vector2(Camera.main.pixelWidth, Camera.main.pixelHeight/2));
-            playerPhaseTransitionImage.SetActive(true);
-            Vector2 leftMostScreenPosition = playerPhaseTransitionImage.transform.position;
-
-            for(float t = 0.0f; t < 1.0f; t+=0.1f) {
-                playerPhaseTransitionImage.GetComponent<ImageTransitions>().TranslateAcrossScreen(leftMostScreenPosition, rightMostScreenPosition, t);
-
-                if (t == 0.5f) {
-                    yield return new WaitForSeconds(0.5f);
-                }
-                yield return new WaitForSeconds(0.05f);
-            }
-            playerPhaseTransitionImage.transform.position = leftMostScreenPosition;
-            playerPhaseTransitionImage.SetActive(false);
-        } else if (phase == "EnemyPhase") {
-            yield return new WaitForSeconds(1);
-            Vector2 rightMostScreenPosition = Camera.main.ScreenToWorldPoint(new Vector2 (Camera.main.pixelWidth, Camera.main.pixelHeight/2));
-            enemyPhaseTransitionImage.SetActive(true);
-            Vector2 leftMostScreenPosition = enemyPhaseTransitionImage.transform.position;
-
-            for(float t = 0.0f; t < 1.0f; t+=0.1f) {
-                enemyPhaseTransitionImage.GetComponent<ImageTransitions>().TranslateAcrossScreen(leftMostScreenPosition, rightMostScreenPosition, t);
-
-                if (t == 0.5f) {
-                    yield return new WaitForSeconds(0.5f);
-                }
-                yield return new WaitForSeconds(0.05f);
-            }
-            enemyPhaseTransitionImage.transform.position = leftMostScreenPosition;
-            enemyPhaseTransitionImage.SetActive(false);
-        }
-        isPhaseTransitionRunning = false;
-    }
-
-
-    void moveCanvasToGlobalPoint(GameObject go, Vector3 globalPos) {
-        Vector3 screenPos = Camera.main.WorldToScreenPoint(globalPos);
-        Vector2 movePos;
-        //Convert the screenpoint to ui rectangle local point
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(go.transform as RectTransform, screenPos, Camera.main, out movePos);
-        //Convert the local point to world point
-        go.transform.position = new Vector3(movePos.x, movePos.y, 0);      
-    }
-
-    void openUnitInfoMenu(PlayerInfo playerInfo) {
-        unitInfoMenu.SetActive(true);
-        PlayerAnimator animator = playerInfo.animator;
-        Image playerFace = GameObject.Find("PlayerFace").GetComponent<Image>() as Image;
-        Text hp = GameObject.Find("HPDisplay").GetComponent<Text>() as Text;
-        Text atk = GameObject.Find("AtkDisplay").GetComponent<Text>() as Text;
-        Text def = GameObject.Find("DefDisplay").GetComponent<Text>() as Text;
-        Text mov = GameObject.Find("MovDisplay").GetComponent<Text>() as Text;
-        playerFace.sprite = animator.playerPortrait;
-        hp.text = "HP " + playerInfo.currentHealth.ToString() + "/" + playerInfo.baseHealth.ToString();
-        atk.text = "ATK " + playerInfo.baseAttack.ToString();
-        def.text = "DEF " + playerInfo.baseDefense.ToString();
-        mov.text = "MOV " + playerInfo.mov.ToString();
-    }
-
-    void closeUnitInfoMenu() {
-        unitInfoMenu.SetActive(false);
-    }
-
-    IEnumerator openBattleEventScreen(PlayerInfo atkPI, PlayerInfo defPI, PlayerInfo newAtkPI, PlayerInfo newDefPI, bool atkHit, bool defHit) {
-        //re-enable the battle event screen
-        battleEventScreen.SetActive(true);
-        battleEventScreenDisplayed = true;
-        //get attacker and defender position values
-        GameObject attackerHealthBarGameObj = battleEventScreen.transform.GetChild(1).gameObject;
-        GameObject defenderHealthBarGameObj = battleEventScreen.transform.GetChild(2).gameObject;
-        Vector3 attackerPos = new Vector3(-1.5f, attackerHealthBarGameObj.transform.position.y - 1, 0.0f);
-        Vector3 defenderPos = new Vector3(1.5f, defenderHealthBarGameObj.transform.position.y - 1, 0.0f);
-        //setup attacker w/ original stats
-        PlayerAnimator attackerPlayer = addPlayerToBattleEventScreen(atkPI.getPlayerId(), attackerPos, atkPI);
-        //setup defender w/ original stats
-        PlayerAnimator defenderPlayer = addPlayerToBattleEventScreen(defPI.getPlayerId(), defenderPos, defPI);
-
-        //setup healthbar fill values
-        setHealthBarOnBattleEventScreen(attackerHealthBarGameObj, atkPI.currentHealth, atkPI.baseHealth);
-        setHealthBarOnBattleEventScreen(defenderHealthBarGameObj, defPI.currentHealth, defPI.baseHealth);
-        yield return new WaitForSeconds(1.0f);
-        //update healthbar final values
-        setHealthBarOnBattleEventScreen(attackerHealthBarGameObj, newAtkPI.currentHealth, newAtkPI.baseHealth);
-        setHealthBarOnBattleEventScreen(defenderHealthBarGameObj, newDefPI.currentHealth, newDefPI.baseHealth); 
-        yield return new WaitForSeconds(1.0f);
-        //TODO apply animation logic for attacks
-        Destroy(attackerPlayer);
-        Destroy(defenderPlayer);
-        battleEventScreen.SetActive(false);
-        battleEventScreenDisplayed = false;
-    }
-
-    PlayerAnimator addPlayerToBattleEventScreen(string playerId, Vector3 position, PlayerInfo playerInfo) {
-        playerId += "-temp";
-        GameObject playerToSpawn = new GameObject(playerId);
-        PlayerAnimator player = playerToSpawn.AddComponent<PlayerAnimator>() as PlayerAnimator;
-        player.Setup(playerInfo);
-        player.name = playerId;
-        if (player) {
-            player.AddPlayerToParallax(position);
-        }
-        playerToSpawn.transform.parent = battleEventScreen.transform;
-        player.spriteRenderer.sortingOrder = 5;        
-        print("Sprite added at position: " + position.x + "," + position.y);
-        return player;
-    }
-
-    void setHealthBarOnBattleEventScreen(GameObject healthBar, int currentHP, int baseHP) {
-        float value = ((float) currentHP) / baseHP;
-        healthBar.GetComponent<HealthBar>().SetHealth(value);
-        print("Health bar value set to: " + value);
-    }
-
-    void openPlayerBattleMenu() {       
-        playerBattleMenu.SetActive(true);
-        playerBattleMenuDisplayed = true;
-        print("Player Battle menu opened");
-        //TODO: Fix this
-        //string playerId = clickedPlayerNode.getPlayerInfo().getPlayerId();
-        //Player playerClicked = GameObject.Find(playerId).GetComponent<Player>();
-        //Vector3 playerSpriteVector = playerClicked.transform.position; //global position where I want the menu to appear
-        //print(playerSpriteVector); //(-0.5, 1.5, 0)
-        //RectTransform rt = playerBattleMenu.transform.GetChild(0).GetComponent<RectTransform>();
-        //Vector3 newPos = new Vector3(playerSpriteVector.x + 2, playerSpriteVector.y + 2, 0);
-        //rt.anchoredPosition = newPos;
-    }
-
-    void closePlayerBattleMenu() {
-        playerBattleMenu.SetActive(false);
-        playerBattleMenuDisplayed = false;
-    }
-    void onAttackButtonClick() {
-        print("Attack Button was clicked!");
-        closePlayerBattleMenu();
-        preProcessAttackState();
-        currentState = GameState.AttackState;
-    }
-    void onItemButtonClick() {
-        print("Item Button was clicked! TODO: Implement items");
-        closePlayerBattleMenu();
-        currentState = GameState.TurnEndState;
-    }
-    void onWaitButtonClick() {
-        print("Wait Button was clicked!");
-        closePlayerBattleMenu();
-        currentState = GameState.TurnEndState;
-    }
-
 }
-
-
-

@@ -2,30 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerManager : MonoBehaviour
-{
+public class PlayerManager : MonoBehaviour {
     public PlayerInfo playerInfo;
- 
-    #region Singleton
-    public static PlayerManager instance;
- 
-    void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(this);
-        }
-        else
-        {
-            Destroy(this.gameObject);
-        }
-    }
- 
-    #endregion
- 
-    public void UpdateCharacterStatus(EquipmentItem newItem, EquipmentItem oldItem)
-    {
-        if(oldItem != null) {} 
+    public ConsumableItemManager consumableItemManager;
+    public EquipmentItemManager equipmentItemManager;
+
+    public void Setup(PlayerInfo pI, ConsumableItemManager cIMgr, EquipmentItemManager eQPMgr) {
+        playerInfo = pI;
+        consumableItemManager = cIMgr;
+        equipmentItemManager = eQPMgr;
     }
 }

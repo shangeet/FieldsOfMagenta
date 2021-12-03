@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ItemAction {USE, EQUIP, DROP};
+public enum ItemAction {ADDTOPLAYERINVENTORY, EQUIPTOPLAYER, DROP};
 public class Inventory : MonoBehaviour {
+
     public List<Item> items = new List<Item>();
     public delegate void OnItemChanged();
     public OnItemChanged onItemChangedCallback;

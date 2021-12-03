@@ -2,17 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ConsumableItem : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+public enum ConsumptionType {HEAL, TEMPBOOST, PERMABOOST}
+[CreateAssetMenu(fileName = "New Item", menuName = "Inventory/ConsumableItem")]
+public class ConsumableItem : ModdableItem {
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public int baseDuration;
+    public int currentDuration;
+    public ConsumptionType consumptionType;  
+
+    public override void Use() {
+        base.Use();
     }
 }
