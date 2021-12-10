@@ -6,7 +6,6 @@ public class ItemMenuSpawner : MonoBehaviour {
     [SerializeField] public GameObject itemPrefabToSpawn;
 
     public GameObject SpawnPrefab() {
-        print(itemPrefabToSpawn);
         return  (GameObject) Instantiate(itemPrefabToSpawn);
     }
 }

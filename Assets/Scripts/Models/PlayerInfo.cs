@@ -176,4 +176,16 @@ public class PlayerInfo {
         currentLuck += item.luckMod;
         currentMov += item.movMod;
     }
+
+    public static void SwitchConsumableItems(PlayerInfo current, PlayerInfo target, string currentItemName, string targetItemName) {
+        int currentItemQty = current.consumableItemManager.GetQuantityOfItemInInventory(currentItemName);
+        int targetItemQty = target.consumableItemManager.GetQuantityOfItemInInventory(targetItemName);
+        ConsumableItem currentItemToSwap = current.consumableItemManager.GetConsumableItem(currentItemName);
+        ConsumableItem targetItemToSwap = target.consumableItemManager.GetConsumableItem(targetItemName);
+
+        current.consumableItemManager.RemoveItem(currentItemName);
+        target.consumableItemManager.RemoveItem(targetItemName);
+        current.consumableItemManager.AddItemWithQuantity(targetItemToSwap, targetItemQty);
+        target.consumableItemManager.AddItemWithQuantity(currentItemToSwap, currentItemQty);
+    }
 }

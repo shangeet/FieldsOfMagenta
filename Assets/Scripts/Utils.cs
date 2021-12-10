@@ -149,6 +149,22 @@ public class Utils {
         return neighboringNodes;
     }
 
+    public static List<Node> getNearbyPlayerNodes(Node currentNode, Dictionary<Vector3Int, Node> nodeDict) {
+        List<Node> neighboringNodes = new List<Node>();
+        Vector3Int[] positions = {
+            new Vector3Int(currentNode.getPosition().x, currentNode.getPosition().y + 1, currentNode.getPosition().z),
+            new Vector3Int(currentNode.getPosition().x, currentNode.getPosition().y - 1, currentNode.getPosition().z),
+            new Vector3Int(currentNode.getPosition().x + 1, currentNode.getPosition().y, currentNode.getPosition().z),
+            new Vector3Int(currentNode.getPosition().x - 1, currentNode.getPosition().y, currentNode.getPosition().z)
+        };
+        foreach (Vector3Int pos in positions) {
+            if (nodeDict.ContainsKey(pos) && nodeClickedIsPlayer(nodeDict[pos])) {
+                neighboringNodes.Add(nodeDict[pos]);
+            }
+        }
+        return neighboringNodes;
+    }
+
     //TODO optimize this
     public static Node getLowestCostNodeMap(Dictionary<Node, int> nodeMap, List<Node> openList) {
         int smallest = int.MaxValue;

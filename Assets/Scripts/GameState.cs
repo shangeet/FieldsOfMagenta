@@ -11,6 +11,7 @@ public enum GameState
     ShowBattleMenuState,
     ShowItemMenuState,
     UseItemState,
+    SwapItemState,
     AttackState,
     TurnEndState,
     EnemyTurnState
