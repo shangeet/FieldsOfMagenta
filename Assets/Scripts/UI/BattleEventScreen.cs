@@ -29,28 +29,42 @@ public class BattleEventScreen : MonoBehaviour
         //re-enable the battle event screen
         battleEventScreen.SetActive(true);
         battleEventScreenDisplayed = true;
-        print("Attacker Original Health: " + atkPI.currentHealth.ToString() + "/" + atkPI.baseHealth.ToString());
-        print("Attacker Current Health: " + newAtkPI.currentHealth.ToString() + "/" + newAtkPI.baseHealth.ToString());
-        print("Defender Original Health: " + defPI.currentHealth.ToString() + "/" + defPI.baseHealth.ToString());
-        print("Defender Current Health: " + newDefPI.currentHealth.ToString() + "/" + newDefPI.baseHealth.ToString());
+        //print("Attacker Original Health: " + atkPI.currentHealth.ToString() + "/" + atkPI.baseHealth.ToString());
+        //print("Attacker Current Health: " + newAtkPI.currentHealth.ToString() + "/" + newAtkPI.baseHealth.ToString());
+        //print("Defender Original Health: " + defPI.currentHealth.ToString() + "/" + defPI.baseHealth.ToString());
+        //print("Defender Current Health: " + newDefPI.currentHealth.ToString() + "/" + newDefPI.baseHealth.ToString());
         //get attacker and defender position values
         GameObject attackerHealthBarGameObj = battleEventScreen.transform.GetChild(1).gameObject;
         GameObject defenderHealthBarGameObj = battleEventScreen.transform.GetChild(2).gameObject;
-        Vector3 attackerPos = new Vector3(-1.5f, attackerHealthBarGameObj.transform.position.y - 1, 0.0f);
-        Vector3 defenderPos = new Vector3(1.5f, defenderHealthBarGameObj.transform.position.y - 1, 0.0f);
-        //setup attacker w/ original stats
-        PlayerAnimator attackerPlayer = addPlayerToBattleEventScreen(atkPI.getPlayerId(), attackerPos, atkPI);
-        //setup defender w/ original stats
-        PlayerAnimator defenderPlayer = addPlayerToBattleEventScreen(defPI.getPlayerId(), defenderPos, defPI);
-
-        //setup healthbar fill values
+        GameObject foreground = battleEventScreen.transform.Find("BattleBackground/Foreground").gameObject;
+        Vector3 attackerPos = new Vector3(attackerHealthBarGameObj.transform.position.x, foreground.transform.position.y - 2, 0.0f);
+        Vector3 defenderPos = new Vector3(defenderHealthBarGameObj.transform.position.x, foreground.transform.position.y - 2, 0.0f);
+        //setup healthbar initial fill values
         setHealthBarOnBattleEventScreen(attackerHealthBarGameObj, atkPI.currentHealth, atkPI.baseHealth);
         setHealthBarOnBattleEventScreen(defenderHealthBarGameObj, defPI.currentHealth, defPI.baseHealth);
-        yield return new WaitForSeconds(1.0f);
-        //update healthbar final values
-        setHealthBarOnBattleEventScreen(attackerHealthBarGameObj, newAtkPI.currentHealth, newAtkPI.baseHealth);
-        setHealthBarOnBattleEventScreen(defenderHealthBarGameObj, newDefPI.currentHealth, newDefPI.baseHealth); 
-        yield return new WaitForSeconds(1.0f);
+
+        //setup attacker w/ original stats
+        GameObject attackerPlayer = addPlayerToBattleEventScreen(atkPI.getPlayerId(), attackerPos, atkPI, true);
+        //setup defender w/ original stats
+        GameObject defenderPlayer = addPlayerToBattleEventScreen(defPI.getPlayerId(), defenderPos, defPI, false);
+        animateAttackSequence(attackerPlayer, attackerPos, defenderPlayer, defenderPos, true);
+        StartCoroutine(animateHealthReduction(defenderHealthBarGameObj, defPI.currentHealth, newDefPI.currentHealth, newDefPI.baseHealth));
+        yield return new WaitForSeconds(2.0f);
+
+        if (newDefPI.currentHealth != 0) {
+            animateAttackSequence(defenderPlayer, defenderPos, attackerPlayer, attackerPos, false);
+            StartCoroutine(animateHealthReduction(attackerHealthBarGameObj, atkPI.currentHealth, newAtkPI.currentHealth, newAtkPI.baseHealth));
+            yield return new WaitForSeconds(2.0f);            
+        } else {
+            animateDeathSequence(defenderPlayer);
+            yield return new WaitForSeconds(1.0f);
+        }
+
+        if (newAtkPI.currentHealth == 0) {
+            animateDeathSequence(attackerPlayer);
+            yield return new WaitForSeconds(1.0f);
+        }
+        
         //TODO apply animation logic for attacks
         Destroy(attackerPlayer);
         Destroy(defenderPlayer);
@@ -58,25 +72,47 @@ public class BattleEventScreen : MonoBehaviour
         battleEventScreenDisplayed = false;
     }
 
-    public PlayerAnimator addPlayerToBattleEventScreen(string playerId, Vector3 position, PlayerInfo playerInfo) {
+    public GameObject addPlayerToBattleEventScreen(string playerId, Vector3 position, PlayerInfo playerInfo, bool isAttacker) {
         playerId += "-temp";
         GameObject playerToSpawn = new GameObject(playerId);
-        PlayerAnimator player = playerToSpawn.AddComponent<PlayerAnimator>() as PlayerAnimator;
-        player.Setup(playerInfo);
-        player.name = playerId;
-        if (player) {
-            player.AddPlayerToParallax(position);
+        PlayerAnimator playerAnimator = playerToSpawn.AddComponent<PlayerAnimator>() as PlayerAnimator;
+        playerAnimator.setAnimatorMode("battle", playerId, playerInfo.getBattleControllerPath(), playerInfo.portraitRefPath);
+        playerAnimator.name = playerId;
+        if (playerAnimator) {
+            playerAnimator.AddPlayerToParallax(position, isAttacker);
         }
         playerToSpawn.transform.parent = battleEventScreen.transform;
-        player.spriteRenderer.sortingOrder = 5;        
-        print("Sprite added at position: " + position.x + "," + position.y);
-        return player;
+        playerAnimator.spriteRenderer.sortingOrder = 5;        
+        //print("Sprite added at position: " + position.x + "," + position.y);
+        return playerToSpawn;
     }
 
-    void setHealthBarOnBattleEventScreen(GameObject healthBar, int currentHP, int baseHP) {
+    public void animateAttackSequence(GameObject attackerPlayer, Vector3 attackerPos, GameObject defenderPlayer, Vector3 defenderPos, bool isAttacker) {
+        PlayerAnimator attackPlayerAnimator = attackerPlayer.GetComponent<PlayerAnimator>() as PlayerAnimator;
+        StartCoroutine(attackPlayerAnimator.AttackEnemy(defenderPlayer, defenderPos, isAttacker));
+    }
+
+    public void animateDeathSequence(GameObject playerToAnimate) {
+        PlayerAnimator playerAnimator = playerToAnimate.GetComponent<PlayerAnimator>() as PlayerAnimator;
+        StartCoroutine(playerAnimator.AnimateFaint());
+    }
+
+    public void setHealthBarOnBattleEventScreen(GameObject healthBar, int currentHP, int baseHP) {
         float value = ((float) currentHP) / baseHP;
         healthBar.GetComponent<HealthBar>().SetHealth(value);
-        print("Health bar value set to: " + value);
+        //print("Health bar value set to: " + value);
+    }
+
+    public IEnumerator animateHealthReduction(GameObject healthBar, int oldHP, int newHP, int baseHP) {
+        float currentHP = (float) oldHP;
+        float expectedHP = (float) newHP;
+        float step = 0.05f;
+        while ((currentHP - expectedHP) > 0.05f) {
+            currentHP -= step;
+            float value = ((float) currentHP) / baseHP;
+            healthBar.GetComponent<HealthBar>().SetHealth(value);
+            yield return new WaitForSeconds(0.01f);
+        }
     }
 
     void moveCanvasToGlobalPoint(GameObject go, Vector3 globalPos) {

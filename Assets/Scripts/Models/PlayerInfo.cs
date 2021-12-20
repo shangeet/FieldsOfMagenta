@@ -6,7 +6,9 @@ public class PlayerInfo {
     
     //Key identifiers
     private string id;
-    private string textureRefPath;
+    private string baseSpritePath;
+    private string gameControllerPath;
+    private string battleControllerPath;
     private bool isEnemy;
     private BattleClass battleClass;
 
@@ -39,14 +41,21 @@ public class PlayerInfo {
     public int totalExperience {get; set;}
     //private List<Status> statusList {get; set;}
     public string portraitRefPath {get; set;}
-    public PlayerAnimator animator {get; set;}
+    public PlayerAnimator playerAnimator {get; set;}
 
-    public PlayerInfo(string id, string textureRefPath, bool isEnemy, BattleClass battleClass) {
+    public PlayerInfo(string id, bool isEnemy, BattleClass battleClass) {
        this.id = id;
-       this.textureRefPath = textureRefPath;
        this.isEnemy = isEnemy;
        this.battleClass = battleClass;
-       this.animator = null;
+       this.playerAnimator = null;
+    }
+
+    public PlayerInfo() {}
+
+    public void setAnimationPaths(string baseSpritePath, string gameAnimatorPath, string battleAnimatorPath) {
+        this.baseSpritePath = baseSpritePath;
+        this.gameControllerPath = gameAnimatorPath;
+        this.battleControllerPath = battleAnimatorPath;
     }
 
     public void setupBaseStats(List<int> baseStats) {
@@ -78,16 +87,48 @@ public class PlayerInfo {
         return this.id;
     }
 
-    public string getTextureRefPath() {
-        return this.textureRefPath;
+    public void setPlayerId(string idToSet) {
+        this.id = idToSet;
+    }
+
+    public string getBaseSpritePath() {
+        return this.baseSpritePath;
+    }
+
+    public void setBaseSpritePath(string basePath) {
+        this.baseSpritePath = basePath;
     }
 
     public bool getIsEnemy() {
         return this.isEnemy;
     }
 
+    public void setIsEnemy(bool isE) {
+        this.isEnemy = isE;
+    }
+
     public BattleClass getBattleClass() {
         return this.battleClass;
+    }
+
+    public void setBattleClass(BattleClass newBattleClass) {
+        this.battleClass = newBattleClass;
+    }
+
+    public string getGameControllerPath() {
+        return this.gameControllerPath;
+    }
+
+    public void setGameControllerPath(string newPath) {
+        this.gameControllerPath = newPath;
+    }
+
+    public string getBattleControllerPath() {
+        return this.battleControllerPath;
+    }
+
+    public string setBattleControllerPath(string newPath) {
+        return this.battleControllerPath = newPath;
     }
 
     public void UpdateCharacterBaseStats(ModdableItem item) {
@@ -187,5 +228,38 @@ public class PlayerInfo {
         target.consumableItemManager.RemoveItem(targetItemName);
         current.consumableItemManager.AddItemWithQuantity(targetItemToSwap, targetItemQty);
         target.consumableItemManager.AddItemWithQuantity(currentItemToSwap, currentItemQty);
+    }
+
+    public static PlayerInfo Clone(PlayerInfo playerInfoToClone) {
+        PlayerInfo deepCopy = new PlayerInfo();
+        deepCopy.setPlayerId(playerInfoToClone.getPlayerId());
+        deepCopy.setBaseSpritePath(playerInfoToClone.getBaseSpritePath());
+        deepCopy.setGameControllerPath(playerInfoToClone.getGameControllerPath());
+        deepCopy.setBattleControllerPath(playerInfoToClone.getBattleControllerPath());
+        deepCopy.setIsEnemy(playerInfoToClone.getIsEnemy());
+        deepCopy.setBattleClass(playerInfoToClone.getBattleClass());
+        deepCopy.level = playerInfoToClone.level;
+        deepCopy.baseHealth = playerInfoToClone.baseHealth;
+        deepCopy.baseAttack = playerInfoToClone.baseAttack;
+        deepCopy.baseDefense = playerInfoToClone.baseDefense;
+        deepCopy.baseMagicAttack = playerInfoToClone.baseMagicAttack;
+        deepCopy.baseMagicDefense = playerInfoToClone.baseMagicDefense;
+        deepCopy.baseDexterity = playerInfoToClone.baseDexterity;
+        deepCopy.baseLuck = playerInfoToClone.baseLuck;
+        deepCopy.baseMov = playerInfoToClone.baseMov;
+        deepCopy.currentHealth = playerInfoToClone.currentHealth;
+        deepCopy.currentAttack = playerInfoToClone.currentAttack;
+        deepCopy.currentDefense = playerInfoToClone.currentDefense;
+        deepCopy.currentMagicAttack = playerInfoToClone.currentMagicAttack;
+        deepCopy.currentMagicDefense = playerInfoToClone.currentMagicDefense;
+        deepCopy.currentDexterity = playerInfoToClone.currentDexterity;
+        deepCopy.currentLuck = playerInfoToClone.currentLuck;
+        deepCopy.currentMov = playerInfoToClone.currentMov;
+        deepCopy.equipmentItemManager = playerInfoToClone.equipmentItemManager;
+        deepCopy.consumableItemManager = playerInfoToClone.consumableItemManager;
+        deepCopy.totalExperience = playerInfoToClone.totalExperience;
+        deepCopy.portraitRefPath = playerInfoToClone.portraitRefPath;
+        deepCopy.playerAnimator = playerInfoToClone.playerAnimator;
+        return deepCopy;
     }
 }

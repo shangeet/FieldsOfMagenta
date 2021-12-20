@@ -33,6 +33,7 @@ public class GameMaster : MonoBehaviour {
     public bool startedTranslation = false;
     public bool highlightedPossibleSwapPartner = false;
     bool allEnemiesHaveMoved = false;
+    public bool playerCurrentlyMoving = false;
 
     void Awake() {
         //Setup: We will delete this after we have a way to transfer info a file/read from file
@@ -149,39 +150,43 @@ public class GameMaster : MonoBehaviour {
     */
     void processMovePlayerStartState(Node currentClickedNode) {
 
-        if (Input.GetMouseButtonDown(1)) {//track back
-            //resetTurnStateData();
-            foreach (Node node in clickedNodePath) {
-                tileMap.SetColor(node.getPosition(), node.getOriginalColor());
-            }
-            ChangeState(GameState.PlayerTurnStart);
-        } else if (currentClickedNode == clickedNode) { //player node clicked on again, open battle menu and reset colors
-            ChangeState(GameState.ShowBattleMenuState);
-            foreach (Node node in clickedNodePath) {
-                tileMap.SetColor(node.getPosition(), node.getOriginalColor());
-            }
-        } else if (currentClickedNode != null) {
-            previousClickedNode = clickedNode;
-            clickedNode = currentClickedNode;
-            if(clickedNodePath != null && clickedNodePath.Contains(clickedNode)) {
-                PlayerAnimator playerToAnimate = clickedPlayerNode.getPlayerInfo().animator;
-                //move player
-                List<Node> pathToTake = Utils.getShortestPathNodes(clickedPlayerNode, clickedNode, clickedNodePath, Heuristic.NodeDistanceHeuristic, nodeDict);
-                playerToAnimate.MovePlayerToTile(tileMap, pathToTake);
-                //update player information in nodes
-                swapNodeInfoOnSpriteMove(pathToTake[0], pathToTake[pathToTake.Count - 1]);
-                clickedPlayerNode = pathToTake[pathToTake.Count - 1];
-                //reset state after moving 
+        if (!playerCurrentlyMoving) {
+            if (Input.GetMouseButtonDown(1)) { //track back
                 foreach (Node node in clickedNodePath) {
                     tileMap.SetColor(node.getPosition(), node.getOriginalColor());
                 }
-                ChangeState(GameState.ShowBattleMenuState); 
-            } else { //outside node. go back to turn start state and reset info
+                ChangeState(GameState.PlayerTurnStart);
+            } else if (currentClickedNode == clickedNode) { //player node clicked on again, open battle menu and reset colors
                 foreach (Node node in clickedNodePath) {
                     tileMap.SetColor(node.getPosition(), node.getOriginalColor());
-                }            
-                ChangeState(GameState.PlayerTurnStart);
-                resetTurnStateData();
+                }
+                ChangeState(GameState.ShowBattleMenuState);
+            } else if (currentClickedNode != null) {
+                previousClickedNode = clickedNode;
+                clickedNode = currentClickedNode;
+                if(clickedNodePath != null && clickedNodePath.Contains(clickedNode)) {
+                    PlayerAnimator playerToAnimate = clickedPlayerNode.getPlayerInfo().playerAnimator;
+                    //move player
+                    List<Node> pathToTake = Utils.getShortestPathNodes(clickedPlayerNode, clickedNode, clickedNodePath, Heuristic.NodeDistanceHeuristic, nodeDict);
+                    
+                    StartCoroutine(playerToAnimate.MovePlayerToTile(tileMap, pathToTake));
+                    
+                    //update player information in nodes
+                    swapNodeInfoOnSpriteMove(pathToTake[0], pathToTake[pathToTake.Count - 1]);
+                    clickedPlayerNode = pathToTake[pathToTake.Count - 1];
+                    print(clickedPlayerNode.getPlayerInfo().playerAnimator.transform.position);
+                    //reset state after moving 
+                    foreach (Node node in clickedNodePath) {
+                        tileMap.SetColor(node.getPosition(), node.getOriginalColor());
+                    }
+                    ChangeState(GameState.ShowBattleMenuState); 
+                } else { //outside node. go back to turn start state and reset info
+                    foreach (Node node in clickedNodePath) {
+                        tileMap.SetColor(node.getPosition(), node.getOriginalColor());
+                    }            
+                    ChangeState(GameState.PlayerTurnStart);
+                    resetTurnStateData();
+                }
             }
         }
         //else we didn't click a node. stay in this state
@@ -191,11 +196,13 @@ public class GameMaster : MonoBehaviour {
         GameState.ShowBattleMenuState Related Functions
     */
     void processShowBattleMenuState() {
-        if (!playerBattleMenu.IsPlayerBattleMenuDisplayed()) {
+        print("SHOW BATTLE MENU");
+        if (!playerBattleMenu.IsPlayerBattleMenuDisplayed() && !playerCurrentlyMoving) {
             playerBattleMenu.openPlayerBattleMenu();            
         }
 
         if (Input.GetMouseButtonDown(1)) { //cancel movement and track back
+            print("Detected right click");
             cancelPlayerMove();
             playerBattleMenu.closePlayerBattleMenu();
             resetTurnStateData();
@@ -328,8 +335,8 @@ public class GameMaster : MonoBehaviour {
     void calculateBattleEventDisplayBattleUI(Node attackerNode, Node defenderNode) {
         PlayerInfo attackerPI = attackerNode.getPlayerInfo();
         PlayerInfo defenderPI = defenderNode.getPlayerInfo();
-        PlayerInfo newAttackerPI = attackerPI;
-        PlayerInfo newDefenderPI = defenderPI;
+        PlayerInfo newAttackerPI = PlayerInfo.Clone(attackerPI);
+        PlayerInfo newDefenderPI = PlayerInfo.Clone(defenderPI);
         int attackerHealth = attackerPI.currentHealth;
         int defenderHealth = defenderPI.currentHealth;
         int attackerAtk = attackerPI.currentAttack;
@@ -377,13 +384,13 @@ public class GameMaster : MonoBehaviour {
                 GameObject playerToDestroy = GameObject.Find(newAttackerPI.getPlayerId());
                 playerToDestroy.SetActive(false);
                 //update node dict's player info
-                print("Attacker " + newAttackerPI.getPlayerId() + "has health " + attackerPI.currentHealth);
-                print("Defender " + newDefenderPI.getPlayerId() + "has health " + defenderPI.currentHealth);
+                print("Attacker " + newAttackerPI.getPlayerId() + "has health " + newAttackerPI.currentHealth);
+                print("Defender " + newDefenderPI.getPlayerId() + "has health " + newDefenderPI.currentHealth);
                 attackerNode.setPlayerInfo(null);
                 defenderNode.setPlayerInfo(newDefenderPI);
             } else {
-                print("Attacker " + newAttackerPI.getPlayerId() + "has health " + attackerPI.currentHealth);
-                print("Defender " + newDefenderPI.getPlayerId() + "has health " + defenderPI.currentHealth);
+                print("Attacker " + newAttackerPI.getPlayerId() + "has health " + newAttackerPI.currentHealth);
+                print("Defender " + newDefenderPI.getPlayerId() + "has health " + newDefenderPI.currentHealth);
                 attackerNode.setPlayerInfo(newAttackerPI);
                 defenderNode.setPlayerInfo(newDefenderPI);
             }
@@ -439,7 +446,7 @@ public class GameMaster : MonoBehaviour {
                     if (!Utils.getNearbyNodes(enemyNode, nodeDict).Contains(candidatePlayerNode)) { //move and attack else just attack
                         //move and attack
                         List<Node> pathToMove = Utils.getShortestPathNodes(enemyNode, candidatePlayerNode, nodeRange, Heuristic.NodeDistanceHeuristic, nodeDict);
-                        PlayerAnimator enemyToAnimate = enemy.animator;
+                        PlayerAnimator enemyToAnimate = enemy.playerAnimator;
                         //Player enemyToMove = GameObject.Find(enemy.getPlayerId()).GetComponent<Player>();
                         pathToMove.RemoveAt(pathToMove.Count - 1); //remove the last element since that's the player
                         enemyToAnimate.MoveEnemyNextToPlayer(tileMap, pathToMove);
@@ -480,12 +487,12 @@ public class GameMaster : MonoBehaviour {
     */
     void cancelPlayerMove() {
         if (previousClickedNode != null) {
-            PlayerAnimator playerToAnimate = clickedNode.getPlayerInfo().animator;
+            PlayerAnimator playerToAnimate = clickedNode.getPlayerInfo().playerAnimator;
             //move player
             //print(clickedPlayerNode.getPosition().x + "," + clickedPlayerNode.getPosition().y);
             //print(previousClickedNode.getPosition().x + "," + previousClickedNode.getPosition().y);
-            List<Node> pathToTake = new List<Node> {clickedPlayerNode, previousClickedNode};
-            playerToAnimate.MovePlayerToTile(tileMap, pathToTake);
+            //List<Node> pathToTake = new List<Node> {clickedPlayerNode, previousClickedNode};
+            playerToAnimate.PlayerReturnToTile(tileMap, previousClickedNode);
             //update player information in nodes
             swapNodeInfoOnSpriteMove(clickedPlayerNode, previousClickedNode);            
         }
@@ -494,8 +501,14 @@ public class GameMaster : MonoBehaviour {
     // Critical information handling // Do NOT move this to an external class
     void populateGridSetupData() {
         pawnInfoDict = new Dictionary<Vector2, PlayerInfo>();
-        PlayerInfo testOne = new PlayerInfo("fakeid", "images/sprites/SampleSprite", false, BattleClass.Warrior);
-        PlayerInfo testTwo = new PlayerInfo("fakeid2", "images/sprites/SampleSprite", false, BattleClass.Warrior);
+        PlayerInfo testOne = new PlayerInfo("fakeid", false, BattleClass.Warrior);
+        testOne.setAnimationPaths("images/sprites/CharacterSpriteSheets/Ally/MainCharacter",
+            "Animations/MainCharacter/Main_Game",
+            "Animations/MainCharacter/Main_Battle");
+        PlayerInfo testTwo = new PlayerInfo("fakeid2", false, BattleClass.Warrior);
+        testTwo.setAnimationPaths("images/sprites/CharacterSpriteSheets/Ally/MainCharacter",
+            "Animations/MainCharacter/Main_Game",
+            "Animations/MainCharacter/Main_Battle");
         List<int> stats = new List<int> {1, 10, 10, 8, 10, 10, 10, 10, 2, 0};
         testOne.setupBaseStats(stats);
         testOne.setupBattleStats();
@@ -505,8 +518,14 @@ public class GameMaster : MonoBehaviour {
         testTwo.portraitRefPath = "images/portraits/test_face";
         pawnInfoDict[new Vector2(0, 0)] = testOne;
         pawnInfoDict[new Vector2(1,0)] = testTwo;
-        PlayerInfo enemyOne = new PlayerInfo("fakeenemyid", "images/sprites/SampleSprite", true, BattleClass.Warrior);
-        PlayerInfo enemyTwo = new PlayerInfo("fakeenemyid2", "images/sprites/SampleSprite", true, BattleClass.Warrior);
+        PlayerInfo enemyOne = new PlayerInfo("fakeenemyid", true, BattleClass.Warrior);
+        enemyOne.setAnimationPaths("images/sprites/CharacterSpriteSheets/Enemy/EnemyOne",
+            "Animations/EnemyFighter/Enemy_Game",
+            "Animations/EnemyFighter/Enemy_Battle");
+        PlayerInfo enemyTwo = new PlayerInfo("fakeenemyid2", true, BattleClass.Warrior);
+        enemyTwo.setAnimationPaths("images/sprites/CharacterSpriteSheets/Enemy/EnemyOne",
+            "Animations/EnemyFighter/Enemy_Game",
+            "Animations/EnemyFighter/Enemy_Battle");
         enemyOne.setupBaseStats(stats);
         enemyOne.setupBattleStats();
         enemyTwo.setupBaseStats(stats);
@@ -514,11 +533,11 @@ public class GameMaster : MonoBehaviour {
         enemyOne.portraitRefPath = "images/portraits/test_face";
         enemyTwo.portraitRefPath = "images/portraits/test_face";
         //setup items
-        ConsumableItem healthPotion = (ConsumableItem) AssetDatabase.LoadAssetAtPath("Assets/Resources/Items/MinorHealthPotion.asset", typeof(ConsumableItem));
-        healthPotion.itemSprite = (Sprite) AssetDatabase.LoadAssetAtPath("Assets/Resources/images/ui/Icons/HealthPotionIcon.png", typeof(Sprite));
-        ConsumableItem manaPotion = (ConsumableItem) AssetDatabase.LoadAssetAtPath("Assets/Resources/Items/MinorManaPotion.asset", typeof(ConsumableItem));
-        manaPotion.itemSprite = (Sprite) AssetDatabase.LoadAssetAtPath("Assets/Resources/images/ui/Icons/ManaPotionIcon.png", typeof(Sprite));
-        EquipmentItem vest = (EquipmentItem) AssetDatabase.LoadAssetAtPath("Assets/Resources/Items/LeatherVest.asset", typeof(EquipmentItem));
+        ConsumableItem healthPotion = (ConsumableItem) Resources.Load("Items/MinorHealthPotion", typeof(ConsumableItem));
+        healthPotion.itemSprite = (Sprite) Resources.Load("images/ui/Icons/HealthPotionIcon", typeof(Sprite));
+        ConsumableItem manaPotion = (ConsumableItem) Resources.Load("Items/MinorManaPotion", typeof(ConsumableItem));
+        manaPotion.itemSprite = (Sprite) Resources.Load("images/ui/Icons/ManaPotionIcon", typeof(Sprite));
+        EquipmentItem vest = (EquipmentItem) Resources.Load("Items/LeatherVest", typeof(EquipmentItem));
         testOne.equipmentItemManager = new EquipmentItemManager();
         testOne.consumableItemManager = new ConsumableItemManager();
         List<ConsumableItem> cIList = new List<ConsumableItem> {healthPotion, healthPotion};
@@ -580,13 +599,13 @@ public class GameMaster : MonoBehaviour {
         string playerId = playerInfo.getPlayerId();
         GameObject objToSpawn = new GameObject(playerId);
         PlayerAnimator newPawn = objToSpawn.AddComponent<PlayerAnimator>() as PlayerAnimator;
-        newPawn.Setup(playerInfo);
+        newPawn.setAnimatorMode("game", playerId, playerInfo.getGameControllerPath(), playerInfo.portraitRefPath);
         newPawn.name = playerId;
-        pawnInfoDict[pos2D].animator = newPawn;
+        pawnInfoDict[pos2D].playerAnimator = newPawn;
         if (newPawn) {
             newPawn.AddSpriteToTile(tileMap, pos3D);
         }        
-        print("Sprite added at position: " + pos2D.x + "," + pos2D.y);
+        //print("Sprite added at position: " + pos2D.x + "," + pos2D.y);
     }
 
     void swapNodeInfoOnSpriteMove(Node source, Node dest) {
@@ -608,6 +627,10 @@ public class GameMaster : MonoBehaviour {
 
     public void ChangeState(GameState state) {
         currentState = state;
+    }
+
+    public GameState GetCurrentState() {
+        return currentState;
     }
 
     //UI related logic

@@ -30,7 +30,7 @@ public class SwapItemsMenu : MonoBehaviour {
     }
 
     void Update() {
-        if (!hasTraded && Input.GetMouseButtonDown(1)) {
+        if (!hasTraded && Input.GetMouseButtonDown(1) && gameMaster.GetCurrentState() == GameState.SwapItemState) {
             closeSwapItemMenu();
             currentPlayer = null;
             targetPlayer = null;
@@ -52,8 +52,8 @@ public class SwapItemsMenu : MonoBehaviour {
         itemSwapMenu.SetActive(true);
         swapItemMenuDisplayed = true;
         //Set player portraits
-        PlayerAnimator currentPlayerAnimator = currentPlayer.animator;
-        PlayerAnimator targetPlayerAnimator = targetPlayer.animator;
+        PlayerAnimator currentPlayerAnimator = currentPlayer.playerAnimator;
+        PlayerAnimator targetPlayerAnimator = targetPlayer.playerAnimator;
         Image currentPlayerImage = itemSwapMenu.transform.Find("UnitInfoMenuPlayerCurrent/PlayerCurrentInfo/CurrentPlayerFace").GetComponent<Image>();
         Image targetPlayerImage = itemSwapMenu.transform.Find("UnitInfoMenuPlayerTarget/PlayerCurrentInfo/TargetPlayerFace").GetComponent<Image>();
         currentPlayerImage.sprite = currentPlayerAnimator.playerPortrait;

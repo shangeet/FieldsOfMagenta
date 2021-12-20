@@ -1,0 +1,6 @@
+
+This is a test script to integrate NaniNovel.
+@char Colin
+Colin.Colin_Main: Hello friend. Let us do battle!
+@changeScene nextScenePath:"Assets/Scenes/ExampleScene.unity"
+@stop

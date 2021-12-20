@@ -36,6 +36,14 @@ public class PlayerBattleMenu : MonoBehaviour {
         playerBattleMenu.SetActive(true);
         playerBattleMenuDisplayed = true;
         print("Player Battle menu opened");
+        PlayerInfo pInfo = gameMaster.clickedPlayerNode.getPlayerInfo();
+        Vector3 playerPosition = GameObject.Find(pInfo.getPlayerId()).transform.position;
+
+        print(playerPosition);
+        Vector3 canvasPosition = new Vector3(playerPosition.x + 1, playerPosition.y + 1, 1);
+        playerBattleMenu.transform.position = canvasPosition;
+
+        print("Updated position");
         //TODO: Fix this
         //string playerId = clickedPlayerNode.getPlayerInfo().getPlayerId();
         //Player playerClicked = GameObject.Find(playerId).GetComponent<Player>();

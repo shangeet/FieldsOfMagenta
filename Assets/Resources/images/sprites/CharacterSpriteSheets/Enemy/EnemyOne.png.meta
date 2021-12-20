@@ -1,0 +1,648 @@
+fileFormatVersion: 2
+guid: 4653b437859f1c24ca430535a6c2058a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 833991671278933535
+    second: EnemiesOne_0
+  - first:
+      213: -1969117478506541437
+    second: EnemiesOne_1
+  - first:
+      213: 771192684372374908
+    second: EnemiesOne_2
+  - first:
+      213: 4150226057484961133
+    second: EnemiesOne_3
+  - first:
+      213: -645016211530743981
+    second: EnemiesOne_4
+  - first:
+      213: -2942997158452067284
+    second: EnemiesOne_5
+  - first:
+      213: 499236907562585411
+    second: EnemiesOne_6
+  - first:
+      213: 1983286152640931762
+    second: EnemiesOne_7
+  - first:
+      213: -6636223685704526054
+    second: EnemiesOne_8
+  - first:
+      213: -3681076200421900200
+    second: EnemiesOne_9
+  - first:
+      213: -1502232102300439455
+    second: EnemiesOne_10
+  - first:
+      213: 3251341881144692849
+    second: EnemiesOne_11
+  - first:
+      213: 3667515504441721034
+    second: EnemiesOne_12
+  - first:
+      213: -2117300533216707312
+    second: EnemiesOne_13
+  - first:
+      213: 6066993005702294074
+    second: EnemiesOne_14
+  - first:
+      213: 4393079783334912153
+    second: EnemiesOne_15
+  - first:
+      213: 3056572680366283094
+    second: EnemiesOne_16
+  - first:
+      213: 9000327439348707298
+    second: EnemiesOne_17
+  - first:
+      213: -4058053243547911814
+    second: EnemiesOne_18
+  - first:
+      213: -6803361428845121535
+    second: EnemiesOne_19
+  - first:
+      213: -2785904516302575968
+    second: EnemiesOne_20
+  - first:
+      213: -2038799934283791919
+    second: EnemiesOne_21
+  - first:
+      213: -2416198358052464434
+    second: EnemiesOne_22
+  - first:
+      213: 2671728834774821466
+    second: EnemiesOne_23
+  - first:
+      213: -6030178768327616249
+    second: EnemiesOne_24
+  - first:
+      213: -5846170462357930902
+    second: EnemiesOne_25
+  - first:
+      213: 8994458449091357883
+    second: EnemiesOne_26
+  - first:
+      213: 4322095078563929116
+    second: EnemiesOne_27
+  - first:
+      213: 2809776582874955064
+    second: EnemiesOne_28
+  - first:
+      213: -256852280041434891
+    second: EnemiesOne_29
+  - first:
+      213: 6754166073861488424
+    second: EnemiesOne_30
+  - first:
+      213: 5736455023481918587
+    second: EnemiesOne_31
+  - first:
+      213: 5548023393316530868
+    second: EnemiesOne_32
+  - first:
+      213: 4694469217902075384
+    second: EnemiesOne_33
+  - first:
+      213: 3012794295796674747
+    second: EnemiesOne_34
+  - first:
+      213: 6457080101809820435
+    second: EnemiesOne_35
+  - first:
+      213: 3566756284614966161
+    second: EnemiesOne_36
+  - first:
+      213: 2042446915728037824
+    second: EnemiesOne_37
+  - first:
+      213: 3410495733711331754
+    second: EnemiesOne_38
+  - first:
+      213: -2551967847265998945
+    second: EnemiesOne_39
+  - first:
+      213: -3444259771548578365
+    second: EnemiesOne_40
+  - first:
+      213: 4652915926174305797
+    second: EnemiesOne_41
+  - first:
+      213: -4319912673986424538
+    second: EnemiesOne_42
+  - first:
+      213: -5390254781853919199
+    second: EnemiesOne_43
+  - first:
+      213: 8960663075423041001
+    second: EnemiesOne_44
+  - first:
+      213: -8018539974860143973
+    second: EnemiesOne_45
+  - first:
+      213: 5280122659888866574
+    second: EnemiesOne_46
+  - first:
+      213: -22192538213353720
+    second: EnemiesOne_47
+  - first:
+      213: 6942921976826958716
+    second: EnemiesOne_48
+  - first:
+      213: 4874295626221198800
+    second: EnemiesOne_49
+  - first:
+      213: -3324911964331596818
+    second: EnemiesOne_50
+  - first:
+      213: 1062900098530047540
+    second: EnemiesOne_51
+  - first:
+      213: 2953150734695537170
+    second: EnemiesOne_52
+  - first:
+      213: -7283079687875824843
+    second: EnemiesOne_53
+  - first:
+      213: 2803364418511095330
+    second: EnemiesOne_54
+  - first:
+      213: 4245880420351072527
+    second: EnemiesOne_55
+  - first:
+      213: 3173562301935212492
+    second: EnemiesOne_56
+  - first:
+      213: 2697371996687106484
+    second: EnemiesOne_57
+  - first:
+      213: 3795129524819175286
+    second: EnemiesOne_58
+  - first:
+      213: -5884293051317102715
+    second: EnemiesOne_59
+  - first:
+      213: 4518922567882831471
+    second: EnemiesOne_60
+  - first:
+      213: 9171722693932309140
+    second: EnemiesOne_61
+  - first:
+      213: -5121694764927357104
+    second: EnemiesOne_62
+  - first:
+      213: 1404364192955573760
+    second: EnemiesOne_63
+  - first:
+      213: 3476390723382661954
+    second: EnemiesOne_64
+  - first:
+      213: -3222088209345873178
+    second: EnemiesOne_65
+  - first:
+      213: 5128950498072241208
+    second: EnemiesOne_66
+  - first:
+      213: 7556202586075673379
+    second: EnemiesOne_67
+  - first:
+      213: -1730124258037032701
+    second: EnemiesOne_68
+  - first:
+      213: 2026915302777439355
+    second: EnemiesOne_69
+  - first:
+      213: 6030744731931030809
+    second: EnemiesOne_70
+  - first:
+      213: 8877796271564733848
+    second: EnemiesOne_71
+  - first:
+      213: 8196612463470567051
+    second: EnemiesOne_72
+  - first:
+      213: 7311060429836213854
+    second: EnemiesOne_73
+  - first:
+      213: -2603534093924051561
+    second: EnemiesOne_74
+  - first:
+      213: -4705055916929459634
+    second: EnemiesOne_75
+  - first:
+      213: 8490928624907499598
+    second: EnemiesOne_76
+  - first:
+      213: 394395798988471443
+    second: EnemiesOne_77
+  - first:
+      213: -4299038971968547609
+    second: EnemiesOne_78
+  - first:
+      213: -1796898710059374122
+    second: EnemiesOne_79
+  - first:
+      213: 1096388646297421536
+    second: EnemiesOne_80
+  - first:
+      213: -1818435487618532325
+    second: EnemiesOne_81
+  - first:
+      213: -2532789515720064289
+    second: EnemiesOne_82
+  - first:
+      213: -6271071517681429469
+    second: EnemiesOne_83
+  - first:
+      213: -2732426490066796594
+    second: EnemiesOne_84
+  - first:
+      213: -8622809763711977389
+    second: EnemiesOne_85
+  - first:
+      213: 8816377189760417990
+    second: EnemiesOne_86
+  - first:
+      213: 1517795655253423526
+    second: EnemiesOne_87
+  - first:
+      213: -1908607939290080568
+    second: EnemiesOne_88
+  - first:
+      213: -2655028854360588668
+    second: EnemiesOne_89
+  - first:
+      213: 7972181607954677936
+    second: EnemiesOne_90
+  - first:
+      213: -5163764547195089323
+    second: EnemiesOne_91
+  - first:
+      213: -359223758741794401
+    second: EnemiesOne_92
+  - first:
+      213: 2078700765496838880
+    second: EnemiesOne_93
+  - first:
+      213: -5865793739063847313
+    second: EnemiesOne_94
+  - first:
+      213: 5933178291631653176
+    second: EnemiesOne_95
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: EnemiesOne_0
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 252
+        width: 17
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f161730a10fe29b00800000000000000
+      internalID: 833991671278933535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EnemiesOne_1
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 252
+        width: 17
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 38eca9c061a4ca4e0800000000000000
+      internalID: -1969117478506541437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EnemiesOne_2
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 252
+        width: 17
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c75356519a3d3ba00800000000000000
+      internalID: 771192684372374908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EnemiesOne_12
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 216
+        width: 15
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac08c728be1a5e230800000000000000
+      internalID: 3667515504441721034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EnemiesOne_13
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 216
+        width: 15
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01d7fda0266dd92e0800000000000000
+      internalID: -2117300533216707312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EnemiesOne_14
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 216
+        width: 15
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3a2aaf8ef9423450800000000000000
+      internalID: 6066993005702294074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EnemiesOne_24
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 180
+        width: 15
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 709dab50c50805ca0800000000000000
+      internalID: -6030178768327616249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EnemiesOne_25
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 180
+        width: 15
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6c36c650fa3edea0800000000000000
+      internalID: -5846170462357930902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EnemiesOne_26
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 180
+        width: 15
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbce9150e4cb2dc70800000000000000
+      internalID: 8994458449091357883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EnemiesOne_36
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 144
+        width: 17
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19bfdd081f9af7130800000000000000
+      internalID: 3566756284614966161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EnemiesOne_37
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 144
+        width: 17
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c7df8406aa385c10800000000000000
+      internalID: 2042446915728037824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EnemiesOne_38
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 144
+        width: 17
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa169dbdcc3845f20800000000000000
+      internalID: 3410495733711331754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

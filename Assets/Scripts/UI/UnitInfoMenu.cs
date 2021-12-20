@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
+using UnityEngine.EventSystems;
 
 public class UnitInfoMenu : MonoBehaviour {
     
@@ -25,7 +27,7 @@ public class UnitInfoMenu : MonoBehaviour {
 
     public void openUnitInfoMenu(PlayerInfo playerInfo) {
         unitInfoMenu.SetActive(true);
-        PlayerAnimator animator = playerInfo.animator;
+        PlayerAnimator animator = playerInfo.playerAnimator;
         Image playerFace = GameObject.Find("PlayerFace").GetComponent<Image>() as Image;
         Text hp = GameObject.Find("HPDisplay").GetComponent<Text>() as Text;
         Text atk = GameObject.Find("AtkDisplay").GetComponent<Text>() as Text;
