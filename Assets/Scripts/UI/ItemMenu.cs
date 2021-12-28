@@ -55,7 +55,7 @@ public class ItemMenu : MonoBehaviour
             itemRow.transform.SetParent(itemSlotContainer.transform, true);
             Vector3 itemRowPosition = new Vector3(0, startHeight, itemRow.transform.position.z);
             itemRow.GetComponent<RectTransform>().anchoredPosition = itemRowPosition;
-            startHeight += 30;
+            startHeight -= 30;
         }
     }
 

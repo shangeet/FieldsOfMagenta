@@ -71,8 +71,10 @@ public class PlayerInfo {
        this.totalExperience = baseStats[9];        
     }
 
-    public void setupBattleStats() {
-        this.currentHealth = baseHealth;
+    public void setupBattleStats(bool setHealth) {
+        if (setHealth) {
+            this.currentHealth = baseHealth;            
+        }
         this.currentAttack = baseAttack;
         this.currentDefense = baseDefense;
         this.currentMagicAttack = baseMagicAttack;
@@ -140,6 +142,10 @@ public class PlayerInfo {
         baseDexterity += item.dexMod;
         baseLuck += item.luckMod;
         baseMov += item.movMod;        
+    }
+
+    public void UpdateBattleStatsInBattle() {
+        setupBattleStats(false);
     }
 
     public void EquipItem(EquipmentItem itemToEquip) {
@@ -261,5 +267,49 @@ public class PlayerInfo {
         deepCopy.portraitRefPath = playerInfoToClone.portraitRefPath;
         deepCopy.playerAnimator = playerInfoToClone.playerAnimator;
         return deepCopy;
+    }
+
+    public void gainExp(int gainExp) {   
+        List<int> warriorStatBoostInfo = BaseClassConstants.getExperienceDictByClassAndLevel(this.battleClass, this.level);
+        int expToLvlUp = warriorStatBoostInfo[0];
+        int remExp = totalExperience + gainExp;
+        while (remExp > expToLvlUp) {
+            levelUp(warriorStatBoostInfo, expToLvlUp);
+            remExp -= expToLvlUp;
+            //get stat boosts + exp needed for the next level
+            warriorStatBoostInfo = BaseClassConstants.getExperienceDictByClassAndLevel(this.battleClass, this.level);
+            expToLvlUp = warriorStatBoostInfo[0];
+        }
+        totalExperience = remExp;
+    }
+
+    public List<int> getTotalExpListLevels(int startingLevel, int finalLevel) {
+        List<int> expValues = new List<int>();
+        for (int lvl = startingLevel; lvl <= finalLevel; lvl++) {
+            expValues.Add(BaseClassConstants.getExperienceDictByClassAndLevel(this.battleClass, lvl)[0]);
+        }
+        return expValues;
+    }
+
+    public int getTotalExpNeededToLevelUp() {
+        return BaseClassConstants.getExperienceDictByClassAndLevel(this.battleClass, this.level)[0];
+    }
+
+    public void levelUp(List<int> warriorStatBoostInfo, int expToLvlUp) {
+        int remExp = totalExperience - expToLvlUp;
+        List<int> newStats = new List<int> {
+            level + 1,
+            baseHealth + warriorStatBoostInfo[1],
+            baseAttack + warriorStatBoostInfo[2],
+            baseDefense + warriorStatBoostInfo[3],
+            baseMagicAttack + warriorStatBoostInfo[4],
+            baseMagicDefense + warriorStatBoostInfo[5],
+            baseDexterity + warriorStatBoostInfo[6],
+            baseLuck + warriorStatBoostInfo[7],
+            baseMov + warriorStatBoostInfo[8],
+            remExp
+        };
+        setupBaseStats(newStats);
+        UpdateBattleStatsInBattle();
     }
 }

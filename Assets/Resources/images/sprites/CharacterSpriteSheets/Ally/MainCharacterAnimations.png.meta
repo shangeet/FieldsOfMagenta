@@ -186,6 +186,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -1396,6 +1397,61 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      MainCharacterAnimations_19: 530801319900016431
+      MainCharacterAnimations_12: 2298426737655986559
+      MainCharacterAnimations_5: 2660180306911185478
+      MainCharacterAnimations_46: 6233977442733419390
+      MainCharacterAnimations_26: 6813153178064013583
+      MainCharacterAnimations_1: 1907926131652843299
+      MainCharacterAnimations_36: -6463902061969717854
+      MainCharacterAnimations_31: -5003625867495297058
+      MainCharacterAnimations_3: 5177296277923594275
+      MainCharacterAnimations_2: -1990854427943497270
+      MainCharacterAnimations_42: 4321462122588263171
+      MainCharacterAnimations_22: -3541928562288577530
+      MainCharacterAnimations_21: 4101395630386062104
+      MainCharacterAnimations_48: -5557235344710920463
+      MainCharacterAnimations_41: 8666106890557962225
+      MainCharacterAnimations_9: -6567002771690081186
+      MainCharacterAnimations_17: 3708293387395994778
+      MainCharacterAnimations_32: -6130369003474705336
+      MainCharacterAnimations_6: 6192627923583099906
+      MainCharacterAnimations_38: 6896436207197671740
+      MainCharacterAnimations_27: 5048413136211294716
+      MainCharacterAnimations_8: -7710510441589004799
+      MainCharacterAnimations_4: -1667783149149164319
+      MainCharacterAnimations_37: 2814692451991646351
+      MainCharacterAnimations_20: -5915639261965634122
+      MainCharacterAnimations_14: 8652831858235506508
+      MainCharacterAnimations_39: 9215475704926637858
+      MainCharacterAnimations_53: 2447304198800689098
+      MainCharacterAnimations_0: -1819067648517331572
+      MainCharacterAnimations_13: -2666938062322836364
+      MainCharacterAnimations_16: -7153680149523181527
+      MainCharacterAnimations_40: 6364790531049724849
+      MainCharacterAnimations_7: 7656746903750268222
+      MainCharacterAnimations_47: 2504666294053195869
+      MainCharacterAnimations_15: 4480935755876710494
+      MainCharacterAnimations_50: 1569945246647639423
+      MainCharacterAnimations_52: 644255255287160191
+      MainCharacterAnimations_10: -2010966103984008
+      MainCharacterAnimations_34: -7603234498041006501
+      MainCharacterAnimations_23: 4550246101901455527
+      MainCharacterAnimations_29: 6635161653700872573
+      MainCharacterAnimations_51: -4471026151512038157
+      MainCharacterAnimations_11: 5486660180774567324
+      MainCharacterAnimations_30: -2311025374637929851
+      MainCharacterAnimations_35: 6369428926350231516
+      MainCharacterAnimations_24: 731060633321224585
+      MainCharacterAnimations_45: 1412090648214695231
+      MainCharacterAnimations_33: -8681574364966949440
+      MainCharacterAnimations_49: -6427922624852654527
+      MainCharacterAnimations_18: -7877506159848102500
+      MainCharacterAnimations_28: 8731676594325896985
+      MainCharacterAnimations_25: -550561088803146980
+      MainCharacterAnimations_43: 502245108912482424
+      MainCharacterAnimations_44: 8370770611519634108
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

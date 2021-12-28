@@ -42,6 +42,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -244,6 +245,13 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      Shinagata1_1_5: -9191014884078515410
+      Shinagata1_1_0: -7605152252581454614
+      Shinagata1_1_2: 4369410980514413213
+      Shinagata1_1_4: -6589647199462999545
+      Shinagata1_1_1: -3616827408401122519
+      Shinagata1_1_3: 4995960134921821576
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

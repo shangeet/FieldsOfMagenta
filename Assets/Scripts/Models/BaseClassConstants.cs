@@ -25,9 +25,9 @@ public class BaseClassConstants
         {2, new List<int>(){2000, 0, 1, 0, 1, 1, 0, 1, 0}}
     };
 
-    public static List<int> getExperienceDictByClassAndLevel(string battleClass, int level) {
+    public static List<int> getExperienceDictByClassAndLevel(BattleClass battleClass, int level) {
         switch(battleClass) {
-            case "Warrior":
+            case BattleClass.Warrior:
                 return warriorExpDict[level];
             default:
                 return new List<int> {int.MaxValue, 0, 0, 0, 0, 0, 0, 0, 0};

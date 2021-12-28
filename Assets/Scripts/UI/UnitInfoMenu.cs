@@ -41,6 +41,8 @@ public class UnitInfoMenu : MonoBehaviour {
     }
 
     public void closeUnitInfoMenu() {
-        unitInfoMenu.SetActive(false);
+        if (unitInfoMenu.activeSelf) {
+           unitInfoMenu.SetActive(false); 
+        }
     }
 }

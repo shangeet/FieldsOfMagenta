@@ -9,10 +9,12 @@ public enum GameState
     ShowEnemyInfoState,
     MovePlayerStartState,
     ShowBattleMenuState,
+    ShowExpGainState,
     ShowItemMenuState,
     UseItemState,
     SwapItemState,
     AttackState,
     TurnEndState,
-    EnemyTurnState
+    EnemyTurnState,
+    GameEndState
 }

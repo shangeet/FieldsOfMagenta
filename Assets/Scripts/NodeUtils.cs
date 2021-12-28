@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Utils {
+public class NodeUtils {
 
     public static List<Node> getViableNodesPaths(int mov, Node startNode, Dictionary<Vector3Int, Node> nodeDict) {
         //Debug.Log(mov);
@@ -94,7 +94,7 @@ public class Utils {
             if (currentNode == end) {
                 //Debug.Log("Got path!");
                 //printDictionaryToConsole(costMap);          
-                List<Node> optimalPath = Utils.derivePath(costMap, start, end, nodeDict);
+                List<Node> optimalPath = NodeUtils.derivePath(costMap, start, end, nodeDict);
                 // string pathToPrint = "Path: ";
                 // foreach(Node node in optimalPath) {
                 //     pathToPrint += "(" + node.getPosition().x + "," + node.getPosition().y + ") ";

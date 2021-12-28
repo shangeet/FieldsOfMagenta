@@ -192,6 +192,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -1444,6 +1445,63 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      OceanShallow_10: 21300060
+      OceanDeep2x2_3: 21300208
+      OceanDeep_8: 21300238
+      OceanDeep_12: 21300252
+      OceanDeep_11: 21300220
+      OceanDeep_1: 21300140
+      OceanShallow_14: 21300062
+      OceanShallow2x2_5: 21300020
+      OceanShallow2x2_9: 21300024
+      OceanShallow_15: 21300094
+      OceanDeep_14: 21300190
+      OceanDeep_6: 21300174
+      OceanShallow_8: 21300110
+      OceanDeep2x2_5: 21300148
+      OceanDeep2x2_7: 21300212
+      OceanShallow_11: 21300092
+      OceanDeep_2: 21300172
+      OceanDeep_15: 21300222
+      OceanShallow2x2_2: 21300048
+      OceanShallow_9: 21300028
+      OceanDeep2x2_4: 21300240
+      OceanShallow_2: 21300044
+      OceanShallow_1: 21300012
+      OceanShallow_6: 21300046
+      OceanDeep_10: 21300188
+      OceanDeep2x2_11: 21300216
+      OceanDeep2x2_9: 21300152
+      OceanDeep_7: 21300206
+      OceanDeep_4: 21300236
+      OceanShallow2x2_8: 21300116
+      OceanShallow2x2_3: 21300080
+      OceanShallow_16: 21300126
+      OceanDeep_3: 21300204
+      OceanDeep_5: 21300142
+      OceanDeep2x2_2: 21300176
+      OceanDeep2x2_6: 21300180
+      OceanDeep_9: 21300156
+      OceanShallow_4: 21300108
+      OceanShallow2x2_1: 21300016
+      OceanDeep_13: 21300158
+      OceanShallow_12: 21300124
+      OceanShallow_13: 21300030
+      OceanShallow2x2_4: 21300112
+      OceanDeep2x2_1: 21300144
+      OceanShallow2x2_6: 21300052
+      OceanDeep2x2_10: 21300184
+      OceanShallow_5: 21300014
+      OceanDeep_16: 21300254
+      OceanShallow2x2_11: 21300088
+      OceanDeep2x2_8: 21300244
+      OceanShallow_7: 21300078
+      OceanShallow2x2_12: 21300120
+      OceanShallow2x2_7: 21300084
+      OceanShallow2x2_10: 21300056
+      OceanShallow_3: 21300076
+      OceanDeep2x2_12: 21300248
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

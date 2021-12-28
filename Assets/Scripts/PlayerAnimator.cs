@@ -5,8 +5,8 @@ using UnityEngine.Tilemaps;
 using UnityEngine;
 
 //This class handles animations 
-public class PlayerAnimator : MonoBehaviour
-{
+public class PlayerAnimator : MonoBehaviour {
+
     public string id;
     public string textureRefPath;
     public const string LAYER_NAME = "Sprite";
@@ -160,6 +160,14 @@ public class PlayerAnimator : MonoBehaviour
         foreach(AnimatorControllerParameter parameter in animator.parameters) {            
                 animator.SetBool(parameter.name, false);            
         }        
+    }
+
+    public void AnimateSpriteTurnEnded() {
+        spriteRenderer.color = new Color(0.5f, 0.5f, 0.5f, 1);
+    }
+
+    public void AnimateRevertSpriteTurnStarted() {
+        spriteRenderer.color = new Color(1,1,1,1);
     }
 
 }

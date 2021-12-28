@@ -132,6 +132,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -964,6 +965,43 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      TropicalExtras_Trees_13: 21300024
+      TropicalExtras_Trees_12: 21300020
+      TropicalExtras_Tree_0: 21300040
+      TropicalExtras_Trees_8: 21300034
+      TropicalExtras_Hut_2: 21300056
+      TropicalExtras_Trees_9: 21300032
+      TropicalExtras_Trees_10: 21300038
+      TropicalExtras_Tree_1: 21300042
+      TropicalExtras_Rock_Beach_0: 21300068
+      TropicalExtras_Trees_15: 21300018
+      TropicalExtras_Volcano_1: 21300014
+      TropicalExtras_Trees_1: 21300030
+      TropicalExtras_Tree_Beach_2: 21300050
+      TropicalExtras_Trees_7: 21300006
+      TropicalExtras_Trees_4: 21300004
+      TropicalExtras_Volcano_0: 21300012
+      TropicalExtras_Trees_15b: 21300010
+      TropicalExtras_Hut_0: 21300052
+      TropicalExtras_Trees_2: 21300000
+      TropicalExtras_Trees_14: 21300008
+      TropicalExtras_Hut_1: 21300054
+      TropicalExtras_Trees_6: 21300002
+      TropicalExtras_Trees_3: 21300016
+      TropicalExtras_Tree_Beach_0: 21300046
+      TropicalExtras_Hut_Beach_0: 21300058
+      TropicalExtras_Trees_5: 21300036
+      TropicalExtras_Hut_Beach_1: 21300060
+      TropicalExtras_Hut_Beach_2: 21300062
+      TropicalExtras_Rock_1: 21300066
+      TropicalExtras_Trees_11: 21300022
+      TropicalExtras_Tree_Beach_1: 21300048
+      TropicalExtras_Rock_0: 21300064
+      TropicalExtras_Rock_Beach_1: 21300070
+      TropicalExtras_Volcano_3: 21300028
+      TropicalExtras_Volcano_2: 21300026
+      TropicalExtras_Tree_3: 21300044
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
