@@ -2,34 +2,54 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public enum ItemAction {ADDTOPLAYERINVENTORY, EQUIPTOPLAYER, DROP};
-public class Inventory : MonoBehaviour {
+[System.Serializable]
+public class Inventory {
 
-    public List<Item> items = new List<Item>();
-    public delegate void OnItemChanged();
-    public OnItemChanged onItemChangedCallback;
-    #region Singleton
-    public static Inventory instance;
+    public List<ConsumableItem> consumableItems;
+    public List<EquipmentItem> equipmentItems;
 
-    void Awake() {
-       if (instance == null) {
-            instance = this;
-            DontDestroyOnLoad(this);
-        }
-        else {
-            Destroy(this.gameObject);
-        }        
+    public Inventory() {
+        consumableItems = new List<ConsumableItem>();
+        equipmentItems = new List<EquipmentItem>();
     }
-    #endregion
-    public void AddItem(Item item) {
-        items.Add(item);
-        if(onItemChangedCallback != null)
-            onItemChangedCallback.Invoke();
+
+    public void AddItem(ConsumableItem item) {
+        consumableItems.Add(item);
+    }
+
+    public void AddItem(EquipmentItem item) {
+        equipmentItems.Add(item);
     }
  
-    public void RemoveItem(Item item) {
-        items.Remove(item);
-        if (onItemChangedCallback != null)
-            onItemChangedCallback.Invoke();
+    public void RemoveItem(ConsumableItem item) {
+        consumableItems.Remove(item);
+    }
+
+    public void RemoveItem(EquipmentItem item) {
+        equipmentItems.Remove(item);
+    }
+
+    public List<Item> GetAllItems() {
+        List<Item> allItems = new List<Item>();
+
+        foreach (Item item in consumableItems) {
+            allItems.Add(item);
+        }
+
+        foreach (Item item in equipmentItems) {
+            allItems.Add(item);
+        }
+
+        return allItems;  
+    }
+
+    public List<ConsumableItem> GetAllConsumableItems() {
+        return consumableItems;
+    }
+
+    public List<EquipmentItem> GetAllEquipmentItems() {
+        return equipmentItems;
     }
 }

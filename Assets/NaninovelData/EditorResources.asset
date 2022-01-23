@@ -166,6 +166,12 @@ MonoBehaviour:
     - name: Prologue
       pathPrefix: Scripts
       guid: aa19ac92f4beac142ae26c4a0919fc3b
+    - name: PrologueBattle
+      pathPrefix: Scripts
+      guid: 8d0694a5f8238da4eb5f7bd8a5b2fd95
+    - name: NewPrologueBattle
+      pathPrefix: Scripts
+      guid: 72b1753191e03624b86a9925e3bb65c5
   - Id: Backgrounds/37eb6551-db5f-4749-8643-543f11e40e7b
     Resources: []
   - Id: Backgrounds/497f205a-d136-45ae-a221-2ec2504c468e

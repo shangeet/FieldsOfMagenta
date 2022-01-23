@@ -10,19 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3ea4fcf9986fd054faa4556311b5d566, type: 3}
-  m_Name: MinorManaPotion
+  m_Name: MinorHealthPotion
   m_EditorClassIdentifier: 
-  itemName: Minor Mana Potion
-  itemSprite: {fileID: 21300000, guid: dcce9bfa1b3f3894689327fbab8bee26, type: 3}
-  itemDescription: Test item
-  assetPath: Assets/Resources/Items/MinorManaPotion
+  itemName: Minor Health Potion
+  itemDescription: Heals 10 HP when consumed
+  assetPath: Assets/Resources/Items/MinorHealthPotion
+  spritePath: images/ui/Icons/icon15
+  unlockableQuestIds: 
+  goldValue: 25
   atkMod: 0
   defMod: 0
   mAtkMod: 0
   mDefMod: 0
   luckMod: 0
   movMod: 0
-  healthMod: 0
+  healthMod: 10
   manaMod: 0
   dexMod: 0
   baseDuration: 0

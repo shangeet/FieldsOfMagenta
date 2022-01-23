@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using UnityEditor;
 using UnityEngine.EventSystems;
 
-//Responsible for handling the entire game state, turn management, commands to move/animate sprite, create subwindow battle and destroy it
+//Responsible for handling the entire battle state, turn management, commands to move/animate sprite, create subwindow battle and destroy it
 public class GameMaster : MonoBehaviour {
 
     private Dictionary<Vector2, PlayerInfo> pawnInfoDict;
@@ -44,6 +44,7 @@ public class GameMaster : MonoBehaviour {
 
     // Misc
     bool playerVictory;
+    bool isEnemyTurn;
     GameObject playerVictoryScreen;
     GameObject playerDefeatScreen;
 
@@ -402,17 +403,19 @@ public class GameMaster : MonoBehaviour {
         nodeDict[attackerNode.getPosition()] = attackerNode;
         nodeDict[defenderNode.getPosition()] = defenderNode;
 
-        if (!attackerPI.getIsEnemy() && newDefenderPI.currentHealth == 0) {
+        if (!attackerPI.getIsEnemy() && newAttackerPI.currentHealth > 0 && newDefenderPI.currentHealth == 0) {
+            print("Gained exp");
             newAttackerPI.gainExp(1500);
             timesLeveledUp = newAttackerPI.level - attackerPI.level;
             totalExpToLevelUp = newAttackerPI.getTotalExpListLevels(attackerPI.level, newAttackerPI.level);
             oldBattlePI = attackerPI;
             newBattlePI = newAttackerPI;
             showExpGainBar = true;
-        } else if (!defenderPI.getIsEnemy() && newAttackerPI.currentHealth == 0) {
+        } else if (attackerPI.getIsEnemy() && newAttackerPI.currentHealth == 0 && newDefenderPI.currentHealth > 0) {
+            print("Gained exp");
             newDefenderPI.gainExp(1500);
-            timesLeveledUp = newAttackerPI.level - attackerPI.level;
-            totalExpToLevelUp = newAttackerPI.getTotalExpListLevels(attackerPI.level, newAttackerPI.level);
+            timesLeveledUp = newDefenderPI.level - defenderPI.level;
+            totalExpToLevelUp = newDefenderPI.getTotalExpListLevels(defenderPI.level, newDefenderPI.level);
             oldBattlePI = defenderPI;
             newBattlePI = newDefenderPI;
             showExpGainBar = true;
@@ -427,6 +430,7 @@ public class GameMaster : MonoBehaviour {
             ChangeState(GameState.TurnEndState);
         } else {
             if (!battleEventScreen.IsBattleEventScreenDisplayed() && !playerExpScreen.IsExperienceScreenProcessing()) {
+                print("Showing exp gain state");
                 Vector3 playerPos = clickedPlayerNode.getPosition();
                 playerExpScreen.ShowPlayerGainExpScreen(oldBattlePI, newBattlePI, totalExpToLevelUp, timesLeveledUp, playerPos);
                 showExpGainBar = false;
@@ -441,27 +445,35 @@ public class GameMaster : MonoBehaviour {
         GameState.TurnEndState Related Functions
     */
     void processTurnEndState() {
-        //record end of unit's turn in dict, but only if it exists (if it died, we ignore since that node is now null)
-        if (clickedNode.getPlayerId() != null) {
-            playerTurnEndedDict[clickedPlayerNode.getPlayerInfo().getPlayerId()] = true;
-            clickedPlayerNode.getPlayerInfo().playerAnimator.AnimateSpriteTurnEnded();
-        }
 
-        //check if all enemies or players have died
-        checkIfGameEnded();
-        
-        //auto turn-end if all units are done
-        if (!playerTurnEndedDict.ContainsValue(false) && !phaseTransitionUIHandler.IsPhaseTransitionRunning() && !playerExpScreen.IsExperienceScreenProcessing()) {
-            print("Player Turn ended");
-            resetPlayerTurnEndedDict();
-            StartCoroutine(phaseTransitionUIHandler.translatePhaseImage("EnemyPhase"));
+        //record end of unit's turn in dict, but only if it exists (if it died, we ignore since that node is now null)
+        if (!isEnemyTurn) {
+            if (clickedNode.getPlayerId() != null) {
+                playerTurnEndedDict[clickedPlayerNode.getPlayerInfo().getPlayerId()] = true;
+                clickedPlayerNode.getPlayerInfo().playerAnimator.AnimateSpriteTurnEnded();
+            }    
+            //auto turn-end if all units are done
+            if (!playerTurnEndedDict.ContainsValue(false) && !phaseTransitionUIHandler.IsPhaseTransitionRunning() && !playerExpScreen.IsExperienceScreenProcessing()) {
+                print("Player Turn ended");
+                resetPlayerTurnEndedDict();
+                StartCoroutine(phaseTransitionUIHandler.translatePhaseImage("EnemyPhase"));
+                //check if all enemies or players have died
+                checkIfGameEnded(); 
+                ChangeState(GameState.EnemyTurnState);
+                resetTurnStateData();
+            } else if (!phaseTransitionUIHandler.IsPhaseTransitionRunning() && !playerExpScreen.IsExperienceScreenProcessing()) { //else we go back to the player turn start state, but wait for transition to not run
+                //check if all enemies or players have died
+                checkIfGameEnded(); 
+                ChangeState(GameState.PlayerTurnStart);         
+                //reset turn state data
+                resetTurnStateData();
+            }        
+        } else {
+            //check if all enemies or players have died
+            checkIfGameEnded(); 
             ChangeState(GameState.EnemyTurnState);
-            resetTurnStateData();
-        } else if (!phaseTransitionUIHandler.IsPhaseTransitionRunning() && !playerExpScreen.IsExperienceScreenProcessing()) { //else we go back to the player turn start state, but wait for transition to not run
-            ChangeState(GameState.PlayerTurnStart);         
-            //reset turn state data
-            resetTurnStateData();
-        }    
+        }
+   
     }
 
     /*
@@ -470,6 +482,7 @@ public class GameMaster : MonoBehaviour {
 
     //Enemy logic handling// Do NOT move this to external class
     void processEnemyTurnState() {
+        isEnemyTurn = true;
         //process action for each enemy only if someone else is not attacking and we have a valid enemy that hasn't ended their turn
         if (!battleEventScreen.IsBattleEventScreenDisplayed() && !HaveAllEnemiesHaveMoved() && !phaseTransitionUIHandler.IsPhaseTransitionRunning()) {
             PlayerInfo enemy = pickAvailableEnemy();
@@ -481,7 +494,8 @@ public class GameMaster : MonoBehaviour {
                 Node enemyNode = NodeUtils.findEnemyNode(enemy.getPlayerId(), nodeDict);
                 List<Node> nodeRange = NodeUtils.getViableNodesPaths(enemyNode.getPlayerInfo().currentMov, enemyNode, nodeDict);
                 Node candidatePlayerNode = NodeUtils.findPlayerNodeNearEnemy(enemyNode, enemyNode.getPlayerInfo().currentMov, nodeDict);
-                if (candidatePlayerNode != null) {            
+                if (candidatePlayerNode != null) {      
+                    clickedPlayerNode = candidatePlayerNode;      
                     //check if we have to move or not
                     Node attackerNode = enemyNode;
                     if (!NodeUtils.getNearbyNodes(enemyNode, nodeDict).Contains(candidatePlayerNode)) { //move and attack else just attack
@@ -497,11 +511,12 @@ public class GameMaster : MonoBehaviour {
                     }
                     enemyTurnEndedDict[enemy.getPlayerId()] = true;
                     calculateBattleEventDisplayBattleUI(attackerNode, candidatePlayerNode);
+                    ChangeState(GameState.ShowExpGainState);
                 } else { //nothing to do, just end turn
                     enemyTurnEndedDict[enemy.getPlayerId()] = true;
                 }
             }
-        } else if (!phaseTransitionUIHandler.IsPhaseTransitionRunning() && !startedTranslation && HaveAllEnemiesHaveMoved() && !battleEventScreen.IsBattleEventScreenDisplayed()) {
+        } else if (!phaseTransitionUIHandler.IsPhaseTransitionRunning() && !startedTranslation && HaveAllEnemiesHaveMoved() && !battleEventScreen.IsBattleEventScreenDisplayed() && !playerExpScreen.IsExperienceScreenProcessing()) {
             if (!checkIfGameEnded()) {
                 print("Started coroutine");
                 startedTranslation = true;
@@ -511,6 +526,7 @@ public class GameMaster : MonoBehaviour {
             resetEnemyTurnEndedDict();
             startedTranslation = false;
             SetAllEnemiesHaveMoved(false);
+            isEnemyTurn = false;
             ChangeState(GameState.PlayerTurnStart);
         } //else the translation is still moving/isn't ready to be moved yet. Wait for the next frame.
     }
@@ -559,51 +575,38 @@ public class GameMaster : MonoBehaviour {
     // Critical information handling // Do NOT move this to an external class
     void populateGridSetupData() {
         pawnInfoDict = new Dictionary<Vector2, PlayerInfo>();
-        PlayerInfo testOne = new PlayerInfo("fakeid", false, BattleClass.Warrior);
+        PlayerInfo testOne = new PlayerInfo("fakeid", "Bob", false, BattleClass.Warrior, "images/portraits/test_face");
         testOne.setAnimationPaths("images/sprites/CharacterSpriteSheets/Ally/MainCharacter",
             "Animations/MainCharacter/Main_Game",
             "Animations/MainCharacter/Main_Battle");
-        PlayerInfo testTwo = new PlayerInfo("fakeid2", false, BattleClass.Warrior);
+        PlayerInfo testTwo = new PlayerInfo("fakeid2", "Joe", false, BattleClass.Warrior, "images/portraits/test_face");
         testTwo.setAnimationPaths("images/sprites/CharacterSpriteSheets/Ally/MainCharacter",
             "Animations/MainCharacter/Main_Game",
             "Animations/MainCharacter/Main_Battle");
-        List<int> stats = new List<int> {1, 10, 90, 8, 10, 10, 10, 10, 2, 0};
-        testOne.setupBaseStats(stats);
         testOne.setupBattleStats(true);
-        testTwo.setupBaseStats(stats);
         testTwo.setupBattleStats(true);
-        testOne.portraitRefPath = "images/portraits/test_face";
-        testTwo.portraitRefPath = "images/portraits/test_face";
         pawnInfoDict[new Vector2(0, 0)] = testOne;
         pawnInfoDict[new Vector2(1,0)] = testTwo;
-        PlayerInfo enemyOne = new PlayerInfo("fakeenemyid", true, BattleClass.Warrior);
+        PlayerInfo enemyOne = new PlayerInfo("fakeenemyid", "Mr.Evil", true, BattleClass.Warrior, "images/portraits/test_face");
         enemyOne.setAnimationPaths("images/sprites/CharacterSpriteSheets/Enemy/EnemyOne",
             "Animations/EnemyFighter/Enemy_Game",
             "Animations/EnemyFighter/Enemy_Battle");
-        PlayerInfo enemyTwo = new PlayerInfo("fakeenemyid2", true, BattleClass.Warrior);
+        PlayerInfo enemyTwo = new PlayerInfo("fakeenemyid2", "Kim", true, BattleClass.Warrior, "images/portraits/test_face");
         enemyTwo.setAnimationPaths("images/sprites/CharacterSpriteSheets/Enemy/EnemyOne",
             "Animations/EnemyFighter/Enemy_Game",
             "Animations/EnemyFighter/Enemy_Battle");
-        enemyOne.setupBaseStats(stats);
         enemyOne.setupBattleStats(true);
-        enemyTwo.setupBaseStats(stats);
         enemyTwo.setupBattleStats(true);
-        enemyOne.portraitRefPath = "images/portraits/test_face";
-        enemyTwo.portraitRefPath = "images/portraits/test_face";
         //setup items
-        ConsumableItem healthPotion = (ConsumableItem) Resources.Load("Items/MinorHealthPotion", typeof(ConsumableItem));
+        ConsumableItem healthPotion = (ConsumableItem) Resources.Load("Items/Stock/ConsumableItems/MinorHealthPotion", typeof(ConsumableItem));
         healthPotion.itemSprite = (Sprite) Resources.Load("images/ui/Icons/HealthPotionIcon", typeof(Sprite));
-        ConsumableItem manaPotion = (ConsumableItem) Resources.Load("Items/MinorManaPotion", typeof(ConsumableItem));
+        ConsumableItem manaPotion = (ConsumableItem) Resources.Load("Items/Stock/ConsumableItems/MinorManaPotion", typeof(ConsumableItem));
         manaPotion.itemSprite = (Sprite) Resources.Load("images/ui/Icons/ManaPotionIcon", typeof(Sprite));
-        EquipmentItem vest = (EquipmentItem) Resources.Load("Items/LeatherVest", typeof(EquipmentItem));
-        testOne.equipmentItemManager = new EquipmentItemManager();
-        testOne.consumableItemManager = new ConsumableItemManager();
+        EquipmentItem vest = (EquipmentItem) Resources.Load("Items/Stock/EquipmentItems/LeatherVest", typeof(EquipmentItem));
         List<ConsumableItem> cIList = new List<ConsumableItem> {healthPotion, healthPotion};
         EquipmentItem[] eIList = new EquipmentItem[System.Enum.GetNames(typeof(EquipType)).Length];
         eIList[(int) vest.equipType] = vest;
         testOne.LoadItems(cIList, eIList);
-        testTwo.equipmentItemManager = new EquipmentItemManager();
-        testTwo.consumableItemManager = new ConsumableItemManager();
         testTwo.LoadItems(new List<ConsumableItem>(){healthPotion, manaPotion}, new EquipmentItem[System.Enum.GetNames(typeof(EquipType)).Length]);
         //set enemy locations
         pawnInfoDict[new Vector2(2,2)] = enemyOne;

@@ -33,6 +33,8 @@ public class PlayerExpScreen : MonoBehaviour {
     }
 
     public void ShowPlayerGainExpScreen(PlayerInfo oldPlayerInfo, PlayerInfo newPlayerInfo, List<int> totalExpToLvlUp, int timesLeveledUp, Vector3 playerCurrentPos) {
+        print("LEVELD UP");
+        print(timesLeveledUp);
         playerExpBar.SetActive(true);
         Vector3 barPosition = new Vector3(playerCurrentPos.x + 0.5f, playerCurrentPos.y - 0.1f, playerCurrentPos.z);
         playerExpBar.transform.position = barPosition;

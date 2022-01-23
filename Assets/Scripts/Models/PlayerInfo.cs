@@ -2,52 +2,61 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class PlayerInfo {
     
     //Key identifiers
-    private string id;
-    private string baseSpritePath;
-    private string gameControllerPath;
-    private string battleControllerPath;
-    private bool isEnemy;
-    private BattleClass battleClass;
+    public string id;
+    public string name;
+    public string baseSpritePath;
+    public string gameControllerPath;
+    public string battleControllerPath;
+    public bool isEnemy;
+    public BattleClass battleClass;
 
     //Base Stats
-    public int level {get; set;}
-    public int baseHealth {get; set;}
-    public int baseAttack {get; set;}
-    public int baseDefense {get; set;}
-    public int baseMagicAttack {get; set;}
-    public int baseMagicDefense {get; set;}
-    public int baseDexterity {get; set;}
-    public int baseLuck {get; set;}
-    public int baseMov {get; set;}
+    public int level;
+    public int baseHealth;
+    public int baseAttack;
+    public int baseDefense;
+    public int baseMagicAttack;
+    public int baseMagicDefense;
+    public int baseDexterity;
+    public int baseLuck;
+    public int baseMov;
 
     //In-battle stats
-    public int currentHealth {get; set;}
-    public int currentAttack {get; set;}
-    public int currentDefense {get; set;}
-    public int currentMagicAttack {get; set;}
-    public int currentMagicDefense {get; set;}
-    public int currentDexterity {get; set;}
-    public int currentLuck {get; set;}
-    public int currentMov {get; set;}
+    public int currentHealth;
+    public int currentAttack;
+    public int currentDefense;
+    public int currentMagicAttack;
+    public int currentMagicDefense;
+    public int currentDexterity;
+    public int currentLuck;
+    public int currentMov;
 
     //Items
-    public EquipmentItemManager equipmentItemManager {get; set;}
-    public ConsumableItemManager consumableItemManager {get; set;}
+    public EquipmentItemManager equipmentItemManager;
+    public ConsumableItemManager consumableItemManager;
 
     //Misc
-    public int totalExperience {get; set;}
+    public int totalExperience;
     //private List<Status> statusList {get; set;}
-    public string portraitRefPath {get; set;}
-    public PlayerAnimator playerAnimator {get; set;}
+    public string portraitRefPath;
+    public PlayerAnimator playerAnimator;
 
-    public PlayerInfo(string id, bool isEnemy, BattleClass battleClass) {
-       this.id = id;
-       this.isEnemy = isEnemy;
-       this.battleClass = battleClass;
-       this.playerAnimator = null;
+    public PlayerInfo(string id, string name, bool isEnemy, BattleClass battleClass, string portraitRefPath) {
+        this.id = id;
+        this.name = name;
+        this.isEnemy = isEnemy;
+        this.battleClass = battleClass;
+        this.playerAnimator = null;
+        this.totalExperience = 0;
+        this.equipmentItemManager = new EquipmentItemManager();
+        this.consumableItemManager = new ConsumableItemManager();
+        this.portraitRefPath = portraitRefPath;
+        List<int> baseStats = BaseClassConstants.getBaseStatsForBattleClass(battleClass);
+        setupBaseStats(baseStats);
     }
 
     public PlayerInfo() {}
@@ -67,8 +76,7 @@ public class PlayerInfo {
        this.baseMagicDefense = baseStats[5];
        this.baseDexterity = baseStats[6];
        this.baseLuck = baseStats[7];
-       this.baseMov = baseStats[8];
-       this.totalExperience = baseStats[9];        
+       this.baseMov = baseStats[8];       
     }
 
     public void setupBattleStats(bool setHealth) {
@@ -78,8 +86,8 @@ public class PlayerInfo {
         this.currentAttack = baseAttack;
         this.currentDefense = baseDefense;
         this.currentMagicAttack = baseMagicAttack;
-        this.currentMagicDefense = currentMagicDefense;
-        this.currentDexterity = currentDexterity;
+        this.currentMagicDefense = baseMagicDefense;
+        this.currentDexterity = baseDexterity;
         this.currentLuck = baseLuck;
         this.currentMov = baseMov;
         //this.statusList = new List<Status>();
@@ -133,7 +141,7 @@ public class PlayerInfo {
         return this.battleControllerPath = newPath;
     }
 
-    public void UpdateCharacterBaseStats(ModdableItem item) {
+    public void AddCharacterBaseStats(ModdableItem item) {
         baseHealth += item.healthMod;
         baseAttack += item.atkMod;
         baseDefense += item.defMod;
@@ -144,18 +152,31 @@ public class PlayerInfo {
         baseMov += item.movMod;        
     }
 
+    public void SubtractCharacterBaseStats(ModdableItem item) {
+        baseHealth -= item.healthMod;
+        baseAttack -= item.atkMod;
+        baseDefense -= item.defMod;
+        baseMagicAttack -= item.mAtkMod;
+        baseMagicDefense -= item.mDefMod;
+        baseDexterity -= item.dexMod;
+        baseLuck -= item.luckMod;
+        baseMov -= item.movMod; 
+    }
+
     public void UpdateBattleStatsInBattle() {
         setupBattleStats(false);
     }
 
     public void EquipItem(EquipmentItem itemToEquip) {
-        EquipmentItem previousItem = equipmentItemManager.Equip(itemToEquip);
-        UpdateCharacterBaseStats(itemToEquip);
+        equipmentItemManager.Equip(itemToEquip);
+        AddCharacterBaseStats(itemToEquip);
+        setupBattleStats(true);
     }
 
     public void UnEquipItem(EquipmentItem equippedItem) {
         equipmentItemManager.UnEquip(equippedItem);
         RevertCharacterStatusItemExpired(equippedItem);
+        setupBattleStats(true);
     }
 
     public ConsumableItem GetConsumableItemWithKey(string itemKey) {
@@ -168,7 +189,7 @@ public class PlayerInfo {
         if (itemToConsume.consumptionType == ConsumptionType.HEAL || itemToConsume.consumptionType == ConsumptionType.TEMPBOOST) {
             UpdateCharacterItemStatus(itemToConsume, null, true); 
         } else if (itemToConsume.consumptionType == ConsumptionType.PERMABOOST) {
-            UpdateCharacterBaseStats(itemToConsume);
+            AddCharacterBaseStats(itemToConsume);
         }
     }
 
@@ -187,6 +208,18 @@ public class PlayerInfo {
         }
     }
 
+    public ConsumableItemManager GetConsumableItemManager() {
+        return consumableItemManager;
+    }
+
+    public void SetConsumableItemManager(ConsumableItemManager updatedManager) {
+        consumableItemManager = updatedManager;
+    }
+
+    public EquipmentItemManager GetEquipmentItemManager() {
+        return equipmentItemManager;
+    }
+
     public void UpdateCharacterItemStatus(ModdableItem newItem, ModdableItem oldItem, bool capHealth) {
         if (oldItem != null) {
             subtractPlayerInfoStats(oldItem);
@@ -196,7 +229,7 @@ public class PlayerInfo {
 
     public void RevertCharacterStatusItemExpired(ModdableItem expiredItem) {
         if (expiredItem != null) {
-            subtractPlayerInfoStats(expiredItem);            
+            SubtractCharacterBaseStats(expiredItem);            
         }
     }
 

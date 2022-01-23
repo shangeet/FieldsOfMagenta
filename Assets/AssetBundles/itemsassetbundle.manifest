@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 1258957167
+CRC: 3591119532
 Hashes:
   AssetFileHash:
     serializedVersion: 2
     Hash: f94fbfac3b8475dcf51e5a177d930625
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 0e230b7ee85a0c89bd5d059806ced858
+    Hash: 05527c66fe96ccd18a3a840a1fbcaf80
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -55,8 +55,8 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: UnityEngine.UI
   ClassName: UnityEngine.UI.SpriteState
 Assets:
-- Assets/Resources/Items/LeatherVest.asset
-- Assets/Resources/Items/MinorHealthPotion.asset
+- Assets/Resources/Items/Stock/EquipmentItems/LeatherVest.asset
+- Assets/Resources/Items/Stock/ConsumableItems/MinorHealthPotion.asset
 - Assets/Resources/images/ui/Icons/HealthPotionIcon.png
 - Assets/Resources/Items/ItemSlot.prefab
 Dependencies: []

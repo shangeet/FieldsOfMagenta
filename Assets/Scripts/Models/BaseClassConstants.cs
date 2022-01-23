@@ -6,7 +6,7 @@ public class BaseClassConstants
 {
 
     // Reference base stats dicts
-    public static List<int> warriorBaseStats = new List<int> {10, 10, 8, 10, 10, 10, 10, 2};
+    public static List<int> warriorBaseStats = new List<int> {1, 10, 10, 8, 10, 10, 10, 10, 2};
 
 
     public static List<int> getBaseStatsForBattleClass(BattleClass battleClass) {

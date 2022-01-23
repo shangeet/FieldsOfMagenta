@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class EquipmentItemManager {
     
     public int numSlots = System.Enum.GetNames(typeof(EquipType)).Length;
@@ -9,6 +10,10 @@ public class EquipmentItemManager {
 
     public EquipmentItemManager() {
         currentEquipment = new EquipmentItem[numSlots];
+    }
+
+    public EquipmentItem[] GetCurrentEquipment() {
+        return currentEquipment;
     }
 
     public void PopulateWithCurrentEquipement(EquipmentItem[] savedEquipment) {
@@ -36,6 +41,15 @@ public class EquipmentItemManager {
         int equipSlot = (int) equippedItem.equipType;
 
         currentEquipment[equipSlot] = null;
+    }
+
+    public int GetMaxSlots() {
+        return numSlots;
+    }
+
+    public bool CanEquipItem(EquipmentItem itemToEquip) {
+        int equipType = (int) itemToEquip.GetEquipType();
+        return currentEquipment[equipType] == null;
     }
 
 }

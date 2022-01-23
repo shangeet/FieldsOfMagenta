@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: LeatherVest
   m_EditorClassIdentifier: 
   itemName: Leather Vest
-  itemSprite: {fileID: 0}
   itemDescription: A basic leather vest for new adventurers
   assetPath: Assets/Resources/Items/LeatherVest
+  unlockableQuestIds: 
+  goldValue: 0
   atkMod: 0
   defMod: 5
   mAtkMod: 0

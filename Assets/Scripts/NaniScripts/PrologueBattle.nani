@@ -1,0 +1,5 @@
+This is a prologue battle script. 
+@char Colin
+Colin.Colin_Main: It's time to battle!
+@changeScene nextScenePath:"Assets/Scenes/ExampleScene.unity"
+@stop
