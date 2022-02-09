@@ -16,7 +16,7 @@ public class Cursor : MonoBehaviour {
     void Start() {
         spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = cursor;
-        spriteRenderer.sortingOrder = 1;
+        spriteRenderer.sortingOrder = 3;
         spriteRenderer.sortingLayerName = LAYER_NAME;
         animator = gameObject.AddComponent<Animator>();
         animator.runtimeAnimatorController = animatorController;

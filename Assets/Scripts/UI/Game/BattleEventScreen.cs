@@ -29,10 +29,6 @@ public class BattleEventScreen : MonoBehaviour
         //re-enable the battle event screen
         battleEventScreen.SetActive(true);
         battleEventScreenDisplayed = true;
-        //print("Attacker Original Health: " + atkPI.currentHealth.ToString() + "/" + atkPI.baseHealth.ToString());
-        //print("Attacker Current Health: " + newAtkPI.currentHealth.ToString() + "/" + newAtkPI.baseHealth.ToString());
-        //print("Defender Original Health: " + defPI.currentHealth.ToString() + "/" + defPI.baseHealth.ToString());
-        //print("Defender Current Health: " + newDefPI.currentHealth.ToString() + "/" + newDefPI.baseHealth.ToString());
         //get attacker and defender position values
         GameObject attackerHealthBarGameObj = battleEventScreen.transform.GetChild(1).gameObject;
         GameObject defenderHealthBarGameObj = battleEventScreen.transform.GetChild(2).gameObject;
@@ -83,7 +79,6 @@ public class BattleEventScreen : MonoBehaviour
         }
         playerToSpawn.transform.parent = battleEventScreen.transform;
         playerAnimator.spriteRenderer.sortingOrder = 5;        
-        //print("Sprite added at position: " + position.x + "," + position.y);
         return playerToSpawn;
     }
 
@@ -100,7 +95,6 @@ public class BattleEventScreen : MonoBehaviour
     public void setHealthBarOnBattleEventScreen(GameObject healthBar, int currentHP, int baseHP) {
         float value = ((float) currentHP) / baseHP;
         healthBar.GetComponent<HealthBar>().SetHealth(value);
-        //print("Health bar value set to: " + value);
     }
 
     public IEnumerator animateHealthReduction(GameObject healthBar, int oldHP, int newHP, int baseHP) {

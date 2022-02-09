@@ -41,11 +41,9 @@ public class ItemMenu : MonoBehaviour
         foreach (KeyValuePair<string, int> pair in currentConsumableItemsInventory) {
             string itemName = pair.Key;
             int quantity = pair.Value;
-            print("Found item " + itemName + " qty: " + quantity.ToString());
             Sprite itemSprite = currentConsumableItems[itemName].itemSprite;
             GameObject itemRow = itemMenu.GetComponent<ItemMenuSpawner>().SpawnPrefab();
             itemRow.name = "ID-" + itemSlotContainer.GetComponentsInChildren<Transform>().Length.ToString();
-            print(itemRow);
             GameObject buttonGameObj = itemRow.transform.GetChild(0).gameObject;
             Button button = buttonGameObj.GetComponent<Button>();
             button.onClick.AddListener(onConsumableItemButtonClick);
@@ -70,13 +68,12 @@ public class ItemMenu : MonoBehaviour
     }
 
     void onConsumableItemButtonClick() {
-        print("Button clicked!");
         GameObject itemRowButton = EventSystem.current.currentSelectedGameObject;
         string itemKey = itemRowButton.transform.GetChild(1).gameObject.GetComponent<Text>().text;
         PlayerInfo clickedPlayerInfo = gameMaster.clickedPlayerNode.getPlayerInfo();
         clickedPlayerInfo.ConsumeItem(itemKey);
         closePlayerItemMenu();
-        gameMaster.ChangeState(GameState.TurnEndState);
+        gameMaster.ChangeState(GameState.HandleTileState);
     }
 
     public bool IsItemMenuDisplayed() {

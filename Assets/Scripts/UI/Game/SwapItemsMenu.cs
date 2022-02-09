@@ -90,11 +90,9 @@ public class SwapItemsMenu : MonoBehaviour {
         foreach (KeyValuePair<string, int> pair in currentConsumableItemsInventory) {
             string itemName = pair.Key;
             int quantity = pair.Value;
-            print("Found item " + itemName + " qty: " + quantity.ToString());
             Sprite itemSprite = currentConsumableItems[itemName].itemSprite;
             GameObject itemRow = GameObject.Find("ItemSwapMenu").gameObject.GetComponent<ItemMenuSpawner>().SpawnPrefab();
             itemRow.name = isTarget? "Target-" + itemName : "Current-" + itemName;
-            print(itemRow); 
             GameObject buttonGameObj = itemRow.transform.GetChild(0).gameObject;
             Button button = buttonGameObj.GetComponent<Button>();
             button.onClick.AddListener(onConsumableItemButtonClick);
@@ -146,7 +144,6 @@ public class SwapItemsMenu : MonoBehaviour {
 
         //if both empty, deselect both
         if (currentEmpty && targetEmpty) {
-            print("Both empty. You're trolling");
             playErrorNoise();
             deSelectButton(currentPlayerClickedItemButton);
             deSelectButton(targetPlayerClickedItemButton);
@@ -157,7 +154,6 @@ public class SwapItemsMenu : MonoBehaviour {
             int expectedCurrentInventoryCount = currentPlayerInventoryCount++;
             if (expectedCurrentInventoryCount <= maxInventoryCount && !cpCurrentConsumableItemsInventory.ContainsKey(itemName)) {
                 //swap
-                print("Swapping items current empty");
                 swapItems(currentEmpty, targetEmpty);
             } else {
                 //play error noise & reset
@@ -172,7 +168,6 @@ public class SwapItemsMenu : MonoBehaviour {
             int expectedTargetInventoryCount = targetPlayerInventoryCount++;
             if (expectedTargetInventoryCount <= maxInventoryCount && !tpCurrentConsumableItemsInventory.ContainsKey(itemName)) {
                 //swap
-                print("Swapping items target empty");
                 swapItems(currentEmpty, targetEmpty);
             } else {
                 //play error noise & reset
@@ -186,7 +181,6 @@ public class SwapItemsMenu : MonoBehaviour {
             string currentItemName = currentPlayerClickedItemButton.transform.Find("ItemName").gameObject.GetComponent<Text>().text;
             string targetItemName = targetPlayerClickedItemButton.transform.Find("ItemName").gameObject.GetComponent<Text>().text;
             if (!tpCurrentConsumableItemsInventory.ContainsKey(currentItemName) && !cpCurrentConsumableItemsInventory.ContainsKey(targetItemName)) { 
-                print("Both valid. Swapping.");
                 swapItems(currentEmpty, targetEmpty);                
             } else {
                 playErrorNoise();
@@ -199,9 +193,8 @@ public class SwapItemsMenu : MonoBehaviour {
     }
 
     void onConfirmButtonClick() {
-        print("Clicked on confirm button");
         closeSwapItemMenu();
-        gameMaster.endShowSwapItemMenuStateToEndTurnState(currentPlayer);
+        gameMaster.endShowSwapItemMenuStateToHandleTileState(currentPlayer);
         currentPlayer = null;
         targetPlayer = null;
     }
@@ -222,7 +215,6 @@ public class SwapItemsMenu : MonoBehaviour {
             currentItemToSwap = currentPlayerClickedItemButton.transform.Find("ItemName").gameObject.GetComponent<Text>().text;
             for (int idx = 0; idx < currentItemLocations.Length; idx++) {
                 if (currentItemLocations[idx] != null && currentItemLocations[idx].transform.Find("ItemName").gameObject.GetComponent<Text>().text == currentItemToSwap) {
-                    print("Got current item index: " + idx.ToString());
                     idxCurrentItemToSwitch = idx;
                 }
             }  
@@ -239,7 +231,6 @@ public class SwapItemsMenu : MonoBehaviour {
             targetItemToSwap = targetPlayerClickedItemButton.transform.Find("ItemName").gameObject.GetComponent<Text>().text;
             for (int idx = 0; idx < targetItemLocations.Length; idx++) {
                 if (targetItemLocations[idx] != null && targetItemLocations[idx].transform.Find("ItemName").gameObject.GetComponent<Text>().text == targetItemToSwap) {
-                    print("Got target item index: " + idx.ToString());
                     idxTargetItemToSwitch = idx;
                 }
             }
@@ -253,7 +244,6 @@ public class SwapItemsMenu : MonoBehaviour {
         }
 
         //switch the positions on UI (also need to swap names)
-        print("Switching positions in UI memory");
         Button currentButton = currentItemLocations[idxCurrentItemToSwitch];
         Button targetButton = targetItemLocations[idxTargetItemToSwitch];
         if (!currentEmpty && !targetEmpty) {
@@ -271,12 +261,10 @@ public class SwapItemsMenu : MonoBehaviour {
         targetPlayerClickedItemButton = null;
 
         //swap in the backend
-        print("Swapping in backend");
         hasTraded = true;
         PlayerInfo.SwitchConsumableItems(currentPlayer, targetPlayer, currentItemToSwap, targetItemToSwap);
 
         //Destroy old lists and repopulate
-        print("Destroy and repopulate");
         destroyItemsInContainer(currentItemSlotContainer);
         destroyItemsInContainer(targetItemSlotContainer);
         repopulateContainer(currentItemSlotContainer, currentItemLocations, false);
@@ -335,18 +323,15 @@ public class SwapItemsMenu : MonoBehaviour {
 
         if (isTarget) { //no targets clicked 
             if (targetPlayerClickedItemButton == null) {
-                print("Selected target button");
                 targetPlayerClickedItemButton = itemRowButton;
                 selectButton(itemRowButton);
             } else { //deselect previous before swapping
                 //string previousTargetItemName = targetPlayerClickedItemButton.transform.GetChild(1).gameObject.GetComponent<Text>().text;
                 if (targetPlayerClickedItemButton == itemRowButton) {
                     //just deselect as it's the same button
-                    print("Deselected target button");
                     deSelectButton(itemRowButton);
                     targetPlayerClickedItemButton = null;
                 } else {
-                    print("Deselected one. Selected the other");
                     deSelectButton(targetPlayerClickedItemButton);
                     selectButton(itemRowButton);
                     targetPlayerClickedItemButton = itemRowButton;
@@ -354,17 +339,14 @@ public class SwapItemsMenu : MonoBehaviour {
             }
         } else {
             if (currentPlayerClickedItemButton == null) {
-                print("Selected current button");
                 selectButton(itemRowButton);
                 currentPlayerClickedItemButton = itemRowButton;
             } else {
                 //string previousCurrentItemName = currentPlayerClickedItemButton.transform.GetChild(1).gameObject.GetComponent<Text>().text;
                 if (currentPlayerClickedItemButton == itemRowButton) {
-                    print("Deselected current button");
                     deSelectButton(itemRowButton);
                     currentPlayerClickedItemButton = null;
                 } else {
-                    print("Deselect old select new current button");
                     deSelectButton(currentPlayerClickedItemButton);
                     selectButton(itemRowButton);
                     currentPlayerClickedItemButton = itemRowButton;
@@ -372,7 +354,6 @@ public class SwapItemsMenu : MonoBehaviour {
             }
         }
         if (currentPlayerClickedItemButton != null && targetPlayerClickedItemButton != null) {
-            print("Both clicked! Process Swap!");
             bool currentSlotEmpty = currentPlayerClickedItemButton.name.Contains("Empty");
             bool targetSlotEmpty = targetPlayerClickedItemButton.name.Contains("Empty");
             processSwap(currentSlotEmpty, targetSlotEmpty);

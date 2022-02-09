@@ -170,10 +170,8 @@ public class UnitManagementMenu : MonoBehaviour {
     }
 
     void selectButton(Button button) {
-        print("Selecting button");
         //EventSystem.current.SetSelectedGameObject(null);
         string newButtonImagePath = button.GetComponent<SlotAdditionalProperties>().GetProperty("Selected");
-        print(Resources.Load<Sprite>(newButtonImagePath));
         button.image.sprite = Resources.Load<Sprite>(newButtonImagePath);
     }
 

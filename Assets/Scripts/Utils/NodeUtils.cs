@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class NodeUtils {
 
-    public static List<Node> getViableNodesPaths(int mov, Node startNode, Dictionary<Vector3Int, Node> nodeDict) {
-        //Debug.Log(mov);
-        //Debug.Log(startNode.getPlayerInfo());
+    public static List<Node> getViableNodesPaths(Node startNode, Dictionary<Vector3Int, Node> nodeDict, TileEventManager tileManager) {
+        int mov = startNode.getPlayerInfo().currentMov;
         List<Node> visitedNodes = new List<Node>();
         List<Node> validNodes = new List<Node>();
         Queue<Node> queue = new Queue<Node>();
@@ -24,7 +23,7 @@ public class NodeUtils {
             Node currentNode = queue.Dequeue();
             List<Node> nearbyNodes = getNearbyNodes(currentNode, nodeDict);
             foreach (Node childNode in nearbyNodes) {
-                if (!childNode.getHasObstacle() &&  !visitedNodes.Contains(childNode) && !childNode.isOccupied()) { //node is not an obstacle, other player, and hasn't been visited
+                if (!tileManager.IsObstacleTile(childNode) &&  !visitedNodes.Contains(childNode) && !childNode.isOccupied()) { //node is not an obstacle, other player, and hasn't been visited
                     int newDist = distFromStart[currentNode] + 1;
                     if (newDist <= mov) {
                         distFromStart[childNode] = newDist;
@@ -191,7 +190,8 @@ public class NodeUtils {
         return (int) Mathf.Abs(a.getPosition().x - b.getPosition().x) + Mathf.Abs(a.getPosition().y - b.getPosition().y);
     }
 
-    public static Node findPlayerNodeNearEnemy(Node startNode, int mov, Dictionary<Vector3Int, Node> nodeDict) {
+    public static Node findPlayerNodeNearEnemy(Node startNode, Dictionary<Vector3Int, Node> nodeDict, TileEventManager tileManager) {
+        int mov = startNode.getPlayerInfo().currentMov;
         List<Node> visitedNodes = new List<Node>();
         List<Node> validNodes = new List<Node>();
         Queue<Node> queue = new Queue<Node>();
@@ -211,7 +211,7 @@ public class NodeUtils {
             }
             List<Node> nearbyNodes = getNearbyNodes(currentNode, nodeDict);
             foreach (Node childNode in nearbyNodes) {
-                if (!childNode.getHasObstacle() &&  !visitedNodes.Contains(childNode) && !(childNode.getPlayerInfo() != null && childNode.getPlayerInfo().getIsEnemy())) { //node is not an obstacle, other enemy, and hasn't been visited
+                if (!tileManager.IsObstacleTile(childNode) &&  !visitedNodes.Contains(childNode) && !(childNode.getPlayerInfo() != null && childNode.getPlayerInfo().getIsEnemy())) { //node is not an obstacle, other enemy, and hasn't been visited
                     int newDist = distFromStart[currentNode] + 1;
                     if (newDist <= mov) {
                         distFromStart[childNode] = newDist;
@@ -243,7 +243,6 @@ public class NodeUtils {
         List<Node> optimalPath = new List<Node>(){startNode};
         Node lastNode = startNode;
         int iterations = 0;
-        printDictionaryToConsole(fMap);
        //Debug.Log("START NODE: " + "(" + startNode.getPosition().x + "," + startNode.getPosition().y + ")");
        //Debug.Log("GOAL NODE: " + "(" + goalNode.getPosition().x + "," + goalNode.getPosition().y + ")");
         while(!optimalPath.Contains(goalNode)) {

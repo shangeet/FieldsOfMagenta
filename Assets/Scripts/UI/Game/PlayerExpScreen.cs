@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class PlayerExpScreen : MonoBehaviour {
 
     GameObject playerExpBar;
-    GameObject playerExpGainMenu;
-
+    GameObject playerExpGainMenuGo;
+    ExpGainMenu playerExpGainMenu;
     bool screenAnimationStarted;
     bool playerExpScreenShown;
 
@@ -25,16 +25,15 @@ public class PlayerExpScreen : MonoBehaviour {
 
     void setupUIElements() {
         playerExpBar = GameObject.Find("PlayerExpScreen").gameObject;
-        playerExpGainMenu = GameObject.Find("ExpGainMenu").gameObject;
-        playerExpGainMenu.SetActive(false);
+        playerExpGainMenuGo = GameObject.Find("ExpGainMenu").gameObject;
+        playerExpGainMenu = gameObject.AddComponent<ExpGainMenu>();
+        playerExpGainMenuGo.SetActive(false);
         playerExpBar.SetActive(false);
         playerExpScreenShown = false;
         screenAnimationStarted = false;
     }
 
     public void ShowPlayerGainExpScreen(PlayerInfo oldPlayerInfo, PlayerInfo newPlayerInfo, List<int> totalExpToLvlUp, int timesLeveledUp, Vector3 playerCurrentPos) {
-        print("LEVELD UP");
-        print(timesLeveledUp);
         playerExpBar.SetActive(true);
         Vector3 barPosition = new Vector3(playerCurrentPos.x + 0.5f, playerCurrentPos.y - 0.1f, playerCurrentPos.z);
         playerExpBar.transform.position = barPosition;
@@ -71,8 +70,8 @@ public class PlayerExpScreen : MonoBehaviour {
             yield return new WaitForSeconds(2);
 
             //show exp gain menu
-            playerExpGainMenu.SetActive(true);
-            playerExpGainMenu.GetComponent<ExpGainMenu>().OpenExpGainMenu(oldPlayerInfo, newPlayerInfo);
+            playerExpGainMenuGo.SetActive(true);
+            playerExpGainMenu.OpenExpGainMenu(oldPlayerInfo, newPlayerInfo);
         }
         playerExpScreenShown = false;
     } 
@@ -100,7 +99,7 @@ public class PlayerExpScreen : MonoBehaviour {
     }
 
     public bool IsExperienceScreenProcessing() {
-        return playerExpScreenShown || (playerExpGainMenu.activeSelf && playerExpGainMenu.GetComponent<ExpGainMenu>().IsExpGainMenuDisplayed());
+        return playerExpScreenShown || (playerExpGainMenuGo.activeSelf && playerExpGainMenu.IsExpGainMenuDisplayed());
     }
 
 }

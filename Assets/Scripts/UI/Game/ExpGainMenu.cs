@@ -13,7 +13,7 @@ public class ExpGainMenu : MonoBehaviour {
     }
 
     void Update() {
-        if (Input.GetMouseButtonDown(0)) {
+        if (Input.GetMouseButtonDown(0) && expGainMenuDisplayed) {
             CloseExpGainMenu();
         }
     }
@@ -82,7 +82,6 @@ public class ExpGainMenu : MonoBehaviour {
                 arrowAnim.SetActive(false);
             }
             Vector3 currentPosition = slotRow.transform.localPosition;
-            print("CurentPosition: " + currentPosition.ToString());
             Vector3 newPosition = new Vector3(1.8f, yPadding, currentPosition.z); 
             slotRow.transform.position = newPosition;
             slotRow.transform.SetParent(statSlotListLeft.transform, false);

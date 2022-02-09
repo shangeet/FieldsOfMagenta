@@ -30,7 +30,6 @@ public class StaticTileHandler : MonoBehaviour {
 
     public void SpawnTile(Vector3Int position, string tileId) {
         if (posToRendererDict.ContainsKey(position) && tilesToSpriteDict.ContainsKey(tileId)) {
-            print("Spawning red tile");
             GameObject tileRendererGo = posToRendererDict[position];
             tileRendererGo.GetComponent<StaticTileRenderer>().SpawnTile(tilesToSpriteDict[tileId]);
         }

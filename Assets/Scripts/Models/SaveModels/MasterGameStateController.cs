@@ -64,7 +64,6 @@ public class MasterGameStateController : MonoBehaviour {
         foreach (PlayerInfo newPInfo in playerInfosToUpdate) {
             for (int idx = 0; idx < data.Count; idx++) {
                 if (newPInfo.id.Equals(data[idx].id)) {
-                    print("Updated Player Info");
                     data[idx] = newPInfo;
                 }    
             }            
@@ -119,6 +118,15 @@ public class MasterGameStateController : MonoBehaviour {
 
     public void SetPlayerGold(int gold) {
         currentSaveFile.saveData.playerGold = gold;
+    }
+
+    public void AddPlayerGold(int gold) {
+        currentSaveFile.saveData.playerGold += gold;
+    }
+
+    public void SubtractPlayerGold(int gold) {
+        currentSaveFile.saveData.playerGold -= gold;
+        currentSaveFile.saveData.playerGold = Mathf.Max(0, currentSaveFile.saveData.playerGold);
     }
     
 }

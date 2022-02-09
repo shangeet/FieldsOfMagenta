@@ -30,9 +30,11 @@ public class PlayerAnimator : MonoBehaviour {
         id = pId;
         if (mode == "battle") {
             textureRefPath = controllerPath;
+            sortingOrder = 5;
             animator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>(controllerPath);
         } else if (mode == "game") {
             textureRefPath = controllerPath;
+            sortingOrder = 3;
             animator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>(controllerPath);
         }
         //texture = Resources.Load<Texture2D>(textureRefPath);

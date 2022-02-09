@@ -112,7 +112,6 @@ public class PlayerItemTradeMenu : MonoBehaviour {
             itemSlot.name = itemCount.ToString();
             int maxItemQuantity = playerItemManager.GetMaxItemsPerSlot();
             int currentItemQuantity = pair.Value;
-            print(pair.Key + " QUANTITY: " + currentItemQuantity.ToString());
             Dictionary<string,string> propertiesDict = new Dictionary<string, string>() {
                 {"ItemQuantity", currentItemQuantity.ToString()},
                 {"Selected", "images/ui/RegularButton"},
@@ -322,7 +321,6 @@ public class PlayerItemTradeMenu : MonoBehaviour {
                 int equipType = System.Int32.Parse(getButtonAtIdx(leftSlotIdxSelected, leftSlotContent).gameObject.GetComponent<SlotAdditionalProperties>().GetProperty("EquipType"));
                 EquipmentItemManager equipManager = playerInfoLeftSlot.GetEquipmentItemManager();
                 EquipmentItem equipItemToMove = equipManager.GetCurrentEquipment()[equipType];
-                print("Unequipping: " + equipItemToMove.itemName);
                 playerInfoLeftSlot.UnEquipItem(equipItemToMove);
                 gameStateInstance.AddItemToInventory(equipItemToMove);
                 gameStateInstance.UpdatePlayerInfo(playerInfoLeftSlot);
