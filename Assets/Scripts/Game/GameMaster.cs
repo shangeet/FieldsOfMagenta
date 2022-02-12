@@ -41,6 +41,7 @@ public class GameMaster : MonoBehaviour {
     public GameObject playerExpScreenGo;
     public PlayerExpScreen playerExpScreen;
     public GameObject expGainMenuGo;
+    public GameObject healthBarGo;
     public bool startedTranslation = false;
     public bool highlightedPossibleSwapPartner = false;
     bool allEnemiesHaveMoved = false;
@@ -597,6 +598,8 @@ public class GameMaster : MonoBehaviour {
             }
             GameObject playerToDestroy = GameObject.Find(info.getPlayerId());
             playerToDestroy.SetActive(false); 
+            GameObject healthBarToDestroy = GameObject.Find("HB-" + info.getPlayerId());
+            healthBarToDestroy.SetActive(false);
             clickedPlayerNode.setPlayerInfo(null);              
         }
     }
@@ -697,7 +700,12 @@ public class GameMaster : MonoBehaviour {
         pawnInfoDict[pos2D].playerAnimator = newPawn;
         if (newPawn) {
             newPawn.AddSpriteToTile(tileMap, pos3D);
-        }        
+        }
+        //add health bar
+        GameObject hbGo = Instantiate<GameObject>(healthBarGo);        
+        hbGo.name = "HB-" + playerInfo.id;
+        MiniHealthBar mhb = hbGo.AddComponent<MiniHealthBar>();
+        mhb.Initialize(playerInfo, newPawn);
     }
 
     void swapNodeInfoOnSpriteMove(Node source, Node dest) {
@@ -759,6 +767,11 @@ public class GameMaster : MonoBehaviour {
 
     public Node getNodeAtPosition(Vector3Int pos) {
         return nodeDict.ContainsKey(pos)? nodeDict[pos] : null;
+    }
+
+    public PlayerInfo GetPlayerInfoAtPos(Vector3Int pos) {
+        print(nodeDict.Keys.ToString());
+        return nodeDict.ContainsKey(pos) ? nodeDict[pos].getPlayerInfo() : null;
     }
 
 }

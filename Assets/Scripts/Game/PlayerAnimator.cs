@@ -18,7 +18,7 @@ public class PlayerAnimator : MonoBehaviour {
     public Sprite playerPortrait {get; set;}
     public SpriteRenderer spriteRenderer;
     public GameMaster gameMaster;
-    private Vector3 spriteGameScale = new Vector3(3.0f, 3.0f, 1.0f);
+    private Vector3 spriteGameScale = new Vector3(2.5f, 2.5f, 1.0f);
 
     void Awake() {
         spriteRenderer = gameObject.AddComponent<SpriteRenderer>() as SpriteRenderer;
