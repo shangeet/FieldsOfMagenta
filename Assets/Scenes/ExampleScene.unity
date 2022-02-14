@@ -482,6 +482,7 @@ GameObject:
   - component: {fileID: 1769091248}
   - component: {fileID: 1769091249}
   - component: {fileID: 1769091250}
+  - component: {fileID: 1769091251}
   m_Layer: 7
   m_Name: Tilemap
   m_TagString: Untagged
@@ -4617,7 +4618,6 @@ MonoBehaviour:
   playerExpScreenGo: {fileID: 8446458946726000787, guid: 844e5134a44abab4ca1d16b9427f95d5, type: 3}
   playerExpScreen: {fileID: 0}
   expGainMenuGo: {fileID: 3924148912101109398, guid: e1df1dbf8cf9ec64e8df760df0e07a09, type: 3}
-  healthBarGo: {fileID: 8106247579593042853, guid: 8fbc3a158ff5ce24abaac421e3c77907, type: 3}
   startedTranslation: 0
   highlightedPossibleSwapPartner: 0
   playerCurrentlyMoving: 0
@@ -4668,10 +4668,21 @@ MonoBehaviour:
   - tilePos: {x: -1, y: -2, z: 0}
   leverTileEvents: []
   trapTileEvents: []
-  treasureTileEvents:
-  - tilePos: {x: 5, y: 0, z: 0}
-    treasureSpriteBefore: {fileID: 21301224, guid: de412617a4753ca4c934cd0d3383fae5, type: 3}
-    treasureSpriteAfter: {fileID: 21301222, guid: de412617a4753ca4c934cd0d3383fae5, type: 3}
-    consumableTreasure: {fileID: 0}
-    equipmentTreasure: {fileID: 0}
-    gold: 50
+  treasureTileEvents: []
+--- !u!114 &1769091251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1769091244}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e781bfaae71963b42bc133e6e288649e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemiesToSpawn:
+  - {fileID: 11400000, guid: 57a09cb19abe3f741b48810d33ef7e4e, type: 2}
+  enemyLocations:
+  - {x: 3, y: 0}
+  healthBarGo: {fileID: 8106247579593042853, guid: 8fbc3a158ff5ce24abaac421e3c77907, type: 3}

@@ -9,7 +9,8 @@ public class PlayerAnimator : MonoBehaviour {
 
     public string id;
     public string textureRefPath;
-    public const string LAYER_NAME = "Sprite";
+    public const string SPAWN_LAYER_NAME = "Sprite";
+    public const string BATTLE_LAYER_NAME = "BattleBG";
     public int sortingOrder = 3;
     public Texture2D texture;
     private Sprite basePlayerSprite;
@@ -51,7 +52,7 @@ public class PlayerAnimator : MonoBehaviour {
         //basePlayerSprite =  Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f));
         //spriteRenderer.sprite = basePlayerSprite;
         spriteRenderer.sortingOrder = sortingOrder;
-        spriteRenderer.sortingLayerName = LAYER_NAME;
+        spriteRenderer.sortingLayerName = SPAWN_LAYER_NAME;
     }
 
     public void AddPlayerToParallax(Vector3 pos, bool isAttacker) {
@@ -63,7 +64,7 @@ public class PlayerAnimator : MonoBehaviour {
         //basePlayerSprite =  Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f));
         //spriteRenderer.sprite = basePlayerSprite;
         spriteRenderer.sortingOrder = sortingOrder;
-        spriteRenderer.sortingLayerName = LAYER_NAME;
+        spriteRenderer.sortingLayerName = BATTLE_LAYER_NAME;
     }
 
     public IEnumerator AttackEnemy(GameObject defenderPlayer, Vector3 defenderPos, bool isAttacker) {

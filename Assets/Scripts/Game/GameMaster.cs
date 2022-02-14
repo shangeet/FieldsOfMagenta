@@ -41,7 +41,6 @@ public class GameMaster : MonoBehaviour {
     public GameObject playerExpScreenGo;
     public PlayerExpScreen playerExpScreen;
     public GameObject expGainMenuGo;
-    public GameObject healthBarGo;
     public bool startedTranslation = false;
     public bool highlightedPossibleSwapPartner = false;
     bool allEnemiesHaveMoved = false;
@@ -76,8 +75,6 @@ public class GameMaster : MonoBehaviour {
     }
 
     void Start() {
-        playerVictoryScreen.SetActive(false);
-        playerDefeatScreen.SetActive(false);
     }
 
     // Update is called once per frame
@@ -150,6 +147,10 @@ public class GameMaster : MonoBehaviour {
         battleEventScreen = gameObject.AddComponent<BattleEventScreen>();
         playerExpScreen = gameObject.AddComponent<PlayerExpScreen>();
         phaseTransitionUIHandler = gameObject.AddComponent<PhaseTransitionUIHandler>();
+        playerVictoryScreen = Instantiate<GameObject>(playerVictoryScreen);
+        playerDefeatScreen = Instantiate<GameObject>(playerDefeatScreen);
+        playerVictoryScreen.SetActive(false);
+        playerDefeatScreen.SetActive(false);
     }
 
     /*
@@ -380,15 +381,8 @@ public class GameMaster : MonoBehaviour {
             if (newDefenderPI.getIsEnemy()) {
                 //player gains experience
                 newAttackerPI.gainExp(newDefenderPI.level * 50);
-                retreatedEnemies.Add(newDefenderPI.getPlayerId());
-                enemyTurnEndedDict[newDefenderPI.getPlayerId()] = true;
-            } else {
-                retreatedPlayers.Add(newDefenderPI.getPlayerId());
-                playerTurnEndedDict[newDefenderPI.getPlayerId()] = true;
-            }
-            //destroy the gameobject
-            GameObject playerToDestroy = GameObject.Find(newDefenderPI.getPlayerId());
-            playerToDestroy.SetActive(false);
+            } 
+            CheckIfPlayerDied(newDefenderPI);
             //show the actual battle on-screen
             attackerNode.setPlayerInfo(newAttackerPI);
             defenderNode.setPlayerInfo(null);
@@ -397,15 +391,7 @@ public class GameMaster : MonoBehaviour {
             newAttackerPI.currentHealth = attackerHealth - Mathf.Max(0, dmgDoneToAttacker);    
             if (newAttackerPI.currentHealth <= 0) {
                 newAttackerPI.currentHealth = 0;
-                if (newAttackerPI.getIsEnemy()) {
-                    retreatedEnemies.Add(newAttackerPI.getPlayerId());
-                    enemyTurnEndedDict[newAttackerPI.getPlayerId()] = true;
-                } else {
-                    retreatedPlayers.Add(newAttackerPI.getPlayerId());
-                    playerTurnEndedDict[newAttackerPI.getPlayerId()] = true;
-                }
-                GameObject playerToDestroy = GameObject.Find(newAttackerPI.getPlayerId());
-                playerToDestroy.SetActive(false);
+                CheckIfPlayerDied(newAttackerPI);
                 //update node dict's player info
                 attackerNode.setPlayerInfo(null);
                 defenderNode.setPlayerInfo(newDefenderPI);
@@ -440,7 +426,7 @@ public class GameMaster : MonoBehaviour {
     */
     void processShowExpGainState() {
         if (showExpGainBar == false && !battleEventScreen.IsBattleEventScreenDisplayed()) {
-            ChangeState(GameState.HandleTileState);
+                ChangeState(GameState.HandleTileState);  
         } else {
             if (!battleEventScreen.IsBattleEventScreenDisplayed() && !playerExpScreen.IsExperienceScreenProcessing()) {
                 Vector3 playerPos = clickedPlayerNode.getPosition();
@@ -457,8 +443,10 @@ public class GameMaster : MonoBehaviour {
         //get current PI
         if (clickedPlayerNode != null) {
             PlayerInfo currentPI = clickedPlayerNode.getPlayerInfo();
-            tileEventManager.ProcessTile(clickedPlayerNode, currentPI, gameStateInstance);
-            CheckIfPlayerDied(currentPI);
+            if (currentPI.currentHealth > 0) {
+                tileEventManager.ProcessTile(clickedPlayerNode, currentPI, gameStateInstance);
+                CheckIfPlayerDied(currentPI);                
+            }
         }
         ChangeState(GameState.TurnEndState);
     }
@@ -604,66 +592,16 @@ public class GameMaster : MonoBehaviour {
         }
     }
 
-    // Critical information handling // Do NOT move this to an external class
+    // Critical information handling //
     void populateGridSetupData() {
         pawnInfoDict = new Dictionary<Vector2, PlayerInfo>();
-        PlayerInfo newPlayer = new PlayerInfo("fakeid", "Shan", false, BattleClass.Warrior, "images/portraits/test_face");
-        newPlayer.setAnimationPaths("images/sprites/CharacterSpriteSheets/Ally/MainCharacter",
-            "Animations/MainCharacter/Main_Game",
-            "Animations/MainCharacter/Main_Battle");
         gameStateInstance = GameObject.Find("GameMasterInstance").AddComponent<MasterGameStateController>().instance;
-        gameStateInstance.CreateNewSaveInstance(newPlayer);
-        //add one more player
-        PlayerInfo newPlayerTwo = new PlayerInfo("fakeid2", "Bobby", false, BattleClass.Warrior, "images/portraits/test_face");
-        newPlayerTwo.setAnimationPaths("images/sprites/CharacterSpriteSheets/Ally/MainCharacter",
-            "Animations/MainCharacter/Main_Game",
-            "Animations/MainCharacter/Main_Battle");
-        gameStateInstance.AddNewPlayer(newPlayerTwo);
-        PlayerInfo testOne = gameStateInstance.GetPlayerInfoById("fakeid");
-        PlayerInfo testTwo = gameStateInstance.GetPlayerInfoById("fakeid2");
-        testOne.setupBattleStats(true);
-        testTwo.setupBattleStats(true);
-        pawnInfoDict[new Vector2(7, -1)] = testOne;
-        pawnInfoDict[new Vector2(7,-2)] = testTwo;
-        PlayerInfo enemyOne = new PlayerInfo("fakeenemyid", "Mr.Evil", true, BattleClass.Warrior, "images/portraits/test_face");
-        enemyOne.setAnimationPaths("images/sprites/CharacterSpriteSheets/Enemy/EnemyOne",
-            "Animations/EnemyFighter/Enemy_Game",
-            "Animations/EnemyFighter/Enemy_Battle");
-        PlayerInfo enemyTwo = new PlayerInfo("fakeenemyid2", "Kim", true, BattleClass.Warrior, "images/portraits/test_face");
-        enemyTwo.setAnimationPaths("images/sprites/CharacterSpriteSheets/Enemy/EnemyOne",
-            "Animations/EnemyFighter/Enemy_Game",
-            "Animations/EnemyFighter/Enemy_Battle");
-        enemyOne.setupBattleStats(true);
-        enemyTwo.setupBattleStats(true);
-        //setup items
-        ConsumableItem healthPotion = (ConsumableItem) Resources.Load("Items/Stock/ConsumableItems/MinorHealthPotion", typeof(ConsumableItem));
-        healthPotion.itemSprite = (Sprite) Resources.Load("images/ui/Icons/HealthPotionIcon", typeof(Sprite));
-        ConsumableItem manaPotion = (ConsumableItem) Resources.Load("Items/Stock/ConsumableItems/MinorManaPotion", typeof(ConsumableItem));
-        manaPotion.itemSprite = (Sprite) Resources.Load("images/ui/Icons/ManaPotionIcon", typeof(Sprite));
-        EquipmentItem vest = (EquipmentItem) Resources.Load("Items/Stock/EquipmentItems/LeatherVest", typeof(EquipmentItem));
-        List<ConsumableItem> cIList = new List<ConsumableItem> {healthPotion, healthPotion};
-        EquipmentItem[] eIList = new EquipmentItem[System.Enum.GetNames(typeof(EquipType)).Length];
-        eIList[(int) vest.equipType] = vest;
-        testOne.LoadItems(cIList, eIList);
-        testTwo.LoadItems(new List<ConsumableItem>(){healthPotion, manaPotion}, new EquipmentItem[System.Enum.GetNames(typeof(EquipType)).Length]);
-        //set enemy locations
-        pawnInfoDict[new Vector2(2,2)] = enemyOne;
-        pawnInfoDict[new Vector2(-3,-3)] = enemyTwo;
         //set node data for player and enemies MAP TILEMAP POSITION TO NODE POSITION
         tileMap = transform.GetComponentInParent<Tilemap>();
         tileEventManager.Setup(tileMap);
         staticTileHandler.Setup(tileMap);
-        foreach (var position in tileMap.cellBounds.allPositionsWithin) {
-            Vector2 pos = new Vector2(position.x, position.y);
-            PlayerInfo playerInfo = null;
-            if (pawnInfoDict.ContainsKey(pos)) {
-                playerInfo = pawnInfoDict[pos];
-                populateGridWithSprite(pos, pawnInfoDict, position, playerInfo);
-            }
-            tileMap.SetTileFlags(position, TileFlags.None); //this is so we can change the color freely
-            Color originalTileColor = tileMap.GetColor(position);
-            nodeDict[position] = new Node(position, playerInfo, originalTileColor);
-        }
+        PawnSpawnManager pawnSpawnManager = gameObject.GetComponent<PawnSpawnManager>();
+        pawnSpawnManager.Setup(tileMap, pawnInfoDict, nodeDict, gameStateInstance);
     }
 
     void resetPlayerTurnEndedDict() {
@@ -689,23 +627,6 @@ public class GameMaster : MonoBehaviour {
                 }                
             }
         }        
-    }
-
-    void populateGridWithSprite(Vector2 pos2D, Dictionary<Vector2, PlayerInfo> infoDict, Vector3Int pos3D, PlayerInfo playerInfo) {
-        string playerId = playerInfo.getPlayerId();
-        GameObject objToSpawn = new GameObject(playerId);
-        PlayerAnimator newPawn = objToSpawn.AddComponent<PlayerAnimator>() as PlayerAnimator;
-        newPawn.setAnimatorMode("game", playerId, playerInfo.getGameControllerPath(), playerInfo.portraitRefPath);
-        newPawn.name = playerId;
-        pawnInfoDict[pos2D].playerAnimator = newPawn;
-        if (newPawn) {
-            newPawn.AddSpriteToTile(tileMap, pos3D);
-        }
-        //add health bar
-        GameObject hbGo = Instantiate<GameObject>(healthBarGo);        
-        hbGo.name = "HB-" + playerInfo.id;
-        MiniHealthBar mhb = hbGo.AddComponent<MiniHealthBar>();
-        mhb.Initialize(playerInfo, newPawn);
     }
 
     void swapNodeInfoOnSpriteMove(Node source, Node dest) {
@@ -770,7 +691,6 @@ public class GameMaster : MonoBehaviour {
     }
 
     public PlayerInfo GetPlayerInfoAtPos(Vector3Int pos) {
-        print(nodeDict.Keys.ToString());
         return nodeDict.ContainsKey(pos) ? nodeDict[pos].getPlayerInfo() : null;
     }
 

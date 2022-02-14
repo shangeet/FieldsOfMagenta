@@ -50,3 +50,6 @@ TagManager:
   - name: Parallax
     uniqueID: 361834097
     locked: 0
+  - name: BattleBG
+    uniqueID: 4242170865
+    locked: 0
