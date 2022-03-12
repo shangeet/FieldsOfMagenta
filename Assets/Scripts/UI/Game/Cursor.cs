@@ -11,6 +11,7 @@ public class Cursor : MonoBehaviour {
     private GameMaster gameMaster;
     private const string LAYER_NAME = "Sprite";
     private UnitInfoMenu unitInfoMenu;
+    private Camera gameCamera;
 
     // Start is called before the first frame update
     void Start() {
@@ -22,19 +23,22 @@ public class Cursor : MonoBehaviour {
         animator.runtimeAnimatorController = animatorController;
         transform.localScale = new Vector3(6.0f, 6.0f, 1.0f);
         gameMaster = GameObject.Find("Grid").gameObject.transform.GetChild(0).gameObject.GetComponent<GameMaster>();
+        gameCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
     }
 
     // Update is called once per frame
     void Update() {
-        Vector3Int pos = getNodePositionOnHover();
-        bool cursorAllowed = (gameMaster.currentState == GameState.PlayerTurnStart ||
-                             gameMaster.currentState == GameState.MovePlayerStartState ||
-                             gameMaster.currentState == GameState.ShowBattleMenuState ||
-                             gameMaster.currentState == GameState.AttackState);
-        if (pos != null && cursorAllowed) {
-            transform.position = gameMaster.tileMap.GetCellCenterWorld(pos);  
-            Node currentClickedNode = gameMaster.getNodeAtPosition(pos);
-            processShowUnitInfo(currentClickedNode);
+        if (gameMaster.IsInputEnabled() && gameCamera.isActiveAndEnabled) {
+            Vector3Int pos = getNodePositionOnHover();
+            bool cursorAllowed = (gameMaster.currentState == GameState.PlayerTurnStart ||
+                                gameMaster.currentState == GameState.MovePlayerStartState ||
+                                gameMaster.currentState == GameState.ShowBattleMenuState ||
+                                gameMaster.currentState == GameState.AttackState);
+            if (pos != null && cursorAllowed) {
+                transform.position = gameMaster.tileMap.GetCellCenterWorld(pos);  
+                Node currentClickedNode = gameMaster.getNodeAtPosition(pos);
+                processShowUnitInfo(currentClickedNode);
+            }            
         }
     }
 

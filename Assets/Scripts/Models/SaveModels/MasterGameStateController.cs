@@ -6,6 +6,8 @@ public class MasterGameStateController : MonoBehaviour {
 
     private SaveFileModel currentSaveFile;
 
+    private SaveDataInfo infoBeforeBattle; 
+
     public static int MAX_SAVE_SLOTS = 6;
 
     #region Singleton
@@ -127,6 +129,21 @@ public class MasterGameStateController : MonoBehaviour {
     public void SubtractPlayerGold(int gold) {
         currentSaveFile.saveData.playerGold -= gold;
         currentSaveFile.saveData.playerGold = Mathf.Max(0, currentSaveFile.saveData.playerGold);
+    }
+
+    public void SaveInfoBeforeBattle() {
+        SaveDataInfo currentSaveData = currentSaveFile.saveData;
+        SaveDataInfo storeSaveData = new SaveDataInfo(currentSaveData.playerQuestData, currentSaveData.playerInfoData, currentSaveData.playerInventory, currentSaveData.playerGold);
+        infoBeforeBattle = storeSaveData;
+    }
+
+    public void RevertDataToBeforeBattle() {
+        currentSaveFile.saveData = infoBeforeBattle;
+        ClearInfoBeforeBattleData();
+    }
+
+    public void ClearInfoBeforeBattleData() {
+        infoBeforeBattle = null;
     }
     
 }

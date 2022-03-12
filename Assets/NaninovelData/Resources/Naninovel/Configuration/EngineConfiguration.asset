@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: EngineConfiguration
   m_EditorClassIdentifier: 
   GeneratedDataPath: NaninovelData
-  OverrideObjectsLayer: 0
-  ObjectsLayer: 0
+  OverrideObjectsLayer: 1
+  ObjectsLayer: 9
   AsyncExceptionLogType: 0
   TypeAssemblies:
   - Assembly-CSharp

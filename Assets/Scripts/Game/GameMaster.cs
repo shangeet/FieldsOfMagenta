@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 using UnityEngine.EventSystems;
+using Naninovel;
 
 //Responsible for handling the entire battle state, turn management, commands to move/animate sprite, create subwindow battle and destroy it
 public class GameMaster : MonoBehaviour {
@@ -13,6 +14,8 @@ public class GameMaster : MonoBehaviour {
     private Dictionary<Vector3Int, Node> nodeDict = new Dictionary<Vector3Int, Node>();
     private StaticTileHandler staticTileHandler;
     private TileEventManager tileEventManager;
+    private NovelEventManager novelEventManager; 
+
     [SerializeField] 
     public Tilemap tileMap;
     public List<Node> clickedNodePath;
@@ -21,10 +24,11 @@ public class GameMaster : MonoBehaviour {
     public Node clickedNode;
     private Dictionary<string, bool> playerTurnEndedDict = new Dictionary<string, bool>();
     private Dictionary<string, bool> enemyTurnEndedDict = new Dictionary<string, bool>();
-    private List<string> retreatedPlayers = new List<string>();
-    private List<string> retreatedEnemies = new List<string>(); 
+    private List<PlayerInfo> retreatedPlayers = new List<PlayerInfo>();
+    private List<PlayerInfo> retreatedEnemies = new List<PlayerInfo>(); 
 
     // UI elements and state tracking
+    private bool inputEnabled = true;
     private MasterGameStateController gameStateInstance;
     public GameState currentState;
     public GameObject swapItemMenuGo;
@@ -60,9 +64,14 @@ public class GameMaster : MonoBehaviour {
     public GameObject playerDefeatScreen;
 
     void Awake() {
+    }
+
+    void Start() {
         //setup handlers + managers
         staticTileHandler = gameObject.GetComponent<StaticTileHandler>();
         tileEventManager = gameObject.GetComponent<TileEventManager>();
+        novelEventManager = GameObject.Find("Grid/Tilemap").GetComponent<NovelEventManager>();
+        //novelEventManager = gameObject.GetComponent<NovelEventManager>();
         //populate grid with node data
         populateGridSetupData();
         //Setup the UI's. Disable them at start
@@ -71,10 +80,6 @@ public class GameMaster : MonoBehaviour {
         resetPlayerTurnEndedDict();
         resetEnemyTurnEndedDict();
         currentState = GameState.PlayerTurnStart;
-
-    }
-
-    void Start() {
     }
 
     // Update is called once per frame
@@ -540,7 +545,7 @@ public class GameMaster : MonoBehaviour {
 
     PlayerInfo pickAvailableEnemy() {
         foreach (PlayerInfo enemy in pawnInfoDict.Values) {
-            if (enemy.getIsEnemy() && !retreatedEnemies.Contains(enemy.getPlayerId()) && enemyTurnEndedDict[enemy.getPlayerId()] == false) {
+            if (enemy.getIsEnemy() && !retreatedEnemies.Contains(enemy) && enemyTurnEndedDict[enemy.getPlayerId()] == false) {
                 return enemy;
             }
         }
@@ -553,11 +558,17 @@ public class GameMaster : MonoBehaviour {
     */
 
     void processGameEndState() {
-        if (!phaseTransitionUIHandler.IsPhaseTransitionRunning() && !playerExpScreen.IsExperienceScreenProcessing()) {
-            if (playerVictory) {
-                playerVictoryScreen.SetActive(true);
-            } else {
-                playerDefeatScreen.SetActive(true);
+        if (!novelEventManager.IsEventRunning()) {
+            if (!phaseTransitionUIHandler.IsPhaseTransitionRunning() && !playerExpScreen.IsExperienceScreenProcessing() && novelEventManager.AllEventsPlayed()) {
+                if (playerVictory) {
+                    playerVictoryScreen.SetActive(true);
+                    gameStateInstance.ClearInfoBeforeBattleData();
+                    return;
+                } else {
+                    playerDefeatScreen.SetActive(true);
+                    gameStateInstance.RevertDataToBeforeBattle();
+                    return;
+                }            
             }            
         }
     }
@@ -578,10 +589,10 @@ public class GameMaster : MonoBehaviour {
     void CheckIfPlayerDied(PlayerInfo info) {
         if (info.currentHealth <= 0) {
             if (info.getIsEnemy()) {
-                retreatedEnemies.Add(info.getPlayerId());
+                retreatedEnemies.Add(info);
                 enemyTurnEndedDict[info.getPlayerId()] = true;
             } else {
-                retreatedPlayers.Add(info.getPlayerId());
+                retreatedPlayers.Add(info);
                 playerTurnEndedDict[info.getPlayerId()] = true;
             }
             GameObject playerToDestroy = GameObject.Find(info.getPlayerId());
@@ -602,12 +613,13 @@ public class GameMaster : MonoBehaviour {
         staticTileHandler.Setup(tileMap);
         PawnSpawnManager pawnSpawnManager = gameObject.GetComponent<PawnSpawnManager>();
         pawnSpawnManager.Setup(tileMap, pawnInfoDict, nodeDict, gameStateInstance);
+        gameStateInstance.SaveInfoBeforeBattle();
     }
 
     void resetPlayerTurnEndedDict() {
         foreach (PlayerInfo pi in pawnInfoDict.Values) {
             if (!pi.getIsEnemy()) {
-                if (retreatedPlayers.Contains(pi.getPlayerId())) {
+                if (retreatedPlayers.Contains(pi)) {
                     playerTurnEndedDict[pi.getPlayerId()] = true;
                 } else {
                     playerTurnEndedDict[pi.getPlayerId()] = false;
@@ -620,7 +632,7 @@ public class GameMaster : MonoBehaviour {
     void resetEnemyTurnEndedDict() {
         foreach (PlayerInfo pi in pawnInfoDict.Values) {
             if (pi.getIsEnemy()) {
-                if (retreatedPlayers.Contains(pi.getPlayerId())) {
+                if (retreatedPlayers.Contains(pi)) {
                     enemyTurnEndedDict[pi.getPlayerId()] = true;
                 } else if (pi.getIsEnemy()) {
                     enemyTurnEndedDict[pi.getPlayerId()] = false;                
@@ -655,7 +667,8 @@ public class GameMaster : MonoBehaviour {
 
     //UI related logic
     Node getNodePositionOnClick() {
-        if (Input.GetMouseButtonDown(0)) {
+        if (Input.GetMouseButtonDown(0) && inputEnabled) {
+            print("Click checked");
             Vector3 mousePos = Input.mousePosition;
             mousePos.z = Camera.main.nearClipPlane;
             Vector3 globalPosition = Camera.main.ScreenToWorldPoint(mousePos);
@@ -692,6 +705,56 @@ public class GameMaster : MonoBehaviour {
 
     public PlayerInfo GetPlayerInfoAtPos(Vector3Int pos) {
         return nodeDict.ContainsKey(pos) ? nodeDict[pos].getPlayerInfo() : null;
+    }
+
+    public List<PlayerInfo> GetAllPlayerInfos() {
+        List<PlayerInfo> allPIs = new List<PlayerInfo>();
+
+        foreach (Node node in nodeDict.Values) {
+            if (node.isOccupied()) {
+                allPIs.Add(node.getPlayerInfo());
+            }
+        }
+
+        foreach (PlayerInfo info in retreatedEnemies) {
+            allPIs.Add(info);
+        }
+        
+        foreach (PlayerInfo info in retreatedPlayers) {
+            allPIs.Add(info);
+        }
+
+        return allPIs;
+    }
+
+    public void DisableInput() {
+        // EventSystem eventSystem = GameObject.Find("GameEventSystem").GetComponent<EventSystem>();
+        // eventSystem.enabled = false;
+        inputEnabled = false;
+    }
+
+    public void EnableInput() {
+        // EventSystem eventSystem = GameObject.Find("GameEventSystem").GetComponent<EventSystem>();
+        // eventSystem.enabled = true;        
+        inputEnabled = true;
+    }
+
+    public bool IsInputEnabled() {
+        return inputEnabled;
+    }
+
+    public Vector3Int GetPlayerPosition(PlayerInfo info) {
+        foreach (Vector3Int pos in nodeDict.Keys) {
+            Node node = nodeDict[pos];
+            if (node.isOccupied() && node.getPlayerInfo().id.Equals(info.id)) {
+                return pos;
+            }
+        }
+        return new Vector3Int(int.MinValue, int.MinValue, int.MinValue);
+    }
+
+    public bool uiAnimationsPlaying() {
+        return battleEventScreen.IsBattleEventScreenDisplayed() || phaseTransitionUIHandler.IsPhaseTransitionRunning() || playerExpScreen.IsExperienceScreenProcessing();
     }
 
 }
