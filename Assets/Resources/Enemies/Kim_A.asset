@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: E2
   name: Kim
-  baseSpritePath: images/sprites/CharacterSpriteSheets/Enemy/EnemyOne
-  gameControllerPath: Animations/EnemyFighter/Enemy_Game
-  battleControllerPath: Animations/EnemyFighter/Enemy_Battle
+  spriteAnimationsPath: Animations/EnemyFighterM
   isEnemy: 1
   battleClass: 0
   level: 1
@@ -28,6 +26,7 @@ MonoBehaviour:
   baseDexterity: 7
   baseLuck: 7
   baseMov: 2
+  baseRange: 0
   currentHealth: 15
   currentAttack: 15
   currentDefense: 7

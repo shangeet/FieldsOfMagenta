@@ -668,7 +668,6 @@ public class GameMaster : MonoBehaviour {
     //UI related logic
     Node getNodePositionOnClick() {
         if (Input.GetMouseButtonDown(0) && inputEnabled) {
-            print("Click checked");
             Vector3 mousePos = Input.mousePosition;
             mousePos.z = Camera.main.nearClipPlane;
             Vector3 globalPosition = Camera.main.ScreenToWorldPoint(mousePos);

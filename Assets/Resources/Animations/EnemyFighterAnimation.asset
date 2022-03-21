@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 734a734dad2527e44a4f8a33a854e2d3, type: 3}
+  m_Name: EnemyFighterAnimation
+  m_EditorClassIdentifier: 
+  idle:
+  - {fileID: -1969117478506541437, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  walkLeft:
+  - {fileID: -2117300533216707312, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  - {fileID: 3667515504441721034, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  - {fileID: -2117300533216707312, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  - {fileID: 6066993005702294074, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  - {fileID: -2117300533216707312, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  walkRight:
+  - {fileID: -5846170462357930902, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  - {fileID: 8994458449091357883, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  - {fileID: -5846170462357930902, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  - {fileID: -6030178768327616249, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  - {fileID: -5846170462357930902, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  walkUp:
+  - {fileID: 2042446915728037824, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  - {fileID: 3566756284614966161, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  - {fileID: 2042446915728037824, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  - {fileID: 3410495733711331754, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  - {fileID: 2042446915728037824, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  walkDown:
+  - {fileID: -1969117478506541437, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  - {fileID: 771192684372374908, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  - {fileID: -1969117478506541437, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  - {fileID: 833991671278933535, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  - {fileID: -1969117478506541437, guid: 4653b437859f1c24ca430535a6c2058a, type: 3}
+  battleIdle:
+  - {fileID: 606794322024982648, guid: b94f85ef0ff6b35408776f99f431d24a, type: 3}
+  - {fileID: -4969300281855739960, guid: b94f85ef0ff6b35408776f99f431d24a, type: 3}
+  - {fileID: 9112890847471656202, guid: b94f85ef0ff6b35408776f99f431d24a, type: 3}
+  battleWalk:
+  - {fileID: 6250970539631253566, guid: b94f85ef0ff6b35408776f99f431d24a, type: 3}
+  - {fileID: -3859000258011493209, guid: b94f85ef0ff6b35408776f99f431d24a, type: 3}
+  - {fileID: 6250970539631253566, guid: b94f85ef0ff6b35408776f99f431d24a, type: 3}
+  - {fileID: 6219773862553038260, guid: b94f85ef0ff6b35408776f99f431d24a, type: 3}
+  - {fileID: 6250970539631253566, guid: b94f85ef0ff6b35408776f99f431d24a, type: 3}
+  battleAttack:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  battleHeal:
+  - {fileID: -2024005968394147511, guid: b94f85ef0ff6b35408776f99f431d24a, type: 3}
+  battleTakeDamage:
+  - {fileID: 8004099607374492614, guid: b94f85ef0ff6b35408776f99f431d24a, type: 3}
+  battleFaint:
+  - {fileID: -8486609026155744239, guid: b94f85ef0ff6b35408776f99f431d24a, type: 3}
+  - {fileID: -644172755607183196, guid: b94f85ef0ff6b35408776f99f431d24a, type: 3}
+  - {fileID: 2450867290974088526, guid: b94f85ef0ff6b35408776f99f431d24a, type: 3}

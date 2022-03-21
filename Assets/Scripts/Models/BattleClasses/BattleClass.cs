@@ -1,8 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
-public enum BattleClass
-{  
-    Warrior
+public enum BattleClass {
+    Warrior, 
+    Paladin,
+    Healer,
+    Mage,
+    Rogue,
+    Ranger,
+    Bard
 }
