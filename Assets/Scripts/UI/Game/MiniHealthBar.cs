@@ -20,7 +20,7 @@ public class MiniHealthBar : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        //update player info (not mono-behavior so we need latest value)
+        //update player info
 
         if (playerInfo != null) {
             float healthRatio = ((float) playerInfo.currentHealth) / playerInfo.baseHealth;

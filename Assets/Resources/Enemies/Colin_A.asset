@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: E1
   name: Colin
-  spriteAnimationsPath: Animations/EnemyFighterM
+  baseSpritePath: images/sprites/CharacterSpriteSheets/Enemy/EnemyOne
+  gameControllerPath: Animations/EnemyFighter/Enemy_Game
+  battleControllerPath: Animations/EnemyFighter/Enemy_Battle
   isEnemy: 1
   battleClass: 0
   level: 1
@@ -26,7 +28,6 @@ MonoBehaviour:
   baseDexterity: 5
   baseLuck: 5
   baseMov: 2
-  baseRange: 0
   currentHealth: 10
   currentAttack: 5
   currentDefense: 5
@@ -44,5 +45,9 @@ MonoBehaviour:
     - {fileID: 0}
     - {fileID: 0}
   totalExperience: 0
+  statusList:
+  - effectType: 0
+    remainingActiveTurns: 5
+    maxTurns: 5
   portraitRefPath: images/portraits/test_face
   playerAnimator: {fileID: 0}

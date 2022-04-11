@@ -8,6 +8,11 @@ public class PawnSpawnManager : MonoBehaviour {
     public List<PlayerInfo> enemiesToSpawn;
     public List<Vector2Int> enemyLocations;
     public GameObject healthBarGo;
+    public GameObject statusContainerGo;
+    public GameObject statusContainerSlotGo;
+    public List<EffectType> statusSpriteKeys;
+    public List<Sprite> statusSpriteValues;
+    public Dictionary<EffectType, Sprite> effectTypeSpriteDict = new Dictionary<EffectType, Sprite>();
 
     public void Setup(Tilemap tileMap, Dictionary<Vector2, PlayerInfo> pawnInfoDict, Dictionary<Vector3Int, Node> nodeDict, MasterGameStateController gameStateInstance) {       
 
@@ -47,11 +52,18 @@ public class PawnSpawnManager : MonoBehaviour {
             END OF TEST CODE
         */
 
+        //setup sprite dictionary
+        for (int i = 0; i < statusSpriteKeys.Count; i++) {
+            if (i < statusSpriteValues.Count) {
+                effectTypeSpriteDict[statusSpriteKeys[i]] = statusSpriteValues[i];  
+            }
+        }
+
         //create enemies and place them in the dict
         int idx = 0;
 
         foreach (PlayerInfo info in enemiesToSpawn) {
-            pawnInfoDict[enemyLocations[idx]] = info;
+            pawnInfoDict[enemyLocations[idx]] = PlayerInfo.Clone(info);
             idx++;
         }
 
@@ -78,11 +90,16 @@ public class PawnSpawnManager : MonoBehaviour {
         if (newPawn) {
             newPawn.AddSpriteToTile(tileMap, pos3D);
         }
-        //add health bar
+        // add health bar ui
         GameObject hbGo = Instantiate<GameObject>(healthBarGo);        
         hbGo.name = "HB-" + playerInfo.id;
         MiniHealthBar mhb = hbGo.AddComponent<MiniHealthBar>();
+        // add status effect ui
+        GameObject statContainerGo = Instantiate<GameObject>(statusContainerGo);
+        statContainerGo.name = "SC-" + playerInfo.id;
+        StatusIconContainer statusIconContainer = statContainerGo.AddComponent<StatusIconContainer>();
         mhb.Initialize(playerInfo, newPawn);
+        statusIconContainer.Initialize(playerInfo, newPawn, effectTypeSpriteDict, statusContainerSlotGo);
     }
 
 }

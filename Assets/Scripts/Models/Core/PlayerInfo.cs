@@ -42,7 +42,7 @@ public class PlayerInfo : ScriptableObject {
 
     //Misc
     public int totalExperience;
-    //private List<Status> statusList {get; set;}
+    public List<StatusEffect> statusList;
     public string portraitRefPath;
     public PlayerAnimator playerAnimator;
 
@@ -56,6 +56,7 @@ public class PlayerInfo : ScriptableObject {
         this.equipmentItemManager = new EquipmentItemManager();
         this.consumableItemManager = new ConsumableItemManager();
         this.portraitRefPath = portraitRefPath;
+        this.statusList = new List<StatusEffect>();
         List<int> baseStats = BaseClassConstants.getBaseStatsForBattleClass(battleClass);
         setupBaseStats(baseStats);
     }
@@ -300,6 +301,11 @@ public class PlayerInfo : ScriptableObject {
         deepCopy.totalExperience = playerInfoToClone.totalExperience;
         deepCopy.portraitRefPath = playerInfoToClone.portraitRefPath;
         deepCopy.playerAnimator = playerInfoToClone.playerAnimator;
+        deepCopy.statusList = new List<StatusEffect>();
+        foreach (StatusEffect effect in playerInfoToClone.statusList) {
+            StatusEffect effectClone = new StatusEffect(effect.effectType, effect.maxTurns, effect.remainingActiveTurns);
+            deepCopy.statusList.Add(effectClone);   
+        }
         return deepCopy;
     }
 

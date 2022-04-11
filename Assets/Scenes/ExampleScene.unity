@@ -4527,6 +4527,13 @@ MonoBehaviour:
   enemyLocations:
   - {x: 3, y: 0}
   healthBarGo: {fileID: 8106247579593042853, guid: 8fbc3a158ff5ce24abaac421e3c77907, type: 3}
+  statusContainerGo: {fileID: 3776699217787265519, guid: 78434826c1ee34541b14b74cc05f7f98, type: 3}
+  statusContainerSlotGo: {fileID: 3649451959168236760, guid: 46b25582e6fc61e4883124573ec8fb39, type: 3}
+  statusSpriteKeys: 000000000100000002000000
+  statusSpriteValues:
+  - {fileID: 21300000, guid: ecbc15ef8685b7a49b669c0c511d42db, type: 3}
+  - {fileID: 21300000, guid: ba2a38ba8f56ba648854b66c19413d43, type: 3}
+  - {fileID: 21300000, guid: 65793d88548e2d943a198bb6480665d1, type: 3}
 --- !u!114 &1769091252
 MonoBehaviour:
   m_ObjectHideFlags: 0

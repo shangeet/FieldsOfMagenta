@@ -49,6 +49,7 @@ public class GameMaster : MonoBehaviour {
     public bool highlightedPossibleSwapPartner = false;
     bool allEnemiesHaveMoved = false;
     public bool playerCurrentlyMoving = false;
+    public bool handleStatusEnemyTurn = false;
     PlayerInfo oldBattlePI;
     PlayerInfo newBattlePI;
     int timesLeveledUp;
@@ -457,9 +458,37 @@ public class GameMaster : MonoBehaviour {
     }
 
     /*
+        GameState.HandleStatusEffects Related Functions
+    */
+    void processHandleStatusEffectState() {
+        Dictionary<Vector3Int, Node> newNodeDict = new Dictionary<Vector3Int, Node>();
+        foreach (KeyValuePair<Vector3Int, Node> pair in nodeDict) {
+            PlayerInfo currentInfo = pair.Value.getPlayerInfo();
+            if (currentInfo != null) { //player exists on node. update
+                PlayerInfo newInfo = GameBattleHandler.HandlePlayerStatuses(currentInfo);
+                bool playerDied = CheckIfPlayerDied(newInfo);
+                if (!playerDied) {
+                    pair.Value.setPlayerInfo(newInfo);
+                } else {
+                    pair.Value.setPlayerInfo(null);
+                }
+                if (clickedPlayerNode != null && currentInfo.getPlayerId() == clickedPlayerNode.getPlayerId()) {
+                    clickedPlayerNode = pair.Value;
+                }
+                newNodeDict[pair.Key] = pair.Value;                
+            } else { //no player exists on node. keep as is
+                newNodeDict[pair.Key] = pair.Value;
+            }
+        }
+        nodeDict = newNodeDict;
+    }
+
+    /*
         GameState.TurnEndState Related Functions
     */
     void processTurnEndState() {
+
+        
 
         //record end of unit's turn in dict, but only if it exists (if it died, we ignore since that node is now null)
         if (!isEnemyTurn) {
@@ -469,6 +498,7 @@ public class GameMaster : MonoBehaviour {
             }    
             //auto turn-end if all units are done
             if (!playerTurnEndedDict.ContainsValue(false) && !phaseTransitionUIHandler.IsPhaseTransitionRunning() && !playerExpScreen.IsExperienceScreenProcessing()) {
+                processHandleStatusEffectState();
                 resetPlayerTurnEndedDict();
                 StartCoroutine(phaseTransitionUIHandler.translatePhaseImage("EnemyPhase"));
                 //check if all enemies or players have died
@@ -529,6 +559,9 @@ public class GameMaster : MonoBehaviour {
                     enemyTurnEndedDict[enemy.getPlayerId()] = true;
                 }
             }
+        } else if (!handleStatusEnemyTurn && HaveAllEnemiesHaveMoved()) {
+            processHandleStatusEffectState();
+            handleStatusEnemyTurn = true;
         } else if (!phaseTransitionUIHandler.IsPhaseTransitionRunning() && !startedTranslation && HaveAllEnemiesHaveMoved() && !battleEventScreen.IsBattleEventScreenDisplayed() && !playerExpScreen.IsExperienceScreenProcessing()) {
             if (!checkIfGameEnded()) {
                 startedTranslation = true;
@@ -539,6 +572,7 @@ public class GameMaster : MonoBehaviour {
             startedTranslation = false;
             SetAllEnemiesHaveMoved(false);
             isEnemyTurn = false;
+            handleStatusEnemyTurn = false;
             ChangeState(GameState.PlayerTurnStart);
         } //else the translation is still moving/isn't ready to be moved yet. Wait for the next frame.
     }
@@ -586,7 +620,7 @@ public class GameMaster : MonoBehaviour {
         }
     }
 
-    void CheckIfPlayerDied(PlayerInfo info) {
+    bool CheckIfPlayerDied(PlayerInfo info) {
         if (info.currentHealth <= 0) {
             if (info.getIsEnemy()) {
                 retreatedEnemies.Add(info);
@@ -596,11 +630,15 @@ public class GameMaster : MonoBehaviour {
                 playerTurnEndedDict[info.getPlayerId()] = true;
             }
             GameObject playerToDestroy = GameObject.Find(info.getPlayerId());
-            playerToDestroy.SetActive(false); 
+            Destroy(playerToDestroy);
             GameObject healthBarToDestroy = GameObject.Find("HB-" + info.getPlayerId());
-            healthBarToDestroy.SetActive(false);
-            clickedPlayerNode.setPlayerInfo(null);              
+            Destroy(healthBarToDestroy);
+            GameObject statusContainerToDestroy = GameObject.Find("SC-" + info.getPlayerId());
+            Destroy(statusContainerToDestroy);
+            clickedPlayerNode.setPlayerInfo(null); 
+            return true;             
         }
+        return false;
     }
 
     // Critical information handling //
