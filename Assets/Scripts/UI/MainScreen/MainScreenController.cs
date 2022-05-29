@@ -23,14 +23,14 @@ public class MainScreenController : MonoBehaviour {
 
     void Awake() {
         //gameStateInstance = GameObject.Find("GameMasterInstance").gameObject.GetComponent<MasterGameStateController>().instance;
-        PlayerInfo newPlayer = new PlayerInfo("1", "Shan", false, BattleClass.Warrior, "images/portraits/test_face");
+        PlayerInfo newPlayer = new PlayerInfo("1", "Shan", false, new Bard(), "images/portraits/test_face");
         newPlayer.setAnimationPaths("images/sprites/CharacterSpriteSheets/Ally/MainCharacter",
             "Animations/MainCharacter/Main_Game",
             "Animations/MainCharacter/Main_Battle");
         gameStateInstance = GameObject.Find("GameMasterInstance").AddComponent<MasterGameStateController>().instance;
         gameStateInstance.CreateNewSaveInstance(newPlayer);
         //add one more player
-        PlayerInfo newPlayerTwo = new PlayerInfo("2", "Bobby", false, BattleClass.Warrior, "images/portraits/test_face");
+        PlayerInfo newPlayerTwo = new PlayerInfo("2", "Bobby", false, new Warrior(), "images/portraits/test_face");
         newPlayerTwo.setAnimationPaths("images/sprites/CharacterSpriteSheets/Ally/MainCharacter",
             "Animations/MainCharacter/Main_Game",
             "Animations/MainCharacter/Main_Battle");

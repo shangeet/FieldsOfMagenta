@@ -57,7 +57,7 @@ public class PlayerInfo : ScriptableObject {
         this.consumableItemManager = new ConsumableItemManager();
         this.portraitRefPath = portraitRefPath;
         this.statusList = new List<StatusEffect>();
-        List<int> baseStats = BaseClassConstants.getBaseStatsForBattleClass(battleClass);
+        List<int> baseStats = battleClass.getBaseStats();
         setupBaseStats(baseStats);
     }
 
@@ -310,14 +310,14 @@ public class PlayerInfo : ScriptableObject {
     }
 
     public void gainExp(int gainExp) {   
-        List<int> warriorStatBoostInfo = BaseClassConstants.getExperienceDictByClassAndLevel(this.battleClass, this.level);
+        List<int> warriorStatBoostInfo = battleClass.getExperienceDictByClassAndLevel(this.level);
         int expToLvlUp = warriorStatBoostInfo[0];
         int remExp = totalExperience + gainExp;
         while (remExp > expToLvlUp) {
             levelUp(warriorStatBoostInfo, expToLvlUp);
             remExp -= expToLvlUp;
             //get stat boosts + exp needed for the next level
-            warriorStatBoostInfo = BaseClassConstants.getExperienceDictByClassAndLevel(this.battleClass, this.level);
+            warriorStatBoostInfo = battleClass.getExperienceDictByClassAndLevel(this.level);
             expToLvlUp = warriorStatBoostInfo[0];
         }
         totalExperience = remExp;
@@ -326,13 +326,13 @@ public class PlayerInfo : ScriptableObject {
     public List<int> getTotalExpListLevels(int startingLevel, int finalLevel) {
         List<int> expValues = new List<int>();
         for (int lvl = startingLevel; lvl <= finalLevel; lvl++) {
-            expValues.Add(BaseClassConstants.getExperienceDictByClassAndLevel(this.battleClass, lvl)[0]);
+            expValues.Add(battleClass.getExperienceDictByClassAndLevel(lvl)[0]);
         }
         return expValues;
     }
 
     public int getTotalExpNeededToLevelUp() {
-        return BaseClassConstants.getExperienceDictByClassAndLevel(this.battleClass, this.level)[0];
+        return battleClass.getExperienceDictByClassAndLevel(this.level)[0];
     }
 
     public void levelUp(List<int> warriorStatBoostInfo, int expToLvlUp) {

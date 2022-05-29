@@ -19,13 +19,13 @@ public class PawnSpawnManager : MonoBehaviour {
         /*
             This is the temporary setup for now. Once all features are added, we can extract this and move it out
         */
-        PlayerInfo newPlayer = new PlayerInfo("fakeid", "Shan", false, BattleClass.Warrior, "images/portraits/test_face");
+        PlayerInfo newPlayer = new PlayerInfo("fakeid", "Shan", false, new Warrior(), "images/portraits/test_face");
         newPlayer.setAnimationPaths("images/sprites/CharacterSpriteSheets/Ally/MainCharacter",
             "Animations/MainCharacter/Main_Game",
             "Animations/MainCharacter/Main_Battle");
         gameStateInstance.CreateNewSaveInstance(newPlayer);
         //add one more player
-        PlayerInfo newPlayerTwo = new PlayerInfo("fakeid2", "Bobby", false, BattleClass.Warrior, "images/portraits/test_face");
+        PlayerInfo newPlayerTwo = new PlayerInfo("fakeid2", "Bobby", false, new Warrior(), "images/portraits/test_face");
         newPlayerTwo.setAnimationPaths("images/sprites/CharacterSpriteSheets/Ally/MainCharacter",
             "Animations/MainCharacter/Main_Game",
             "Animations/MainCharacter/Main_Battle");
@@ -34,7 +34,7 @@ public class PawnSpawnManager : MonoBehaviour {
         PlayerInfo testTwo = gameStateInstance.GetPlayerInfoById("fakeid2");
         testOne.setupBattleStats(true);
         testTwo.setupBattleStats(true);
-        pawnInfoDict[new Vector2(7, -1)] = testOne;
+        pawnInfoDict[new Vector2(7,-1)] = testOne;
         pawnInfoDict[new Vector2(7,-2)] = testTwo;
 
         //setup items

@@ -27,7 +27,7 @@ public class TitleScreenController : MonoBehaviour {
 
     void onStartButtonPressed() {
         //create new gamemaster instance to record player information
-        PlayerInfo newPlayer = new PlayerInfo("1", "Shan", false, BattleClass.Warrior, "images/portraits/test_face");
+        PlayerInfo newPlayer = new PlayerInfo("1", "Shan", false, new Warrior(), "images/portraits/test_face");
         newPlayer.setAnimationPaths("images/sprites/CharacterSpriteSheets/Ally/MainCharacter",
             "Animations/MainCharacter/Main_Game",
             "Animations/MainCharacter/Main_Battle");

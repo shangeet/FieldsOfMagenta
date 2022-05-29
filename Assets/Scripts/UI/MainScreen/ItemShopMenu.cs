@@ -70,7 +70,7 @@ public class ItemShopMenu : MonoBehaviour {
     }
 
     private void populateInventory(List<ConsumableItem> consumableItems, List<EquipmentItem> equipmentItems, string inventoryId, bool isPlayerInventory) {
-        float startHeight = 0.0f;
+        
         int itemIdx = 0;
 
         foreach (ConsumableItem item in consumableItems) {
