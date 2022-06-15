@@ -25,6 +25,10 @@ public class Item : ScriptableObject {
          return (itemName.Equals(item.itemName));
       }
    }
+
+    public override int GetHashCode() {
+        return System.HashCode.Combine(itemName, itemDescription);
+    }
     
     public bool Equals(Item item) {
      if ((object)item == null)

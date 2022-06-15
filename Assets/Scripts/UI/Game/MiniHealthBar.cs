@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MiniHealthBar : MonoBehaviour {
+public class MiniHealthBar : AbstractMenu {
 
     public PlayerInfo playerInfo;
     public PlayerAnimator playerAnimator;
     public Slider healthSlider;
     private Vector3 spriteGameScale = new Vector3(1.0f, 0.6f, 1.0f);
-    private GameMaster gameMaster;
+
+    protected override void Awake() {
+        base.Awake();
+    }
 
     // Start is called before the first frame update
     void Start() {
         healthSlider = gameObject.transform.Find("HealthBarContainer").gameObject.GetComponent<Slider>();
-        gameMaster = GameObject.Find("Grid").gameObject.transform.GetChild(0).gameObject.GetComponent<GameMaster>();
         gameObject.GetComponent<Canvas>().sortingLayerName = "UI";
     }
 
@@ -56,6 +58,6 @@ public class MiniHealthBar : MonoBehaviour {
 
     private PlayerInfo updatePlayerInfo() {
         Vector3Int pos = new Vector3Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y), Mathf.FloorToInt(transform.position.z));
-        return gameMaster.GetPlayerInfoAtPos(pos);
+        return sharedResourceBus.GetPlayerInfoAtPos(pos);
     }
 }

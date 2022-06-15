@@ -4,20 +4,18 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class ItemMenu : MonoBehaviour
+public class ItemMenu : AbstractMenu
 {
     
     GameObject itemMenu;
-    GameMaster gameMaster;
     bool itemMenuDisplayed;
 
-    void Awake() {
+    protected override void Awake() {
+        base.Awake();
         setupUIElements();
     }
 
-    void Start() {
-        gameMaster = gameObject.GetComponent<GameMaster>();
-    }
+    void Start() {}
 
     void setupUIElements() {
         // item menu
@@ -27,7 +25,7 @@ public class ItemMenu : MonoBehaviour
     }
 
     public void openPlayerItemMenu() {
-        PlayerInfo clickedPlayerInfo = gameMaster.clickedPlayerNode.getPlayerInfo();
+        PlayerInfo clickedPlayerInfo = sharedResourceBus.GetClickedPlayerNode().getPlayerInfo();
         ConsumableItemManager consumableItemManager = clickedPlayerInfo.consumableItemManager;
         Dictionary<string,int> currentConsumableItemsInventory = consumableItemManager.currentConsumableItemsInventory;
         Dictionary<string,ConsumableItem> currentConsumableItems = consumableItemManager.consumableItems;
@@ -70,10 +68,10 @@ public class ItemMenu : MonoBehaviour
     void onConsumableItemButtonClick() {
         GameObject itemRowButton = EventSystem.current.currentSelectedGameObject;
         string itemKey = itemRowButton.transform.GetChild(1).gameObject.GetComponent<Text>().text;
-        PlayerInfo clickedPlayerInfo = gameMaster.clickedPlayerNode.getPlayerInfo();
+        PlayerInfo clickedPlayerInfo = sharedResourceBus.GetClickedPlayerNode().getPlayerInfo();
         clickedPlayerInfo.ConsumeItem(itemKey);
         closePlayerItemMenu();
-        gameMaster.ChangeState(GameState.HandleTileState);
+        ChangeState(GameState.HandleTileState);
     }
 
     public bool IsItemMenuDisplayed() {

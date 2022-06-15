@@ -2,14 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BattleEventScreen : MonoBehaviour
+public class BattleEventScreen : AbstractMenu
 {
     GameObject battleEventScreen;
     GameMaster gameMaster;
 
     bool battleEventScreenDisplayed;
 
-    void Awake() {
+    protected override void Awake() {
+        base.Awake();
         setupUIElements();
     }
 

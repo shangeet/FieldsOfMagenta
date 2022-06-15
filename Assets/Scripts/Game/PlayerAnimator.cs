@@ -18,13 +18,13 @@ public class PlayerAnimator : MonoBehaviour {
     public Animator animator;
     public Sprite playerPortrait {get; set;}
     public SpriteRenderer spriteRenderer;
-    public GameMaster gameMaster;
+    public SharedResourceBus sharedResourceBus;
     private Vector3 spriteGameScale = new Vector3(2.5f, 2.5f, 1.0f);
 
     void Awake() {
         spriteRenderer = gameObject.AddComponent<SpriteRenderer>() as SpriteRenderer;
         animator = gameObject.AddComponent<Animator>() as Animator;
-        gameMaster = GameObject.Find("Grid").gameObject.transform.GetChild(0).GetComponent<GameMaster>();
+        sharedResourceBus = GameObject.Find("SharedResourceBus").GetComponent<SharedResourceBus>();
     }
 
     public void setAnimatorMode(string mode, string pId, string controllerPath, string portraitRefPath) {
@@ -115,7 +115,7 @@ public class PlayerAnimator : MonoBehaviour {
     }
 
     public IEnumerator MovePlayerToTile(Tilemap tileMap, List<Node> pathToTake) {
-        gameMaster.playerCurrentlyMoving = true;
+        sharedResourceBus.SetPlayerCurrentlyMoving(true);
         Node previousNode = null;
         foreach(Node node in pathToTake) {
             transform.position = tileMap.GetCellCenterWorld(new Vector3Int(node.getPosition().x, node.getPosition().y, 1));
@@ -124,7 +124,7 @@ public class PlayerAnimator : MonoBehaviour {
             yield return new WaitForSeconds(0.05f);
         }
         ResetToIdleAnimation();
-        gameMaster.playerCurrentlyMoving = false;
+        sharedResourceBus.SetPlayerCurrentlyMoving(false);
     }
 
     public void PlayerReturnToTile(Tilemap tileMap, Node nodeToReturn) {

@@ -8,7 +8,7 @@ public class PlayerInfo : ScriptableObject {
     
     //Key identifiers
     public string id;
-    public string name;
+    public string playerName;
     public string baseSpritePath;
     public string gameControllerPath;
     public string battleControllerPath;
@@ -48,7 +48,7 @@ public class PlayerInfo : ScriptableObject {
 
     public PlayerInfo(string id, string name, bool isEnemy, BattleClass battleClass, string portraitRefPath) {
         this.id = id;
-        this.name = name;
+        this.playerName = name;
         this.isEnemy = isEnemy;
         this.battleClass = battleClass;
         this.playerAnimator = null;
@@ -321,6 +321,10 @@ public class PlayerInfo : ScriptableObject {
             expToLvlUp = warriorStatBoostInfo[0];
         }
         totalExperience = remExp;
+    }
+
+    public int GetExpNeededToLevelUp() {
+        return battleClass.getExperienceDictByClassAndLevel(this.level)[0];
     }
 
     public List<int> getTotalExpListLevels(int startingLevel, int finalLevel) {

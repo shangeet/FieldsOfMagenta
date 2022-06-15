@@ -4,6 +4,7 @@ using UnityEngine;
 
 public enum GameState
 {
+    PlayerSetupState,
     PlayerTurnStart,
     ShowUnitInfoState,
     ShowEnemyInfoState,

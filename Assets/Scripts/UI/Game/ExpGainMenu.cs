@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ExpGainMenu : MonoBehaviour {
+public class ExpGainMenu : AbstractMenu {
 
     GameObject expGainMenu;
     bool expGainMenuDisplayed;
 
-    void Awake() {
+    protected override void Awake() {
+        base.Awake();
         setupUIElements();
     }
 

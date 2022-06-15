@@ -6,16 +6,16 @@ using Naninovel;
 [CommandAlias("setNovelEventCompleted")]
 public class UpdateNovelEventStatus : Command {
 
-    [ParameterAlias("eventName")]
-    public StringParameter EventName = "";
+    [RequiredParameter] public StringParameter eventName = "";
 
     public override async UniTask ExecuteAsync (AsyncToken asyncToken = default) {
-
+        Debug.Log(eventName);
         Debug.Log("Naninovel event manager updated");
 
-        GameObject game = GameObject.Find("Grid/Tilemap");
-        NovelEventManager novelEventManager = game.GetComponent<NovelEventManager>();
-        await novelEventManager.MarkEventCompleted(EventName);
+        SharedResourceBus sharedResourceBus = GameObject.Find("SharedResourceBus").GetComponent<SharedResourceBus>();
+        NovelEventManager novelEventManager = sharedResourceBus.GetNovelEventManager();
+        Debug.Log(eventName);
+        await novelEventManager.MarkEventCompleted(eventName);
         await novelEventManager.SetEventRunning(false);  
     }
     

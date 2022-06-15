@@ -14,7 +14,7 @@ public class PawnSpawnManager : MonoBehaviour {
     public List<Sprite> statusSpriteValues;
     public Dictionary<EffectType, Sprite> effectTypeSpriteDict = new Dictionary<EffectType, Sprite>();
 
-    public void Setup(Tilemap tileMap, Dictionary<Vector2, PlayerInfo> pawnInfoDict, Dictionary<Vector3Int, Node> nodeDict, MasterGameStateController gameStateInstance) {       
+    public void Setup(Tilemap tileMap, Dictionary<Vector2, PlayerInfo> pawnInfoDict, Dictionary<Vector3Int, Node> nodeDict, MasterGameStateController gameStateInstance, List<Vector2> validPawnPlacements) {       
 
         /*
             This is the temporary setup for now. Once all features are added, we can extract this and move it out
@@ -34,8 +34,8 @@ public class PawnSpawnManager : MonoBehaviour {
         PlayerInfo testTwo = gameStateInstance.GetPlayerInfoById("fakeid2");
         testOne.setupBattleStats(true);
         testTwo.setupBattleStats(true);
-        pawnInfoDict[new Vector2(7,-1)] = testOne;
-        pawnInfoDict[new Vector2(7,-2)] = testTwo;
+        pawnInfoDict[validPawnPlacements[0]] = testOne;
+        pawnInfoDict[validPawnPlacements[1]] = testTwo;
 
         //setup items
         ConsumableItem healthPotion = (ConsumableItem) Resources.Load("Items/Stock/ConsumableItems/MinorHealthPotion", typeof(ConsumableItem));
@@ -72,7 +72,7 @@ public class PawnSpawnManager : MonoBehaviour {
             PlayerInfo playerInfo = null;
             if (pawnInfoDict.ContainsKey(pos)) {
                 playerInfo = pawnInfoDict[pos];
-                populateGridWithSprite(tileMap, pos, pawnInfoDict, position, playerInfo);
+                PopulateGridWithSprite(tileMap, pos, pawnInfoDict, position, playerInfo);
             }
             tileMap.SetTileFlags(position, TileFlags.None); //this is so we can change the color freely
             Color originalTileColor = tileMap.GetColor(position);
@@ -80,7 +80,7 @@ public class PawnSpawnManager : MonoBehaviour {
         }
     }
 
-    void populateGridWithSprite(Tilemap tileMap, Vector2 pos2D, Dictionary<Vector2, PlayerInfo> pawnInfoDict, Vector3Int pos3D, PlayerInfo playerInfo) {
+    public void PopulateGridWithSprite(Tilemap tileMap, Vector2 pos2D, Dictionary<Vector2, PlayerInfo> pawnInfoDict, Vector3Int pos3D, PlayerInfo playerInfo) {
         string playerId = playerInfo.getPlayerId();
         GameObject objToSpawn = new GameObject(playerId);
         PlayerAnimator newPawn = objToSpawn.AddComponent<PlayerAnimator>() as PlayerAnimator;
@@ -100,6 +100,41 @@ public class PawnSpawnManager : MonoBehaviour {
         StatusIconContainer statusIconContainer = statContainerGo.AddComponent<StatusIconContainer>();
         mhb.Initialize(playerInfo, newPawn);
         statusIconContainer.Initialize(playerInfo, newPawn, effectTypeSpriteDict, statusContainerSlotGo);
+    }
+
+    public PlayerInfo AddSpriteToGrid(Tilemap tileMap, Vector3Int pos3D, PlayerInfo playerInfo) {
+        string playerId = playerInfo.getPlayerId();
+        GameObject objToSpawn = new GameObject(playerId);
+        PlayerAnimator newPawn = objToSpawn.AddComponent<PlayerAnimator>() as PlayerAnimator;
+        newPawn.setAnimatorMode("game", playerId, playerInfo.getGameControllerPath(), playerInfo.portraitRefPath);
+        newPawn.name = playerId;
+        playerInfo.playerAnimator = newPawn;
+        if (newPawn) {
+            newPawn.AddSpriteToTile(tileMap, pos3D);
+        }
+        // add health bar ui
+        GameObject hbGo = Instantiate<GameObject>(healthBarGo);        
+        hbGo.name = "HB-" + playerInfo.id;
+        MiniHealthBar mhb = hbGo.AddComponent<MiniHealthBar>();
+        // add status effect ui
+        GameObject statContainerGo = Instantiate<GameObject>(statusContainerGo);
+        statContainerGo.name = "SC-" + playerInfo.id;
+        StatusIconContainer statusIconContainer = statContainerGo.AddComponent<StatusIconContainer>();
+        mhb.Initialize(playerInfo, newPawn);
+        statusIconContainer.Initialize(playerInfo, newPawn, effectTypeSpriteDict, statusContainerSlotGo);
+        return playerInfo;
+    }
+
+    public void DeletePlayerSpriteOnGrid(PlayerInfo info) {
+        string playerId = info.getPlayerId();
+        GameObject spawnedObject = GameObject.Find(playerId);
+        if (spawnedObject != null) {
+            GameObject hbGo = GameObject.Find("HB-" + playerId);            
+            GameObject statContainerGo = GameObject.Find("SC-" + playerId);      
+            Destroy(hbGo);
+            Destroy(statContainerGo);
+            Destroy(spawnedObject);
+        }
     }
 
 }

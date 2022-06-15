@@ -1,5 +1,5 @@
 This is an in battle test script to integrate NaniNovel.
 @char Colin
-Colin.Colin_Main: It's time to battle!
-@setNovelEventCompleted eventName: "ColinDeath"
+Colin.Colin_Main: The battle has ended!
+@setNovelEventCompleted eventName:"ColinDeath"
 @normalMode reset:false

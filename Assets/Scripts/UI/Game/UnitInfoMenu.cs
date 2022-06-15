@@ -9,15 +9,11 @@ public class UnitInfoMenu : MonoBehaviour {
     
     GameObject unitInfoMenu; 
 
-    GameMaster gameMaster;
-
     void Awake() {
         setupUIElements();
     }
 
-    void Start() {
-        gameMaster = gameObject.GetComponent<GameMaster>();
-    }
+    void Start() {}
 
     void setupUIElements() {
         // unit info menu

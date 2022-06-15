@@ -7,7 +7,8 @@ using Naninovel;
 public class NovelEventManager : MonoBehaviour {
     
     public List<NovelEvent> novelEvents;
-    private GameMaster gameMaster;
+    private SharedResourceBus sharedResourceBus;
+    private UIHandler uiHandler;
     public bool eventRunning = false;
 
     // Start is called before the first frame update
@@ -15,8 +16,10 @@ public class NovelEventManager : MonoBehaviour {
         // Initialize Engine + normal mode
         await RuntimeInitializer.InitializeAsync();
     }
+    
     void Start() {
-        gameMaster = GameObject.Find("Grid/Tilemap").GetComponent<GameMaster>();
+        sharedResourceBus = GameObject.Find("SharedResourceBus").GetComponent<SharedResourceBus>();
+        uiHandler = GameObject.Find("UIHandler").GetComponent<UIHandler>();
         if (Engine.Initialized) {
             DisableBlockUI();
         } else {
@@ -33,14 +36,13 @@ public class NovelEventManager : MonoBehaviour {
     }
 
     public void EvaluateNovelEvents() {
-        List<PlayerInfo> validPlayers = gameMaster.GetAllPlayerInfos();
+        List<PlayerInfo> validPlayers = sharedResourceBus.GetAllPlayerInfos();
         foreach (NovelEvent novelEvent in novelEvents) {
             if (!novelEvent.IsCompleted()) {
                 foreach (PlayerInfo info in validPlayers) {
-                    Vector3Int playerPosition = gameMaster.GetPlayerPosition(info);
+                    Vector3Int playerPosition = sharedResourceBus.GetPlayerPosition(info);
                     var scriptPlayer = Engine.GetService<IScriptPlayer>();
-                    if (novelEvent.IsValid(info, playerPosition) && !eventRunning && !gameMaster.uiAnimationsPlaying()) {
-                        print("VALID EVENT!");
+                    if (novelEvent.IsValid(info, playerPosition) && isValidProcessingState() && !eventRunning && !uiHandler.UIAnimationsPlaying()) {
                         eventRunning = true;
                         novelEvent.PlayEvent();
                     }                
@@ -79,8 +81,13 @@ public class NovelEventManager : MonoBehaviour {
             if (novelEvent.eventName.Equals(eventName)) {
                 novelEvent.isCompleted = true;
                 novelEvents[i] = novelEvent;
-                yield return new WaitForSeconds(1);
+                yield return new WaitForSeconds(0.1f);
             }
         }
+    }
+
+    private bool isValidProcessingState() {
+        GameState currentGameState = sharedResourceBus.GetCurrentGameState();
+        return currentGameState != GameState.PlayerSetupState;
     }
 }

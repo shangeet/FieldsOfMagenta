@@ -3,19 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerBattleMenu : MonoBehaviour {
+public class PlayerBattleMenu : AbstractMenu {
 
     GameObject playerBattleMenu;
-    GameMaster gameMaster;
     bool playerBattleMenuDisplayed;
 
-    void Awake() {
+    protected override void Awake() {
+        base.Awake();
         setupUIElements();
     }
 
-    void Start() {
-        gameMaster = gameObject.GetComponent<GameMaster>();
-    }
+    void Start() {}
 
     void setupUIElements() {
         // player battle menu
@@ -35,7 +33,7 @@ public class PlayerBattleMenu : MonoBehaviour {
     public void openPlayerBattleMenu() {       
         playerBattleMenu.SetActive(true);
         playerBattleMenuDisplayed = true;
-        PlayerInfo pInfo = gameMaster.clickedPlayerNode.getPlayerInfo();
+        PlayerInfo pInfo = sharedResourceBus.GetClickedPlayerNode().getPlayerInfo();
         Vector3 playerPosition = GameObject.Find(pInfo.getPlayerId()).transform.position;
 
         Vector3 canvasPosition = new Vector3(playerPosition.x + 1, playerPosition.y + 1, 1);
@@ -45,23 +43,22 @@ public class PlayerBattleMenu : MonoBehaviour {
 
     void onAttackButtonClick() {
         closePlayerBattleMenu();
-        gameMaster.preProcessAttackState();
-        gameMaster.ChangeState(GameState.AttackState);
+        ChangeState(GameState.AttackState);
     }
 
     void onItemButtonClick() {
         closePlayerBattleMenu();
-        gameMaster.ChangeState(GameState.ShowItemMenuState);
+        ChangeState(GameState.ShowItemMenuState);
     }
 
     void onWaitButtonClick() {
         closePlayerBattleMenu();
-        gameMaster.ChangeState(GameState.HandleTileState);
+        ChangeState(GameState.HandleTileState);
     }
 
     void onSwapItemButtonClick() {
         closePlayerBattleMenu();
-        gameMaster.ChangeState(GameState.SwapItemState);
+        ChangeState(GameState.SwapItemState);
     }
 
     public bool IsPlayerBattleMenuDisplayed() {

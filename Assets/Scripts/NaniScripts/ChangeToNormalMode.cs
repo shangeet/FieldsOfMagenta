@@ -36,10 +36,10 @@ public class ChangeToNormalMode : Command {
         }
 
         // 5. Enable input
-        GameObject gameMasterGo = GameObject.Find("Grid/Tilemap");
-        if (gameMasterGo != null) {
-            GameMaster gameMaster = gameMasterGo.GetComponent<GameMaster>();
-            gameMaster.EnableInput();
+        GameObject uiHandlerGo = GameObject.Find("UIHandler");
+        if (uiHandlerGo != null) {
+            UIHandler uiHandler = uiHandlerGo.GetComponent<UIHandler>();
+            uiHandler.EnableInput();
         }
 
     }

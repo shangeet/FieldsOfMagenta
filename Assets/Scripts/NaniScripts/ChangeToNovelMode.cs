@@ -13,10 +13,10 @@ public class ChangeToNovelMode : Command {
         Debug.Log("Changing to novel mode");
 
         // 1. Disable Input
-        GameObject gameMasterGo = GameObject.Find("Grid/Tilemap");
-        if (gameMasterGo != null) {
-            GameMaster gameMaster = gameMasterGo.GetComponent<GameMaster>();
-            gameMaster.DisableInput();
+        GameObject uiHandlerGo = GameObject.Find("UIHandler");
+        if (uiHandlerGo != null) {
+            UIHandler uiHandler = uiHandlerGo.GetComponent<UIHandler>();
+            uiHandler.DisableInput();
         }
 
         // 2. Switch cameras and adjust camera settings

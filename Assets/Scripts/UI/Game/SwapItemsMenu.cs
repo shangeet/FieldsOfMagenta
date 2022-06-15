@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class SwapItemsMenu : MonoBehaviour {
-    public GameMaster gameMaster;
+public class SwapItemsMenu : AbstractMenu {
+
     public GameObject itemSwapMenu;
     public Button confirmButton;
     public Button currentPlayerClickedItemButton = null;
@@ -24,17 +24,21 @@ public class SwapItemsMenu : MonoBehaviour {
     PlayerInfo currentPlayer;
     PlayerInfo targetPlayer;
 
+    protected override void Awake() {
+        base.Awake();
+    }
+
     void Start() {
-        gameMaster = gameObject.GetComponent<GameMaster>();
         setupUI();
     }
 
     void Update() {
-        if (!hasTraded && Input.GetMouseButtonDown(1) && gameMaster.GetCurrentState() == GameState.SwapItemState) {
+        if (!hasTraded && Input.GetMouseButtonDown(1) && sharedResourceBus.GetCurrentGameState() == GameState.SwapItemState) {
             closeSwapItemMenu();
             currentPlayer = null;
             targetPlayer = null;
-            gameMaster.endShowSwapItemMenuStateToShowBattleMenuState();
+            List<Node> nearbyPlayerNodes = NodeUtils.getNearbyPlayerNodes(sharedResourceBus.GetClickedNode(), sharedResourceBus.GetNodeDict());
+            EndShowSwapItemMenuStateToShowBattleMenuState(nearbyPlayerNodes);
         }
     }
 
@@ -194,7 +198,7 @@ public class SwapItemsMenu : MonoBehaviour {
 
     void onConfirmButtonClick() {
         closeSwapItemMenu();
-        gameMaster.endShowSwapItemMenuStateToHandleTileState(currentPlayer);
+        EndShowSwapItemMenuStateToHandleTileState(currentPlayer);
         currentPlayer = null;
         targetPlayer = null;
     }

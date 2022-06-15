@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerExpScreen : MonoBehaviour {
+public class PlayerExpScreen : AbstractMenu {
 
     GameObject playerExpBar;
     GameObject playerExpGainMenuGo;
@@ -11,7 +11,8 @@ public class PlayerExpScreen : MonoBehaviour {
     bool screenAnimationStarted;
     bool playerExpScreenShown;
 
-    void Awake() {
+    protected override void Awake() {
+        base.Awake();
         setupUIElements();
     }
 

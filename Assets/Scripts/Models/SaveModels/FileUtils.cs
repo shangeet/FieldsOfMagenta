@@ -7,8 +7,9 @@ using Newtonsoft.Json;
 
 public class FileUtils {
 
-    public static string SAVE_FILE_PATH = "Assets/Resources/Saves/";
-    public static string SAVE_FILE_NAME = "Slot_{0}_SaveFile";
+    private static string SAVE_FILE_PATH = "Assets/Resources/Saves/";
+    private static string SAVE_FILE_NAME = "Slot_{0}_SaveFile";
+    private static string LEVEL_FILE_EXT_JSON = ".json";
     private static ILogger logger = Debug.unityLogger;
 
     public static List<T> GetAssetsAtPath<T>(string path) {
@@ -91,6 +92,56 @@ public class FileUtils {
         newSaveFile.saveData.Serialize();
         string json = JsonConvert.SerializeObject(newSaveFile);
         System.IO.File.WriteAllText(filePath, json);
+    }
+
+    public static List<Vector2> GetValidPlayerPlacements(string fileName) {
+        if (!fileName.Contains(LEVEL_FILE_EXT_JSON)) {
+            fileName += LEVEL_FILE_EXT_JSON;
+        }
+        try {
+            StreamReader streamReader = new StreamReader(fileName, Encoding.UTF8);
+            string jsonText = streamReader.ReadToEnd();
+            streamReader.Close();
+            LevelFileModel levelFileModel = JsonConvert.DeserializeObject<LevelFileModel>(jsonText);
+            int yStart = levelFileModel.playerPlacementRangeY[0];
+            int yEnd = levelFileModel.playerPlacementRangeY[1];
+            int xStart = levelFileModel.playerPlacementRangeX[0];
+            int xEnd = levelFileModel.playerPlacementRangeX[1];
+
+            List<Vector2> validPositions = new List<Vector2>();
+
+            for (int x = xStart; x <= xEnd; x++) {
+                for (int y = yStart; y <= yEnd; y++) {
+                    validPositions.Add(new Vector2(x, y));
+                }
+            }
+            return validPositions;
+        } catch (FileNotFoundException fileNotFoundException) {
+            logger.LogError("Game", "File not found: " + fileName + " " + fileNotFoundException.Message.ToString());
+            throw;
+        } catch (System.Exception unexpectedException) {
+            logger.LogError("Game", "Unexpected Exception while deserializing json: " + unexpectedException.Message.ToString());
+            throw;
+        } 
+    }
+
+    public static int GetMaxNumberActivePlayers(string fileName) {
+        if (!fileName.Contains(LEVEL_FILE_EXT_JSON)) {
+            fileName += LEVEL_FILE_EXT_JSON;
+        }
+        try {
+            StreamReader streamReader = new StreamReader(fileName, Encoding.UTF8);
+            string jsonText = streamReader.ReadToEnd();
+            streamReader.Close();
+            LevelFileModel levelFileModel = JsonConvert.DeserializeObject<LevelFileModel>(jsonText);
+            return levelFileModel.maxActivePlayers;
+        } catch (FileNotFoundException fileNotFoundException) {
+            logger.LogError("Game", "File not found: " + fileName + " " + fileNotFoundException.Message.ToString());
+            throw;
+        } catch (System.Exception unexpectedException) {
+            logger.LogError("Game", "Unexpected Exception while deserializing json: " + unexpectedException.Message.ToString());
+            throw;
+        }        
     }
     
 }

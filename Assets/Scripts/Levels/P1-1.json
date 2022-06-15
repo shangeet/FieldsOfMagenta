@@ -1,0 +1,5 @@
+{
+    "playerPlacementRangeX": [0, 3],
+    "playerPlacementRangeY": [0, 4],
+    "maxActivePlayers": 1
+}

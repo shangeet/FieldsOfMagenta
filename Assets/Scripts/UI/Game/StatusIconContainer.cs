@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class StatusIconContainer : MonoBehaviour {
+public class StatusIconContainer : AbstractMenu {
     
     public PlayerInfo playerInfo;
     public PlayerAnimator playerAnimator;
@@ -15,8 +15,12 @@ public class StatusIconContainer : MonoBehaviour {
     private static float yPadding = -0.1f;
     public bool initialized = false;
 
+    protected override void Awake() {
+        base.Awake();
+    }
+
     void Start() {
-        gameMaster = GameObject.Find("Grid").gameObject.transform.GetChild(0).gameObject.GetComponent<GameMaster>();
+        gameMaster = GameObject.Find("GameMaster").GetComponent<GameMaster>();
     }
 
     void Update() {
@@ -30,7 +34,7 @@ public class StatusIconContainer : MonoBehaviour {
                 updatePosition();           
                 Vector3 playerAnimPos = playerAnimator.transform.position;
                 Vector3Int newPlayerPos = new Vector3Int(Mathf.FloorToInt(playerAnimPos.x), Mathf.FloorToInt(playerAnimPos.y), Mathf.FloorToInt(playerAnimPos.z));
-                playerInfo = gameMaster.GetPlayerInfoAtPos(newPlayerPos);     
+                playerInfo = sharedResourceBus.GetPlayerInfoAtPos(newPlayerPos);     
             }            
         }
 
