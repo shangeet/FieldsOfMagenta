@@ -41,6 +41,7 @@ public class EnemyTurnStateProcessor : StateProcessor {
             return true;
         } else if (!phaseTransitionUIHandler.IsPhaseTransitionRunning() && uiHandler.StartedTranslation()) { //done processing, end turn
             sharedResourceBus.ResetEnemyTurnEndedDict();
+            sharedResourceBus.ResetPlayerTurnEndedDict();
             uiHandler.SetStartedTranslation(false);
             sharedResourceBus.SetAllEnemiesHaveMoved(false);
             sharedResourceBus.SetEnemyTurn(false);

@@ -21,7 +21,7 @@ MonoBehaviour:
   battleClassName: Warrior
   level: 1
   baseHealth: 10
-  baseAttack: 5
+  baseAttack: 20
   baseDefense: 5
   baseMagicAttack: 5
   baseMagicDefense: 5
@@ -29,7 +29,7 @@ MonoBehaviour:
   baseLuck: 5
   baseMov: 2
   currentHealth: 10
-  currentAttack: 5
+  currentAttack: 20
   currentDefense: 5
   currentMagicAttack: 5
   currentMagicDefense: 5

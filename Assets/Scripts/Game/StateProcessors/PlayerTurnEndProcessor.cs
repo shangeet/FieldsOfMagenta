@@ -29,6 +29,7 @@ public class PlayerTurnEndProcessor : StateProcessor {
             if (!playerTurnEndedDict.ContainsValue(false) && !phaseTransitionUIHandler.IsPhaseTransitionRunning() && !playerExpScreen.IsExperienceScreenProcessing()) {
                 ProcessStatusEffects();
                 sharedResourceBus.ResetPlayerTurnEndedDict();
+                sharedResourceBus.ResetEnemyTurnEndedDict();
                 StartCoroutine(phaseTransitionUIHandler.translatePhaseImage("EnemyPhase"));
                 //check if all enemies or players have died
                 CheckIfGameEnded(); 

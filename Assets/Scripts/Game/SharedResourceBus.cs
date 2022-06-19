@@ -329,10 +329,13 @@ public class SharedResourceBus : MonoBehaviour {
                     playerTurnEndedDict[pi.getPlayerId()] = true;
                 } else {
                     playerTurnEndedDict[pi.getPlayerId()] = false;
-                    pi.playerAnimator.AnimateRevertSpriteTurnStarted();                
+                    if (pi.playerAnimator != null) {
+                        pi.playerAnimator.AnimateRevertSpriteTurnStarted();     
+                    }                 
                 }                
             }
         }
+        print("done");
     }
 
     public void ResetEnemyTurnEndedDict() {

@@ -139,18 +139,15 @@ public abstract class StateProcessor : MonoBehaviour, StateProcessorInterface {
     }
 
     public bool CheckIfGameEnded() {
-        NovelEventManager novelEventManager = sharedResourceBus.GetNovelEventManager();
+        
         print("Checking if game ended...");
-        print(novelEventManager.AllEventsPlayed());
-        print("Current event running? " + novelEventManager.IsEventRunning().ToString());
-        if (!novelEventManager.AllEventsPlayed() || novelEventManager.IsEventRunning()) {
-            return false;
-        }
 
         List<PlayerInfo> retreatedEnemies = sharedResourceBus.GetRetreatedEnemies();
         List<PlayerInfo> retreatedPlayers = sharedResourceBus.GetRetreatedPlayers();
         Dictionary<string,bool> enemyTurnEndedDict = sharedResourceBus.GetEnemyTurnEndedDict();
         Dictionary<string,bool> playerTurnEndedDict = sharedResourceBus.GetPlayerTurnEndedDict();
+        print(retreatedEnemies.ToString());
+        print(retreatedPlayers.ToString());
         if (retreatedEnemies.Count == enemyTurnEndedDict.Keys.Count) {
             sharedResourceBus.SetPlayerVictory(true);
             ChangeState(GameState.GameEndState);
@@ -160,6 +157,14 @@ public abstract class StateProcessor : MonoBehaviour, StateProcessorInterface {
             ChangeState(GameState.GameEndState);
             return true;
         }
+
+        // NovelEventManager novelEventManager = sharedResourceBus.GetNovelEventManager();
+        // print(novelEventManager.AllEventsPlayed());
+        // print("Current event running? " + novelEventManager.IsEventRunning().ToString());
+        // if (!novelEventManager.AllEventsPlayed() || novelEventManager.IsEventRunning()) {
+        //     return false;
+        // }
+
         return false;
     }
 
@@ -177,6 +182,7 @@ public abstract class StateProcessor : MonoBehaviour, StateProcessorInterface {
 
         //attacker attacks defender
         int dmgDoneToDefender = attackerAtk - defenderDef;
+        print("Damage done to defender: " + dmgDoneToDefender.ToString());
         newDefenderPI.currentHealth = defenderHealth - Mathf.Max(0, dmgDoneToDefender);
         if (newDefenderPI.currentHealth <= 0) {
             newDefenderPI.currentHealth = 0;

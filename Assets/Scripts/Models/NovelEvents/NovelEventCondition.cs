@@ -30,6 +30,11 @@ public class NovelEventCondition {
     }
 
     public bool MeetsCondition(PlayerInfo playerInfo, Vector3Int playerCurrentPosition) {
+        
+        if (playerInfo.id != playerId) {
+            return false;
+        }
+
         if (playerStatus == EventStatus.HEALTH) {
             var condition = new PlayerStatNovelCondition(playerStatus, conditional, intValue, playerInfo);
             return condition.IsValid();

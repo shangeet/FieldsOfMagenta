@@ -7,7 +7,7 @@ public class HandleTileStateProcessor : StateProcessor {
     public override bool Process() {
         TileEventManager tileEventManager = sharedResourceBus.GetTileEventManager();
         Node clickedPlayerNode = sharedResourceBus.GetClickedPlayerNode();
-        if (clickedPlayerNode != null) {
+        if (clickedPlayerNode != null && clickedPlayerNode.getPlayerInfo() != null) {
             PlayerInfo currentPI = clickedPlayerNode.getPlayerInfo();
             if (currentPI.currentHealth > 0) {
                 MasterGameStateController gameStateInstance = sharedResourceBus.GetMasterGameStateController();

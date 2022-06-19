@@ -363,4 +363,13 @@ public class PlayerInfo : ScriptableObject {
     public bool IsHealer() {
         return battleClassName.Equals("Healer");
     }
+
+    public override bool Equals(System.Object obj) {
+        if ((obj == null) || ! this.GetType().Equals(obj.GetType())) {
+            return false;
+        } else {
+            PlayerInfo p = obj as PlayerInfo;
+            return p.id.Equals(this.id);
+        }
+    }
 }
