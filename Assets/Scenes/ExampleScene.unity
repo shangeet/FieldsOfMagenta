@@ -486,10 +486,12 @@ MonoBehaviour:
   - BlueTile
   - RedTile
   - YellowTile
+  - GreenTile
   tileSpriteDictValues:
   - {fileID: 21300000, guid: 816e0f7da43b7f34981da14f009c7ab2, type: 3}
   - {fileID: 21300000, guid: 71f79a40238c4874ca4ddb0511655b47, type: 3}
   - {fileID: 21300000, guid: 39c86af028578024ca25569177669fe0, type: 3}
+  - {fileID: 21300000, guid: c3b9d74583196b34cbb24f476cdbdd35, type: 3}
 --- !u!4 &1492435818
 Transform:
   m_ObjectHideFlags: 0

@@ -19,7 +19,7 @@ public class GameMaster : MonoBehaviour {
     ShowBattleMenuStateProcessor showBattleMenuStateProc;
     ShowItemMenuStateProcessor showItemMenuStateProc;
     ShowSwapItemMenuStateProcessor showSwapItemMenuStateProc;
-    AttackStateProcessor attackStateProc;
+    ActionStateProcessor actionStateProc;
     ShowExpGainStateProcessor showExpGainStateProc;
     HandleTileStateProcessor handleTileStateProc;
     PlayerTurnEndProcessor playerTurnEndProc;
@@ -73,8 +73,8 @@ public class GameMaster : MonoBehaviour {
                 case GameState.SwapItemState:
                     showSwapItemMenuStateProc.Process();
                     break;
-                case GameState.AttackState:
-                    attackStateProc.Process();
+                case GameState.AttackState: case GameState.HealState:
+                    actionStateProc.Process();
                     break;
                 case GameState.HandleTileState:
                     handleTileStateProc.Process();
@@ -114,7 +114,7 @@ public class GameMaster : MonoBehaviour {
         showBattleMenuStateProc = gameObject.AddComponent<ShowBattleMenuStateProcessor>();
         showItemMenuStateProc = gameObject.AddComponent<ShowItemMenuStateProcessor>();
         showSwapItemMenuStateProc = gameObject.AddComponent<ShowSwapItemMenuStateProcessor>();
-        attackStateProc = gameObject.AddComponent<AttackStateProcessor>();
+        actionStateProc = gameObject.AddComponent<ActionStateProcessor>();
         showExpGainStateProc = gameObject.AddComponent<ShowExpGainStateProcessor>();
         handleTileStateProc = gameObject.AddComponent<HandleTileStateProcessor>();
         playerTurnEndProc = gameObject.AddComponent<PlayerTurnEndProcessor>();

@@ -69,10 +69,39 @@ public class BattleEventScreen : AbstractMenu
         battleEventScreenDisplayed = false;
     }
 
+    public IEnumerator openHealEventScreen(PlayerInfo healPI, PlayerInfo targetPI, PlayerInfo newHealPI, PlayerInfo newTargetPI) {
+        //re-enable the battle event screen
+        battleEventScreen.SetActive(true);
+        battleEventScreenDisplayed = true;
+        //get healer and target position values
+        GameObject healerHealthBarGameObj = battleEventScreen.transform.GetChild(1).gameObject;
+        GameObject targetHealthBarGameObj = battleEventScreen.transform.GetChild(2).gameObject;
+        GameObject foreground = battleEventScreen.transform.Find("BattleBackground/Foreground").gameObject;
+        Vector3 healerPos = new Vector3(healerHealthBarGameObj.transform.position.x, foreground.transform.position.y - 2, 0.0f);
+        Vector3 targetPos = new Vector3(targetHealthBarGameObj.transform.position.x, foreground.transform.position.y - 2, 0.0f);
+        //setup healthbar initial fill values
+        setHealthBarOnBattleEventScreen(healerHealthBarGameObj, healPI.currentHealth, healPI.baseHealth);
+        setHealthBarOnBattleEventScreen(targetHealthBarGameObj, targetPI.currentHealth, targetPI.baseHealth);
+
+        //setup healer w/ original stats
+        GameObject healerPlayer = addPlayerToBattleEventScreen(healPI.getPlayerId(), healerPos, healPI, true);
+        //setup target w/ original stats
+        GameObject targetPlayer = addPlayerToBattleEventScreen(targetPI.getPlayerId(), targetPos, targetPI, false);
+        animateHealSequence(healerPlayer, targetPlayer);
+        StartCoroutine(animateHealthReduction(targetHealthBarGameObj, targetPI.currentHealth, newTargetPI.currentHealth, newTargetPI.baseHealth));
+        yield return new WaitForSeconds(2.0f);
+        Destroy(healerPlayer);
+        Destroy(targetPlayer);
+        battleEventScreen.SetActive(false);
+        battleEventScreenDisplayed = false;
+    }
+
     public GameObject addPlayerToBattleEventScreen(string playerId, Vector3 position, PlayerInfo playerInfo, bool isAttacker) {
         playerId += "-temp";
         GameObject playerToSpawn = new GameObject(playerId);
-        PlayerAnimator playerAnimator = playerToSpawn.AddComponent<PlayerAnimator>() as PlayerAnimator;
+        PawnSpawnManager pawnSpawnManager = sharedResourceBus.GetPawnSpawnManager();
+        playerToSpawn = pawnSpawnManager.SetupPlayerAnimator(playerToSpawn, playerInfo);
+        PlayerAnimator playerAnimator = playerToSpawn.GetComponent<PlayerAnimator>() as PlayerAnimator;
         playerAnimator.setAnimatorMode("battle", playerId, playerInfo.getBattleControllerPath(), playerInfo.portraitRefPath);
         playerAnimator.name = playerId;
         if (playerAnimator) {
@@ -91,6 +120,11 @@ public class BattleEventScreen : AbstractMenu
     public void animateDeathSequence(GameObject playerToAnimate) {
         PlayerAnimator playerAnimator = playerToAnimate.GetComponent<PlayerAnimator>() as PlayerAnimator;
         StartCoroutine(playerAnimator.AnimateFaint());
+    }
+
+    public void animateHealSequence(GameObject healerToAnimate, GameObject targetToAnimate) {
+        HealerPlayerAnimator healerPlayerAnimator = healerToAnimate.GetComponent<PlayerAnimator>() as HealerPlayerAnimator;
+        StartCoroutine(healerPlayerAnimator.HealTarget(targetToAnimate));
     }
 
     public void setHealthBarOnBattleEventScreen(GameObject healthBar, int currentHP, int baseHP) {

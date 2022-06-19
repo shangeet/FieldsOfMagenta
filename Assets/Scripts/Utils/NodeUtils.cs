@@ -40,7 +40,7 @@ public class NodeUtils {
         return validNodes;
     }    
 
-    public static List<Node> getViableAttackNodes(int attackRange, Node startNode, Dictionary<Vector3Int, Node> nodeDict) {
+    public static List<Node> getViableActionNodes(int actionRange, Node startNode, Dictionary<Vector3Int, Node> nodeDict, bool isActionOnEnemy) {
         List<Node> visitedNodes = new List<Node>();
         List<Node> validNodes = new List<Node>();
         Queue<Node> queue = new Queue<Node>();
@@ -57,9 +57,9 @@ public class NodeUtils {
             Node currentNode = queue.Dequeue();
             List<Node> nearbyNodes = getNearbyNodes(currentNode, nodeDict);
             foreach (Node childNode in nearbyNodes) {
-                if (!visitedNodes.Contains(childNode) && childNode.isOccupied() && childNode.getPlayerInfo().getIsEnemy()) { //node is not visited, occupied, and an enemy
+                if (!visitedNodes.Contains(childNode) && childNode.isOccupied() && (childNode.getPlayerInfo().getIsEnemy() == isActionOnEnemy)) { //node is not visited, occupied, check if it's an enemy action or not
                     int newDist = distFromStart[currentNode] + 1;
-                    if (newDist <= attackRange) {
+                    if (newDist <= actionRange) {
                         distFromStart[childNode] = newDist;
                         if (!validNodes.Contains(childNode)) {
                             validNodes.Add(childNode);
@@ -225,6 +225,43 @@ public class NodeUtils {
             visitedNodes.Add(currentNode);
         }
         return null;       
+    }
+
+    public static Node findPlayerNodeEnemyAlly(Node startNode, Dictionary<Vector3Int, Node> nodeDict, TileEventManager tileManager) {
+        int mov = startNode.getPlayerInfo().currentMov;
+        List<Node> visitedNodes = new List<Node>();
+        List<Node> validNodes = new List<Node>();
+        Queue<Node> queue = new Queue<Node>();
+        Dictionary<Node, int> distFromStart = new Dictionary<Node, int>();
+
+        distFromStart[startNode] = 0;
+        queue.Enqueue(startNode);
+        int iterations = 0;
+        while (queue.Count != 0) {
+            iterations += 1;
+            if (iterations > 100) {
+                return null;
+            }
+            Node currentNode = queue.Dequeue();
+            if (currentNode.isOccupied() && currentNode.getPlayerInfo().getIsEnemy() && currentNode != startNode) { //found enemy node in range
+                return currentNode;
+            }
+            List<Node> nearbyNodes = getNearbyNodes(currentNode, nodeDict);
+            foreach (Node childNode in nearbyNodes) {
+                if (!tileManager.IsObstacleTile(childNode) &&  !visitedNodes.Contains(childNode) && !(childNode.getPlayerInfo() != null && childNode.getPlayerInfo().getIsEnemy())) { //node is not an obstacle, other enemy, and hasn't been visited
+                    int newDist = distFromStart[currentNode] + 1;
+                    if (newDist <= mov) {
+                        distFromStart[childNode] = newDist;
+                        if (!validNodes.Contains(childNode)) {
+                            validNodes.Add(childNode);
+                            queue.Enqueue(childNode);
+                        }
+                    }
+                }
+            }
+            visitedNodes.Add(currentNode);
+        }
+        return null;         
     }
 
     public static Node findEnemyNode(string playerId, Dictionary<Vector3Int, Node> nodeDict) { //TODO optimize this using a class dictionary var

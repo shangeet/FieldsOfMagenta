@@ -25,10 +25,10 @@ public class PawnSpawnManager : MonoBehaviour {
             "Animations/MainCharacter/Main_Battle");
         gameStateInstance.CreateNewSaveInstance(newPlayer);
         //add one more player
-        PlayerInfo newPlayerTwo = new PlayerInfo("fakeid2", "Bobby", false, new Warrior(), "images/portraits/test_face");
-        newPlayerTwo.setAnimationPaths("images/sprites/CharacterSpriteSheets/Ally/MainCharacter",
-            "Animations/MainCharacter/Main_Game",
-            "Animations/MainCharacter/Main_Battle");
+        PlayerInfo newPlayerTwo = new PlayerInfo("fakeid2", "Bobby", false, new Healer(), "images/portraits/test_face");
+        newPlayerTwo.setAnimationPaths("images/sprites/CharacterSpriteSheets/Ally/ally_healer_f",
+            "Animations/AllyHealerF/AllyHealerFGame",
+            "Animations/AllyHealerF/AllyHealerFBattle");
         gameStateInstance.AddNewPlayer(newPlayerTwo);
         PlayerInfo testOne = gameStateInstance.GetPlayerInfoById("fakeid");
         PlayerInfo testTwo = gameStateInstance.GetPlayerInfoById("fakeid2");
@@ -83,7 +83,8 @@ public class PawnSpawnManager : MonoBehaviour {
     public void PopulateGridWithSprite(Tilemap tileMap, Vector2 pos2D, Dictionary<Vector2, PlayerInfo> pawnInfoDict, Vector3Int pos3D, PlayerInfo playerInfo) {
         string playerId = playerInfo.getPlayerId();
         GameObject objToSpawn = new GameObject(playerId);
-        PlayerAnimator newPawn = objToSpawn.AddComponent<PlayerAnimator>() as PlayerAnimator;
+        objToSpawn = SetupPlayerAnimator(objToSpawn, playerInfo);
+        PlayerAnimator newPawn = objToSpawn.GetComponent<PlayerAnimator>() as PlayerAnimator;
         newPawn.setAnimatorMode("game", playerId, playerInfo.getGameControllerPath(), playerInfo.portraitRefPath);
         newPawn.name = playerId;
         pawnInfoDict[pos2D].playerAnimator = newPawn;
@@ -105,7 +106,8 @@ public class PawnSpawnManager : MonoBehaviour {
     public PlayerInfo AddSpriteToGrid(Tilemap tileMap, Vector3Int pos3D, PlayerInfo playerInfo) {
         string playerId = playerInfo.getPlayerId();
         GameObject objToSpawn = new GameObject(playerId);
-        PlayerAnimator newPawn = objToSpawn.AddComponent<PlayerAnimator>() as PlayerAnimator;
+        objToSpawn = SetupPlayerAnimator(objToSpawn, playerInfo);
+        PlayerAnimator newPawn = objToSpawn.GetComponent<PlayerAnimator>() as PlayerAnimator;
         newPawn.setAnimatorMode("game", playerId, playerInfo.getGameControllerPath(), playerInfo.portraitRefPath);
         newPawn.name = playerId;
         playerInfo.playerAnimator = newPawn;
@@ -135,6 +137,26 @@ public class PawnSpawnManager : MonoBehaviour {
             Destroy(statContainerGo);
             Destroy(spawnedObject);
         }
+    }
+
+    public GameObject SetupPlayerAnimator(GameObject pawnGo, PlayerInfo playerInfo) {
+        string bClassName = playerInfo.battleClassName;
+
+        var @playerAnimatorSelector = new Dictionary<string, System.Action> {
+            { nameof(Bard), () => pawnGo.AddComponent<BardPlayerAnimator>() },
+            { nameof(Healer), () => pawnGo.AddComponent<HealerPlayerAnimator>() },
+            { nameof(Mage), () => pawnGo.AddComponent<MagePlayerAnimator>() },
+            { nameof(Paladin), () => pawnGo.AddComponent<PaladinPlayerAnimator>() },
+            { nameof(Ranger), () => pawnGo.AddComponent<RangerPlayerAnimator>() },
+            { nameof(Rogue), () => pawnGo.AddComponent<RoguePlayerAnimator>() },
+            { nameof(Warrior), () => pawnGo.AddComponent<WarriorPlayerAnimator>() }
+        };
+        
+        if (@playerAnimatorSelector.ContainsKey(bClassName)) {
+            @playerAnimatorSelector[bClassName]();            
+        }
+
+        return pawnGo;
     }
 
 }

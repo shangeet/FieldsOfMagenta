@@ -5,7 +5,7 @@ using UnityEngine.Tilemaps;
 using UnityEngine;
 
 //This class handles animations 
-public class PlayerAnimator : MonoBehaviour {
+public abstract class PlayerAnimator : MonoBehaviour, PlayerAnimatorInterface {
 
     public string id;
     public string textureRefPath;
@@ -67,7 +67,7 @@ public class PlayerAnimator : MonoBehaviour {
         spriteRenderer.sortingLayerName = BATTLE_LAYER_NAME;
     }
 
-    public IEnumerator AttackEnemy(GameObject defenderPlayer, Vector3 defenderPos, bool isAttacker) {
+    public virtual IEnumerator AttackEnemy(GameObject defenderPlayer, Vector3 defenderPos, bool isAttacker) {
         Vector3 attackerOriginalPos = transform.position;
         //move close to enemy position
         Vector3 targetPosition;

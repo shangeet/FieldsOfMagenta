@@ -7,6 +7,7 @@ public class PlayerBattleMenu : AbstractMenu {
 
     GameObject playerBattleMenu;
     bool playerBattleMenuDisplayed;
+    bool canHeal = false;
 
     protected override void Awake() {
         base.Awake();
@@ -18,11 +19,11 @@ public class PlayerBattleMenu : AbstractMenu {
     void setupUIElements() {
         // player battle menu
         playerBattleMenu = GameObject.Find("PlayerBattleMenu");
-        Button attackButton = GameObject.Find("AttackButton").GetComponent<Button>() as Button;
+        Button actionButton = GameObject.Find("ActionButton").GetComponent<Button>() as Button;
         Button itemButton = GameObject.Find("ItemButton").GetComponent<Button>() as Button;
         Button waitButton = GameObject.Find("WaitButton").GetComponent<Button>() as Button;
         Button swapButton = GameObject.Find("ItemSwapButton").GetComponent<Button>() as Button;
-        attackButton.onClick.AddListener(onAttackButtonClick);
+        actionButton.onClick.AddListener(onActionButtonClick);
         itemButton.onClick.AddListener(onItemButtonClick);
         waitButton.onClick.AddListener(onWaitButtonClick);
         swapButton.onClick.AddListener(onSwapItemButtonClick);
@@ -30,7 +31,16 @@ public class PlayerBattleMenu : AbstractMenu {
         playerBattleMenuDisplayed = false;
     }
 
-    public void openPlayerBattleMenu() {       
+    void updateUIElements() {
+        Text actionButtonText = GameObject.Find("ActionButton/Text").GetComponent<Text>();
+        if (canHeal) {
+            actionButtonText.text = "Heal";    
+        } else {
+            actionButtonText.text = "Attack";
+        }
+    }
+
+    public void openPlayerBattleMenu(bool isHealingClass) {       
         playerBattleMenu.SetActive(true);
         playerBattleMenuDisplayed = true;
         PlayerInfo pInfo = sharedResourceBus.GetClickedPlayerNode().getPlayerInfo();
@@ -39,11 +49,18 @@ public class PlayerBattleMenu : AbstractMenu {
         Vector3 canvasPosition = new Vector3(playerPosition.x + 1, playerPosition.y + 1, 1);
         playerBattleMenu.transform.position = canvasPosition;
 
+        canHeal = isHealingClass;
+        updateUIElements();
+
     }
 
-    void onAttackButtonClick() {
+    void onActionButtonClick() {
         closePlayerBattleMenu();
-        ChangeState(GameState.AttackState);
+        if (canHeal) {
+            ChangeState(GameState.HealState);
+        } else {
+            ChangeState(GameState.AttackState);    
+        } 
     }
 
     void onItemButtonClick() {

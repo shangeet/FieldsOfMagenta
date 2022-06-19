@@ -226,6 +226,33 @@ public abstract class StateProcessor : MonoBehaviour, StateProcessorInterface {
         }
     }
 
+    public void CalculateHealEventDisplayBattleUI(BattleEventScreen battleEventScreen, Node healerNode, Node targetNode, Dictionary<Vector3Int, Node> nodeDict) {
+        PlayerInfo healerPI = healerNode.getPlayerInfo();
+        PlayerInfo targetPI = targetNode.getPlayerInfo();
+        PlayerInfo newHealerPI = PlayerInfo.Clone(healerPI);
+        PlayerInfo newTargetPI = PlayerInfo.Clone(targetPI);
+
+        float healVal = ((float) healerPI.currentMagicAttack / (float) targetPI.baseHealth) * 100;
+
+        int healingAmt = Mathf.RoundToInt(healVal);
+
+        newTargetPI.currentHealth = Mathf.Min(newTargetPI.baseHealth, newTargetPI.currentHealth + healingAmt);
+
+        newHealerPI.gainExp(newHealerPI.level * 50);
+
+        healerNode.setPlayerInfo(newHealerPI);
+        targetNode.setPlayerInfo(newTargetPI);
+        
+        StartCoroutine(battleEventScreen.openHealEventScreen(healerPI, targetPI, newHealerPI, newTargetPI));
+        nodeDict[healerNode.getPosition()] = healerNode;
+        nodeDict[targetNode.getPosition()] = targetNode;
+        sharedResourceBus.SetNodeDict(nodeDict);
+
+        int timesLeveledUp = newHealerPI.level - healerPI.level;
+        List<int> totalExpToLevelUp = newHealerPI.getTotalExpListLevels(healerPI.level, newHealerPI.level);
+        updateBattleVars(timesLeveledUp, totalExpToLevelUp, healerPI, newHealerPI, true);
+    }
+
     private void updateBattleVars(int timesLeveledUp, List<int> totalExpToLevelUp, PlayerInfo oldBattlePI, PlayerInfo newBattlePI, bool showExpGainBar) {
         sharedResourceBus.SetTimesLeveledUp(timesLeveledUp);
         sharedResourceBus.SetTotalExpToLevelUp(totalExpToLevelUp);

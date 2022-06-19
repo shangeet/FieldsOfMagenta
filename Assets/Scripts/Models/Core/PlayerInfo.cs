@@ -14,6 +14,7 @@ public class PlayerInfo : ScriptableObject {
     public string battleControllerPath;
     public bool isEnemy;
     public BattleClass battleClass;
+    public string battleClassName;
 
     //Base Stats
     public int level;
@@ -51,6 +52,7 @@ public class PlayerInfo : ScriptableObject {
         this.playerName = name;
         this.isEnemy = isEnemy;
         this.battleClass = battleClass;
+        this.battleClassName = battleClass.GetType().Name;
         this.playerAnimator = null;
         this.totalExperience = 0;
         this.equipmentItemManager = new EquipmentItemManager();
@@ -279,6 +281,7 @@ public class PlayerInfo : ScriptableObject {
         deepCopy.setBattleControllerPath(playerInfoToClone.getBattleControllerPath());
         deepCopy.setIsEnemy(playerInfoToClone.getIsEnemy());
         deepCopy.setBattleClass(playerInfoToClone.getBattleClass());
+        deepCopy.battleClassName = playerInfoToClone.battleClassName;
         deepCopy.level = playerInfoToClone.level;
         deepCopy.baseHealth = playerInfoToClone.baseHealth;
         deepCopy.baseAttack = playerInfoToClone.baseAttack;
@@ -355,5 +358,9 @@ public class PlayerInfo : ScriptableObject {
         };
         setupBaseStats(newStats);
         UpdateBattleStatsInBattle();
+    }
+
+    public bool IsHealer() {
+        return battleClassName.Equals("Healer");
     }
 }

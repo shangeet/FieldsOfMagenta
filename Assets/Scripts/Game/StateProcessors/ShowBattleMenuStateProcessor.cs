@@ -7,7 +7,8 @@ public class ShowBattleMenuStateProcessor : StateProcessor {
     public override bool Process() {
         PlayerBattleMenu playerBattleMenu = uiHandler.GetPlayerBattleMenu();
         if (!playerBattleMenu.IsPlayerBattleMenuDisplayed() && !sharedResourceBus.PlayerCurrentlyMoving()) {
-            playerBattleMenu.openPlayerBattleMenu();
+            bool isHealingClass = sharedResourceBus.GetClickedPlayerNode().getPlayerInfo().IsHealer();
+            playerBattleMenu.openPlayerBattleMenu(isHealingClass);
         }
 
         if (Input.GetMouseButtonDown(1)) { //cancel movement and track back

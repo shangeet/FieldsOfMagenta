@@ -13,6 +13,14 @@ public class Cursor : MonoBehaviour {
     private const string LAYER_NAME = "Sprite";
     private UnitInfoMenu unitInfoMenu;
     private Camera gameCamera;
+    private static List<GameState> validCursorMovementStates = new List<GameState>() {
+        GameState.PlayerSetupState,
+        GameState.PlayerTurnStart,
+        GameState.MovePlayerStartState,
+        GameState.ShowBattleMenuState,
+        GameState.AttackState,
+        GameState.HealState        
+    };
 
     // Start is called before the first frame update
     void Start() {
@@ -34,10 +42,7 @@ public class Cursor : MonoBehaviour {
         if (uiHandler.IsInputEnabled() && gameCamera.isActiveAndEnabled) {
             Vector3Int pos = getNodePositionOnHover();
             GameState currentGameState = sharedResourceBus.GetCurrentGameState();
-            bool cursorAllowed = (currentGameState == GameState.PlayerSetupState || currentGameState == GameState.PlayerTurnStart ||
-                                currentGameState == GameState.MovePlayerStartState ||
-                                currentGameState == GameState.ShowBattleMenuState ||
-                                currentGameState == GameState.AttackState);
+            bool cursorAllowed = validCursorMovementStates.Contains(currentGameState);
             if (pos != null && cursorAllowed) {
                 transform.position = sharedResourceBus.GetTileMap().GetCellCenterWorld(pos);  
                 Node currentClickedNode = sharedResourceBus.getNodeAtPosition(pos);

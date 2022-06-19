@@ -15,6 +15,7 @@ public enum GameState
     UseItemState,
     SwapItemState,
     AttackState,
+    HealState,
     HandleTileState,
     TurnEndState,
     EnemyTurnState,
