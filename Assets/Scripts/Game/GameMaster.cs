@@ -73,7 +73,7 @@ public class GameMaster : MonoBehaviour {
                 case GameState.SwapItemState:
                     showSwapItemMenuStateProc.Process();
                     break;
-                case GameState.AttackState: case GameState.HealState:
+                case GameState.AttackState: case GameState.HealState: case GameState.BuffState:
                     actionStateProc.Process();
                     break;
                 case GameState.HandleTileState:

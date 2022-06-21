@@ -5,20 +5,20 @@ using UnityEngine;
 public class ActionStateProcessor : StateProcessor {
 
     public override bool Process() {
-        bool isAttackAction = (sharedResourceBus.GetCurrentGameState() == GameState.AttackState);
 
         StaticTileHandler staticTileHandler = sharedResourceBus.GetStaticTileHandler();
         int playerActionRange = 1; //TODO Implement this based on player's class
         Node clickedPlayerNode = sharedResourceBus.GetClickedPlayerNode();
         Node currentClickedNode = sharedResourceBus.GetCurrentClickedNode();
         Dictionary<Vector3Int, Node> nodeDict = sharedResourceBus.GetNodeDict();
+        bool isAttackAction = sharedResourceBus.GetCurrentGameState() == GameState.AttackState;
         List<Node> validActionNodes = NodeUtils.getViableActionNodes(playerActionRange, clickedPlayerNode, nodeDict, isAttackAction);
         BattleEventScreen battleEventScreen = uiHandler.GetBattleEventScreen();
 
         //preprocess highlight tiles red if attack action else green
         foreach (Node node in validActionNodes) {
             //tileMap.SetColor(node.getPosition(), Color.red);
-            if (isAttackAction) {
+            if (sharedResourceBus.GetCurrentGameState() == GameState.AttackState) {
                 staticTileHandler.SpawnTile(node.getPosition(), "RedTile");    
             } else {
                 staticTileHandler.SpawnTile(node.getPosition(), "GreenTile");
@@ -34,12 +34,14 @@ public class ActionStateProcessor : StateProcessor {
 
             Node otherNode = currentClickedNode;
             Node playerActing = clickedPlayerNode;
-            if (isAttackAction) {
+            if (sharedResourceBus.GetCurrentGameState() == GameState.AttackState) {
                 // display battle
                 CalculateBattleEventDisplayBattleUI(battleEventScreen, playerActing, otherNode, nodeDict);                
-            } else {
+            } else if (sharedResourceBus.GetCurrentGameState() == GameState.AttackState) {
                 // display heal
                 CalculateHealEventDisplayBattleUI(battleEventScreen, playerActing, otherNode, nodeDict);
+            } else if (sharedResourceBus.GetCurrentGameState() == GameState.BuffState) {
+                CalculateBuffEventDisplayBattleUI(battleEventScreen, playerActing, otherNode, nodeDict);
             }
             //turn is over for player
             ChangeState(GameState.ShowExpGainState);

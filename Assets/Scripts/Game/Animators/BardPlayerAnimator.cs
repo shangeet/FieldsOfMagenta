@@ -45,4 +45,14 @@ public class BardPlayerAnimator : PlayerAnimator {
         spriteRenderer.flipX = !spriteRenderer.flipX;
         ResetToIdleAnimation();        
     }
+
+    public IEnumerator BuffTarget(GameObject targetPlayer) {
+        animator.SetBool("IsAttack", true);
+        targetPlayer.GetComponent<PlayerAnimator>().animator.SetBool("IsHeal", true);
+        yield return new WaitForSeconds(1.8f);
+        animator.SetBool("IsAttack", false);
+        targetPlayer.GetComponent<PlayerAnimator>().animator.SetBool("IsHeal", false);
+        ResetToIdleAnimation();
+    }
+
 }

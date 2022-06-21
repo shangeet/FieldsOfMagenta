@@ -117,7 +117,7 @@ public abstract class StateProcessor : MonoBehaviour, StateProcessorInterface {
 
         foreach(StatusEffect effect in info.statusList) {
 
-            if (effect.remainingActiveTurns != 0) {
+            if (effect.remainingActiveTurns != 0) { //applied only once per turn
                 if (effect.effectType == EffectType.BURNED && effect.maxTurns == effect.remainingActiveTurns) { //applied only once
                     info.currentAttack = Mathf.RoundToInt((info.baseAttack * (0.5f)));
                     effect.remainingActiveTurns--;
@@ -130,7 +130,16 @@ public abstract class StateProcessor : MonoBehaviour, StateProcessorInterface {
                     info.currentMov = info.currentMov == 1 ? 0 : Mathf.RoundToInt(info.currentMov * 0.5f);
                     effect.remainingActiveTurns--;
                     updatedStatusList.Add(effect);
-                } //applied only once                       
+                } else {
+                    effect.remainingActiveTurns--;
+                    updatedStatusList.Add(effect);
+                }                           
+            } else {
+                if (effect.effectType == EffectType.BUFF) {
+                    //removeBuff + don't add it back to the status list
+                    BuffStatusEffect buffEffect = effect as BuffStatusEffect;
+                    info.RemoveBuff(buffEffect);
+                }
             }
         }
 
@@ -257,6 +266,32 @@ public abstract class StateProcessor : MonoBehaviour, StateProcessorInterface {
         int timesLeveledUp = newHealerPI.level - healerPI.level;
         List<int> totalExpToLevelUp = newHealerPI.getTotalExpListLevels(healerPI.level, newHealerPI.level);
         updateBattleVars(timesLeveledUp, totalExpToLevelUp, healerPI, newHealerPI, true);
+    }
+
+    public void CalculateBuffEventDisplayBattleUI(BattleEventScreen battleEventScreen, Node bardNode, Node targetNode, Dictionary<Vector3Int, Node> nodeDict) {
+        PlayerInfo bardPI = bardNode.getPlayerInfo();
+        PlayerInfo targetPI = targetNode.getPlayerInfo();
+        PlayerInfo newBardPI = PlayerInfo.Clone(bardPI);
+        PlayerInfo newTargetPI = PlayerInfo.Clone(targetPI);
+
+        // TODO base this on the item bard is holding
+        BuffStatusEffect buffStatus = new BuffStatusEffect(EffectType.BUFF, BuffAttr.ATK, 5, 5);
+
+        newTargetPI.AddStatusEffect(buffStatus);
+
+        newBardPI.gainExp(newBardPI.level * 50);
+
+        bardNode.setPlayerInfo(newBardPI);
+        targetNode.setPlayerInfo(newTargetPI);
+        
+        StartCoroutine(battleEventScreen.openBardEventScreen(bardPI, targetPI, newBardPI, newTargetPI));
+        nodeDict[bardNode.getPosition()] = bardNode;
+        nodeDict[targetNode.getPosition()] = targetNode;
+        sharedResourceBus.SetNodeDict(nodeDict);
+
+        int timesLeveledUp = newBardPI.level - bardPI.level;
+        List<int> totalExpToLevelUp = newBardPI.getTotalExpListLevels(bardPI.level, newBardPI.level);
+        updateBattleVars(timesLeveledUp, totalExpToLevelUp, bardPI, newBardPI, true);
     }
 
     private void updateBattleVars(int timesLeveledUp, List<int> totalExpToLevelUp, PlayerInfo oldBattlePI, PlayerInfo newBattlePI, bool showExpGainBar) {

@@ -8,6 +8,7 @@ public class PlayerBattleMenu : AbstractMenu {
     GameObject playerBattleMenu;
     bool playerBattleMenuDisplayed;
     bool canHeal = false;
+    bool canBuff = false;
 
     protected override void Awake() {
         base.Awake();
@@ -35,12 +36,14 @@ public class PlayerBattleMenu : AbstractMenu {
         Text actionButtonText = GameObject.Find("ActionButton/Text").GetComponent<Text>();
         if (canHeal) {
             actionButtonText.text = "Heal";    
-        } else {
+        } else if (canBuff) 
+            actionButtonText.text = "Sing";
+        else {
             actionButtonText.text = "Attack";
         }
     }
 
-    public void openPlayerBattleMenu(bool isHealingClass) {       
+    public void openPlayerBattleMenu() {       
         playerBattleMenu.SetActive(true);
         playerBattleMenuDisplayed = true;
         PlayerInfo pInfo = sharedResourceBus.GetClickedPlayerNode().getPlayerInfo();
@@ -49,7 +52,8 @@ public class PlayerBattleMenu : AbstractMenu {
         Vector3 canvasPosition = new Vector3(playerPosition.x + 1, playerPosition.y + 1, 1);
         playerBattleMenu.transform.position = canvasPosition;
 
-        canHeal = isHealingClass;
+        canHeal = pInfo.IsHealer();
+        canBuff = pInfo.IsBard();
         updateUIElements();
 
     }
@@ -58,6 +62,8 @@ public class PlayerBattleMenu : AbstractMenu {
         closePlayerBattleMenu();
         if (canHeal) {
             ChangeState(GameState.HealState);
+        } else if (canBuff) {
+            ChangeState(GameState.BuffState);
         } else {
             ChangeState(GameState.AttackState);    
         } 

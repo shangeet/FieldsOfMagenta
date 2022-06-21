@@ -96,6 +96,30 @@ public class BattleEventScreen : AbstractMenu
         battleEventScreenDisplayed = false;
     }
 
+    public IEnumerator openBardEventScreen(PlayerInfo bardPI, PlayerInfo targetPI, PlayerInfo newBardPI, PlayerInfo newTargetPI) {
+        //re-enable the battle event screen
+        battleEventScreen.SetActive(true);
+        battleEventScreenDisplayed = true;
+
+        //get bard and target position values
+        GameObject bardHealthBarGameObj = battleEventScreen.transform.GetChild(1).gameObject;
+        GameObject targetHealthBarGameObj = battleEventScreen.transform.GetChild(2).gameObject;
+        GameObject foreground = battleEventScreen.transform.Find("BattleBackground/Foreground").gameObject;
+        Vector3 bardPos = new Vector3(bardHealthBarGameObj.transform.position.x, foreground.transform.position.y - 2, 0.0f);
+        Vector3 targetPos = new Vector3(targetHealthBarGameObj.transform.position.x, foreground.transform.position.y - 2, 0.0f);
+
+        //setup bard w/ original stats
+        GameObject bardPlayer = addPlayerToBattleEventScreen(bardPI.getPlayerId(), bardPos, bardPI, true);
+        //setup target w/ original stats
+        GameObject targetPlayer = addPlayerToBattleEventScreen(targetPI.getPlayerId(), targetPos, targetPI, false);
+        animateBuffSequence(bardPlayer, targetPlayer);
+        yield return new WaitForSeconds(2.0f);
+        Destroy(bardPlayer);
+        Destroy(targetPlayer);
+        battleEventScreen.SetActive(false);
+        battleEventScreenDisplayed = false;        
+    }
+
     public GameObject addPlayerToBattleEventScreen(string playerId, Vector3 position, PlayerInfo playerInfo, bool isAttacker) {
         playerId += "-temp";
         GameObject playerToSpawn = new GameObject(playerId);
@@ -125,6 +149,11 @@ public class BattleEventScreen : AbstractMenu
     public void animateHealSequence(GameObject healerToAnimate, GameObject targetToAnimate) {
         HealerPlayerAnimator healerPlayerAnimator = healerToAnimate.GetComponent<PlayerAnimator>() as HealerPlayerAnimator;
         StartCoroutine(healerPlayerAnimator.HealTarget(targetToAnimate));
+    }
+
+    public void animateBuffSequence(GameObject bardToAnimate, GameObject targetToAnimate) {
+        BardPlayerAnimator bardPlayerAnimator = bardToAnimate.GetComponent<PlayerAnimator>() as BardPlayerAnimator;
+        StartCoroutine(bardPlayerAnimator.BuffTarget(targetToAnimate));
     }
 
     public void setHealthBarOnBattleEventScreen(GameObject healthBar, int currentHP, int baseHP) {

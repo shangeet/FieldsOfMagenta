@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public enum EffectType { POISONED, BURNED, PARALYZED }
+public enum EffectType { POISONED, BURNED, PARALYZED, BUFF, DEBUFF }
 [System.Serializable]
 public class StatusEffect  {
     public EffectType effectType;

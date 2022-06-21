@@ -364,12 +364,112 @@ public class PlayerInfo : ScriptableObject {
         return battleClassName.Equals("Healer");
     }
 
+    public bool IsBard() {
+        return battleClassName.Equals("Bard");
+    }
+
+    public void AddStatusEffect(StatusEffect effect) {
+
+        bool statusExists = false;
+
+        for (int i = 0; i < statusList.Count; i++) {
+
+            StatusEffect currEffect = statusList[i];
+
+            if (currEffect is BuffStatusEffect && effect is BuffStatusEffect) {
+
+                BuffStatusEffect buffStatusEffectCurr = currEffect as BuffStatusEffect;
+                BuffStatusEffect buffStatusEffect = effect as BuffStatusEffect;
+
+                if (buffStatusEffectCurr.GetBuffAttr() == buffStatusEffect.GetBuffAttr()) {
+                    buffStatusEffectCurr.remainingActiveTurns = buffStatusEffectCurr.maxTurns;
+                    statusList[i] = currEffect;
+                    statusExists = true;
+                }
+
+            } else if (currEffect.effectType == effect.effectType) {
+                currEffect.remainingActiveTurns = currEffect.maxTurns; 
+                statusList[i] = currEffect;
+                statusExists = true;
+            }
+        }
+
+        if (!statusExists) {
+            statusList.Add(effect);
+            if (effect is BuffStatusEffect) {
+                BuffStatusEffect buffEffect = effect as BuffStatusEffect;
+                AddBuff(buffEffect);
+            }
+        }
+
+    }
+
     public override bool Equals(System.Object obj) {
         if ((obj == null) || ! this.GetType().Equals(obj.GetType())) {
             return false;
         } else {
             PlayerInfo p = obj as PlayerInfo;
             return p.id.Equals(this.id);
+        }
+    }
+
+    public void AddBuff(BuffStatusEffect effect) {
+        BuffAttr buffAttr = effect.GetBuffAttr();
+        int buffAmt = effect.GetBuffAmt();
+        switch (buffAttr) {
+            case BuffAttr.ATK:
+                currentAttack += buffAmt;
+                break;
+            case BuffAttr.DEF:
+                currentDefense += buffAmt;
+                break;
+            case BuffAttr.MATK:
+                currentMagicAttack += buffAmt;
+                break;
+            case BuffAttr.MDEF:
+                currentMagicDefense += buffAmt;
+                break;
+            case BuffAttr.DEX:
+                currentDexterity += buffAmt;
+                break;
+            case BuffAttr.LUK:
+                currentLuck += buffAmt;
+                break;
+            case BuffAttr.MOV:
+                currentMov += buffAmt;
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void RemoveBuff(BuffStatusEffect effect) {
+        BuffAttr buffAttr = effect.GetBuffAttr();
+        int buffAmt = effect.GetBuffAmt();
+        switch (buffAttr) {
+            case BuffAttr.ATK:
+                currentAttack -= buffAmt;
+                break;
+            case BuffAttr.DEF:
+                currentDefense -= buffAmt;
+                break;
+            case BuffAttr.MATK:
+                currentMagicAttack -= buffAmt;
+                break;
+            case BuffAttr.MDEF:
+                currentMagicDefense -= buffAmt;
+                break;
+            case BuffAttr.DEX:
+                currentDexterity -= buffAmt;
+                break;
+            case BuffAttr.LUK:
+                currentLuck -= buffAmt;
+                break;
+            case BuffAttr.MOV:
+                currentMov -= buffAmt;
+                break;
+            default:
+                break;
         }
     }
 }

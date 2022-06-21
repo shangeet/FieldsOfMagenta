@@ -25,10 +25,10 @@ public class PawnSpawnManager : MonoBehaviour {
             "Animations/MainCharacter/Main_Battle");
         gameStateInstance.CreateNewSaveInstance(newPlayer);
         //add one more player
-        PlayerInfo newPlayerTwo = new PlayerInfo("fakeid2", "Bobby", false, new Healer(), "images/portraits/test_face");
-        newPlayerTwo.setAnimationPaths("images/sprites/CharacterSpriteSheets/Ally/ally_healer_f",
-            "Animations/AllyHealerF/AllyHealerFGame",
-            "Animations/AllyHealerF/AllyHealerFBattle");
+        PlayerInfo newPlayerTwo = new PlayerInfo("fakeid2", "Bardley", false, new Healer(), "images/portraits/test_face");
+        newPlayerTwo.setAnimationPaths("images/sprites/CharacterSpriteSheets/Ally/ally_bard_m",
+            "Animations/AllyBardM/AllyBardMGame",
+            "Animations/AllyBardM/AllyBardMBattle");
         gameStateInstance.AddNewPlayer(newPlayerTwo);
         PlayerInfo testOne = gameStateInstance.GetPlayerInfoById("fakeid");
         PlayerInfo testTwo = gameStateInstance.GetPlayerInfoById("fakeid2");
