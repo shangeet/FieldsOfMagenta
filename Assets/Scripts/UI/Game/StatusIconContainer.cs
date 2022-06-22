@@ -8,6 +8,7 @@ public class StatusIconContainer : AbstractMenu {
     public PlayerInfo playerInfo;
     public PlayerAnimator playerAnimator;
     private Dictionary<EffectType, Sprite> statusEffectSpriteDict;
+    private Dictionary<BuffAttr, Sprite> buffEffectSpriteDict;
     private GameObject statusEffectPrefabSlot;
     private List<Sprite> statusesToShow = new List<Sprite>();
     private GameMaster gameMaster;
@@ -24,7 +25,6 @@ public class StatusIconContainer : AbstractMenu {
     }
 
     void Update() {
-
         if (initialized) {
             if (playerInfo != null) {
                 updateStausesToShow();            
@@ -36,23 +36,46 @@ public class StatusIconContainer : AbstractMenu {
                 Vector3Int newPlayerPos = new Vector3Int(Mathf.FloorToInt(playerAnimPos.x), Mathf.FloorToInt(playerAnimPos.y), Mathf.FloorToInt(playerAnimPos.z));
                 playerInfo = sharedResourceBus.GetPlayerInfoAtPos(newPlayerPos);     
             }            
-        }
-
+        }  
     }
 
-    public void Initialize(PlayerInfo newPlayerInfo, PlayerAnimator newPlayerAnimator, Dictionary<EffectType, Sprite> spriteDict, GameObject statusPrefabSlot) {
+    public void Initialize(PlayerInfo newPlayerInfo, PlayerAnimator newPlayerAnimator, Dictionary<EffectType, Sprite> spriteDict, Dictionary<BuffAttr, Sprite> buffSpriteDict, GameObject statusPrefabSlot) {
         playerInfo = newPlayerInfo;
         playerAnimator = newPlayerAnimator;
         statusEffectSpriteDict = spriteDict;
+        buffEffectSpriteDict = buffSpriteDict;
         statusEffectPrefabSlot = statusPrefabSlot;
         initialized = true;
     }
+
+    // public void UpdateStatusContainer(PlayerInfo newPlayerInfo) {
+    //     if (initialized) {
+    //         playerInfo = newPlayerInfo;
+    //         if (playerInfo != null) {
+    //             updateStausesToShow();            
+    //         }
+
+    //         if (playerAnimator != null) {
+    //             updatePosition();           
+    //             Vector3 playerAnimPos = playerAnimator.transform.position;
+    //             Vector3Int newPlayerPos = new Vector3Int(Mathf.FloorToInt(playerAnimPos.x), Mathf.FloorToInt(playerAnimPos.y), Mathf.FloorToInt(playerAnimPos.z));
+    //             playerInfo = sharedResourceBus.GetPlayerInfoAtPos(newPlayerPos);     
+    //         }            
+    //     }        
+    // }
 
     private void updateStausesToShow() {
         List<Sprite> currentStatuses = new List<Sprite>();
 
         foreach (StatusEffect effect in playerInfo.statusList) {
-            if (statusEffectSpriteDict.ContainsKey(effect.effectType)) {
+
+            if (effect is BuffStatusEffect) {
+                BuffStatusEffect buffEffect = effect as BuffStatusEffect;
+                if (buffEffectSpriteDict.ContainsKey(buffEffect.GetBuffAttr())) {
+                    currentStatuses.Add(buffEffectSpriteDict[buffEffect.GetBuffAttr()]);
+                }
+
+            } else if (statusEffectSpriteDict.ContainsKey(effect.effectType)) {
                 currentStatuses.Add(statusEffectSpriteDict[effect.effectType]);  
             }
         }
@@ -88,7 +111,12 @@ public class StatusIconContainer : AbstractMenu {
             piStatusRendererGo.transform.localPosition = new Vector3(xPos, yPos, zPos);
             //update icon and turns remaining
             SpriteRenderer renderer = piStatusRendererGo.transform.Find("StatusSprite").GetComponent<SpriteRenderer>();
-            renderer.sprite = statusEffectSpriteDict[playerStatusEffect.effectType];
+            if (playerStatusEffect is BuffStatusEffect) {
+                BuffStatusEffect buffStatusEffect = playerStatusEffect as BuffStatusEffect;
+                renderer.sprite = buffEffectSpriteDict[buffStatusEffect.GetBuffAttr()];  
+            } else {
+                renderer.sprite = statusEffectSpriteDict[playerStatusEffect.effectType]; 
+            }
             TextMeshProUGUI turnsRemText = piStatusRendererGo.transform.Find("TurnsRemaining").gameObject.GetComponent<TextMeshProUGUI>();
             turnsRemText.text = playerStatusEffect.remainingActiveTurns.ToString();
         }

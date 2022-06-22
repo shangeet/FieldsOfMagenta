@@ -93,6 +93,10 @@ public abstract class StateProcessor : MonoBehaviour, StateProcessorInterface {
                 bool playerDied = CheckIfPlayerDied(newInfo);
                 if (!playerDied) {
                     pair.Value.setPlayerInfo(newInfo);
+                    // //update the UI for each valid player info
+                    // string statusContainerId = "SC-" + newInfo.id;
+                    // StatusIconContainer container = GameObject.Find(statusContainerId).GetComponent<StatusIconContainer>();
+                    // container.UpdateStatusContainer(newInfo); 
                 } else {
                     pair.Value.setPlayerInfo(null);
                 }
@@ -104,7 +108,8 @@ public abstract class StateProcessor : MonoBehaviour, StateProcessorInterface {
                 newNodeDict[pair.Key] = pair.Value;
             }
         }
-        sharedResourceBus.SetNodeDict(newNodeDict);         
+        sharedResourceBus.SetNodeDict(newNodeDict); 
+     
     }
 
     public PlayerInfo HandlePlayerStatuses(PlayerInfo info) {

@@ -12,7 +12,10 @@ public class PawnSpawnManager : MonoBehaviour {
     public GameObject statusContainerSlotGo;
     public List<EffectType> statusSpriteKeys;
     public List<Sprite> statusSpriteValues;
+    public List<BuffAttr> buffSpriteKeys;
+    public List<Sprite> buffSpriteValues;
     public Dictionary<EffectType, Sprite> effectTypeSpriteDict = new Dictionary<EffectType, Sprite>();
+    public Dictionary<BuffAttr, Sprite> buffTypeSpriteDict = new Dictionary<BuffAttr, Sprite>();
 
     public void Setup(Tilemap tileMap, Dictionary<Vector2, PlayerInfo> pawnInfoDict, Dictionary<Vector3Int, Node> nodeDict, MasterGameStateController gameStateInstance, List<Vector2> validPawnPlacements) {       
 
@@ -25,7 +28,7 @@ public class PawnSpawnManager : MonoBehaviour {
             "Animations/MainCharacter/Main_Battle");
         gameStateInstance.CreateNewSaveInstance(newPlayer);
         //add one more player
-        PlayerInfo newPlayerTwo = new PlayerInfo("fakeid2", "Bardley", false, new Healer(), "images/portraits/test_face");
+        PlayerInfo newPlayerTwo = new PlayerInfo("fakeid2", "Bardley", false, new Bard(), "images/portraits/test_face");
         newPlayerTwo.setAnimationPaths("images/sprites/CharacterSpriteSheets/Ally/ally_bard_m",
             "Animations/AllyBardM/AllyBardMGame",
             "Animations/AllyBardM/AllyBardMBattle");
@@ -56,6 +59,12 @@ public class PawnSpawnManager : MonoBehaviour {
         for (int i = 0; i < statusSpriteKeys.Count; i++) {
             if (i < statusSpriteValues.Count) {
                 effectTypeSpriteDict[statusSpriteKeys[i]] = statusSpriteValues[i];  
+            }
+        }
+
+        for (int i = 0; i < buffSpriteKeys.Count; i++) {
+            if (i < buffSpriteValues.Count) {
+                buffTypeSpriteDict[buffSpriteKeys[i]] = buffSpriteValues[i];
             }
         }
 
@@ -100,7 +109,7 @@ public class PawnSpawnManager : MonoBehaviour {
         statContainerGo.name = "SC-" + playerInfo.id;
         StatusIconContainer statusIconContainer = statContainerGo.AddComponent<StatusIconContainer>();
         mhb.Initialize(playerInfo, newPawn);
-        statusIconContainer.Initialize(playerInfo, newPawn, effectTypeSpriteDict, statusContainerSlotGo);
+        statusIconContainer.Initialize(playerInfo, newPawn, effectTypeSpriteDict, buffTypeSpriteDict, statusContainerSlotGo);
     }
 
     public PlayerInfo AddSpriteToGrid(Tilemap tileMap, Vector3Int pos3D, PlayerInfo playerInfo) {
@@ -123,7 +132,7 @@ public class PawnSpawnManager : MonoBehaviour {
         statContainerGo.name = "SC-" + playerInfo.id;
         StatusIconContainer statusIconContainer = statContainerGo.AddComponent<StatusIconContainer>();
         mhb.Initialize(playerInfo, newPawn);
-        statusIconContainer.Initialize(playerInfo, newPawn, effectTypeSpriteDict, statusContainerSlotGo);
+        statusIconContainer.Initialize(playerInfo, newPawn, effectTypeSpriteDict, buffTypeSpriteDict, statusContainerSlotGo);
         return playerInfo;
     }
 

@@ -424,6 +424,15 @@ MonoBehaviour:
   - {fileID: 21300000, guid: ecbc15ef8685b7a49b669c0c511d42db, type: 3}
   - {fileID: 21300000, guid: ba2a38ba8f56ba648854b66c19413d43, type: 3}
   - {fileID: 21300000, guid: 65793d88548e2d943a198bb6480665d1, type: 3}
+  buffSpriteKeys: 00000000010000000200000003000000040000000500000006000000
+  buffSpriteValues:
+  - {fileID: 21300000, guid: 07ed676e0e78ca64ab6b3348229f2999, type: 3}
+  - {fileID: 21300000, guid: f31bc5d098da6f54cb7b4f45cf665753, type: 3}
+  - {fileID: 21300000, guid: 519de703f020f8341b0c7bf320100a5a, type: 3}
+  - {fileID: 21300000, guid: d8fb3b41a16b89448967c9210d7d2ae5, type: 3}
+  - {fileID: 21300000, guid: ad54aa1933d2b2241ab49f492f18ff4b, type: 3}
+  - {fileID: 21300000, guid: f65647378d7f7694e96e59ae991e5ff5, type: 3}
+  - {fileID: 21300000, guid: 4fcb2bec70b938146b16d9111d410d52, type: 3}
 --- !u!114 &1492435814
 MonoBehaviour:
   m_ObjectHideFlags: 0
