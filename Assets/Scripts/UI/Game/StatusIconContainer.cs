@@ -48,22 +48,6 @@ public class StatusIconContainer : AbstractMenu {
         initialized = true;
     }
 
-    // public void UpdateStatusContainer(PlayerInfo newPlayerInfo) {
-    //     if (initialized) {
-    //         playerInfo = newPlayerInfo;
-    //         if (playerInfo != null) {
-    //             updateStausesToShow();            
-    //         }
-
-    //         if (playerAnimator != null) {
-    //             updatePosition();           
-    //             Vector3 playerAnimPos = playerAnimator.transform.position;
-    //             Vector3Int newPlayerPos = new Vector3Int(Mathf.FloorToInt(playerAnimPos.x), Mathf.FloorToInt(playerAnimPos.y), Mathf.FloorToInt(playerAnimPos.z));
-    //             playerInfo = sharedResourceBus.GetPlayerInfoAtPos(newPlayerPos);     
-    //         }            
-    //     }        
-    // }
-
     private void updateStausesToShow() {
         List<Sprite> currentStatuses = new List<Sprite>();
 
