@@ -37,7 +37,7 @@ public class SwapItemsMenu : AbstractMenu {
             closeSwapItemMenu();
             currentPlayer = null;
             targetPlayer = null;
-            List<Node> nearbyPlayerNodes = NodeUtils.getNearbyPlayerNodes(sharedResourceBus.GetClickedNode(), sharedResourceBus.GetNodeDict());
+            List<Node> nearbyPlayerNodes = NodeUtils.GetAdjacentNodes(sharedResourceBus.GetClickedNode(), sharedResourceBus.GetNodeDict(), FindNodeFunctions.NEARBY_PLAYER);
             EndShowSwapItemMenuStateToShowBattleMenuState(nearbyPlayerNodes);
         }
     }

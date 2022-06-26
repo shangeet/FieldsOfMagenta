@@ -28,7 +28,7 @@ public abstract class AbstractMenu : MonoBehaviour {
     }
 
     public void EndShowSwapItemMenuStateToHandleTileState(PlayerInfo currentPlayerInfo) {
-        List<Node> nearbyPlayerNodes = NodeUtils.getNearbyPlayerNodes(sharedResourceBus.GetClickedNode(), sharedResourceBus.GetNodeDict());
+        List<Node> nearbyPlayerNodes = NodeUtils.GetAdjacentNodes(sharedResourceBus.GetClickedNode(), sharedResourceBus.GetNodeDict(), FindNodeFunctions.NEARBY_PLAYER);
         StaticTileHandler staticTileHandler = sharedResourceBus.GetStaticTileHandler();
         foreach (Node n in nearbyPlayerNodes) {
             if (NodeUtils.nodeClickedIsPlayer(n)) {

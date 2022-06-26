@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class NodeUtils {
 
+    public delegate bool IsValidFindConditionFunc(Node currentNode, Node startNode);
+    public delegate bool IsValidChildFunc(Node node, TileEventManager tileEventManager, List<Node> visitedNodes);
+    public delegate bool NearbyNodeAlgorithmFunc(Dictionary<Vector3Int, Node> nodeDict, Vector3Int pos);
+
     public static List<Node> getViableNodesPaths(Node startNode, Dictionary<Vector3Int, Node> nodeDict, TileEventManager tileManager) {
         int mov = startNode.getPlayerInfo().currentMov;
         List<Node> visitedNodes = new List<Node>();
@@ -21,7 +25,7 @@ public class NodeUtils {
                 return null;
             }
             Node currentNode = queue.Dequeue();
-            List<Node> nearbyNodes = getNearbyNodes(currentNode, nodeDict);
+            List<Node> nearbyNodes = GetAdjacentNodes(currentNode, nodeDict, FindNodeFunctions.NEARBY_NODE_NO_RESTRICTIONS);
             foreach (Node childNode in nearbyNodes) {
                 if (!tileManager.IsObstacleTile(childNode) &&  !visitedNodes.Contains(childNode) && !childNode.isOccupied()) { //node is not an obstacle, other player, and hasn't been visited
                     int newDist = distFromStart[currentNode] + 1;
@@ -55,7 +59,7 @@ public class NodeUtils {
                 return null;
             }
             Node currentNode = queue.Dequeue();
-            List<Node> nearbyNodes = getNearbyNodes(currentNode, nodeDict);
+            List<Node> nearbyNodes = GetAdjacentNodes(currentNode, nodeDict, FindNodeFunctions.NEARBY_NODE_NO_RESTRICTIONS);
             foreach (Node childNode in nearbyNodes) {
                 if (!visitedNodes.Contains(childNode) && childNode.isOccupied() && (childNode.getPlayerInfo().getIsEnemy() == isActionOnEnemy)) { //node is not visited, occupied, check if it's an enemy action or not
                     int newDist = distFromStart[currentNode] + 1;
@@ -103,7 +107,7 @@ public class NodeUtils {
             }
             openList.Remove(currentNode);
             closedList.Add(currentNode);
-            foreach (Node child in getNearbyNodes(currentNode, nodeDict)) {
+            foreach (Node child in GetAdjacentNodes(currentNode, nodeDict, FindNodeFunctions.NEARBY_NODE_NO_RESTRICTIONS)) {
                 if(closedList.Contains(child)) { //second check performed since we don't know if child is necessarily viable
                     continue; //skip this iteration 
                 }
@@ -132,23 +136,8 @@ public class NodeUtils {
         }
         return openList;
     }
-    public static List<Node> getNearbyNodes(Node currentNode, Dictionary<Vector3Int, Node> nodeDict) {
-        List<Node> neighboringNodes = new List<Node>();
-        Vector3Int[] positions = {
-            new Vector3Int(currentNode.getPosition().x, currentNode.getPosition().y + 1, currentNode.getPosition().z),
-            new Vector3Int(currentNode.getPosition().x, currentNode.getPosition().y - 1, currentNode.getPosition().z),
-            new Vector3Int(currentNode.getPosition().x + 1, currentNode.getPosition().y, currentNode.getPosition().z),
-            new Vector3Int(currentNode.getPosition().x - 1, currentNode.getPosition().y, currentNode.getPosition().z)
-        };
-        foreach (Vector3Int pos in positions) {
-            if (nodeDict.ContainsKey(pos)) {
-                neighboringNodes.Add(nodeDict[pos]);
-            }
-        }
-        return neighboringNodes;
-    }
 
-    public static List<Node> getNearbyPlayerNodes(Node currentNode, Dictionary<Vector3Int, Node> nodeDict) {
+    public static List<Node> GetAdjacentNodes(Node currentNode, Dictionary<Vector3Int, Node> nodeDict, NearbyNodeAlgorithmFunc isValidFunc) {
         List<Node> neighboringNodes = new List<Node>();
         Vector3Int[] positions = {
             new Vector3Int(currentNode.getPosition().x, currentNode.getPosition().y + 1, currentNode.getPosition().z),
@@ -157,7 +146,7 @@ public class NodeUtils {
             new Vector3Int(currentNode.getPosition().x - 1, currentNode.getPosition().y, currentNode.getPosition().z)
         };
         foreach (Vector3Int pos in positions) {
-            if (nodeDict.ContainsKey(pos) && nodeClickedIsPlayer(nodeDict[pos])) {
+            if (isValidFunc(nodeDict, pos)) {
                 neighboringNodes.Add(nodeDict[pos]);
             }
         }
@@ -190,80 +179,6 @@ public class NodeUtils {
         return (int) Mathf.Abs(a.getPosition().x - b.getPosition().x) + Mathf.Abs(a.getPosition().y - b.getPosition().y);
     }
 
-    public static Node findPlayerNodeNearEnemy(Node startNode, Dictionary<Vector3Int, Node> nodeDict, TileEventManager tileManager) {
-        int mov = startNode.getPlayerInfo().currentMov;
-        List<Node> visitedNodes = new List<Node>();
-        List<Node> validNodes = new List<Node>();
-        Queue<Node> queue = new Queue<Node>();
-        Dictionary<Node, int> distFromStart = new Dictionary<Node, int>();
-
-        distFromStart[startNode] = 0;
-        queue.Enqueue(startNode);
-        int iterations = 0;
-        while (queue.Count != 0) {
-            iterations += 1;
-            if (iterations > 100) {
-                return null;
-            }
-            Node currentNode = queue.Dequeue();
-            if (currentNode.isOccupied() && !currentNode.getPlayerInfo().getIsEnemy()) { //found player node in range
-                return currentNode;
-            }
-            List<Node> nearbyNodes = getNearbyNodes(currentNode, nodeDict);
-            foreach (Node childNode in nearbyNodes) {
-                if (!tileManager.IsObstacleTile(childNode) &&  !visitedNodes.Contains(childNode) && !(childNode.getPlayerInfo() != null && childNode.getPlayerInfo().getIsEnemy())) { //node is not an obstacle, other enemy, and hasn't been visited
-                    int newDist = distFromStart[currentNode] + 1;
-                    if (newDist <= mov) {
-                        distFromStart[childNode] = newDist;
-                        if (!validNodes.Contains(childNode)) {
-                            validNodes.Add(childNode);
-                            queue.Enqueue(childNode);
-                        }
-                    }
-                }
-            }
-            visitedNodes.Add(currentNode);
-        }
-        return null;       
-    }
-
-    public static Node findPlayerNodeEnemyAlly(Node startNode, Dictionary<Vector3Int, Node> nodeDict, TileEventManager tileManager) {
-        int mov = startNode.getPlayerInfo().currentMov;
-        List<Node> visitedNodes = new List<Node>();
-        List<Node> validNodes = new List<Node>();
-        Queue<Node> queue = new Queue<Node>();
-        Dictionary<Node, int> distFromStart = new Dictionary<Node, int>();
-
-        distFromStart[startNode] = 0;
-        queue.Enqueue(startNode);
-        int iterations = 0;
-        while (queue.Count != 0) {
-            iterations += 1;
-            if (iterations > 100) {
-                return null;
-            }
-            Node currentNode = queue.Dequeue();
-            if (currentNode.isOccupied() && currentNode.getPlayerInfo().getIsEnemy() && currentNode != startNode) { //found enemy node in range
-                return currentNode;
-            }
-            List<Node> nearbyNodes = getNearbyNodes(currentNode, nodeDict);
-            foreach (Node childNode in nearbyNodes) {
-                if (!tileManager.IsObstacleTile(childNode) &&  !visitedNodes.Contains(childNode) && !(childNode.getPlayerInfo() != null && childNode.getPlayerInfo().getIsEnemy())) { //node is not an obstacle, other enemy, and hasn't been visited
-                    int newDist = distFromStart[currentNode] + 1;
-                    if (newDist <= mov) {
-                        distFromStart[childNode] = newDist;
-                        if (!validNodes.Contains(childNode)) {
-                            validNodes.Add(childNode);
-                            queue.Enqueue(childNode);
-                        }
-                    }
-                }
-            }
-            visitedNodes.Add(currentNode);
-        }
-        return null;         
-    }
-
     public static Node findEnemyNode(string playerId, Dictionary<Vector3Int, Node> nodeDict) { //TODO optimize this using a class dictionary var
         //Debug.Log("Looking for id: " + playerId);
         foreach(Node n in nodeDict.Values) {
@@ -285,7 +200,7 @@ public class NodeUtils {
         while(!optimalPath.Contains(goalNode)) {
             iterations += 1;
             //Debug.Log("LAST NODE: " + "(" + lastNode.getPosition().x + "," + lastNode.getPosition().y + ")");
-            List<Node> neighbors = getNearbyNodes(lastNode, nodeDict);
+            List<Node> neighbors = GetAdjacentNodes(lastNode, nodeDict, FindNodeFunctions.NEARBY_NODE_NO_RESTRICTIONS);
             if (neighbors.Contains(goalNode)) {
                 //Debug.Log("Adding goal node...");
                 optimalPath.Add(goalNode);
@@ -312,79 +227,41 @@ public class NodeUtils {
         return optimalPath;
     }
 
-    public static void printPositionToConsole(Vector3Int position) {
-        Debug.Log("Current position: " + "(" + position.x + "," + position.y + ")");
-    }
+    public static Node FindNode(Node startNode, Dictionary<Vector3Int, Node> nodeDict, TileEventManager tileManager, IsValidFindConditionFunc isValidFindConditionFunc, IsValidChildFunc isValidChildFunc) {
+        int mov = startNode.getPlayerInfo().currentMov;
+        List<Node> visitedNodes = new List<Node>();
+        List<Node> validNodes = new List<Node>();
+        Queue<Node> queue = new Queue<Node>();
+        Dictionary<Node, int> distFromStart = new Dictionary<Node, int>();
 
-    public static void printPositionToConsole(Vector2Int position) {
-        Debug.Log("Current position: " + "(" + position.x + "," + position.y + ")");
-    }
-
-    public static void printPositionToConsole(Vector3 position) {
-        Debug.Log("Current position: " + "(" + position.x + "," + position.y + ")");
-    }
-
-    public static void printPositionToConsole(Vector2 position) {
-        Debug.Log("Current position: " + "(" + position.x + "," + position.y + ")");
-    }
-    public static void printDictionaryToConsole(Dictionary<Node, int> myDict) {
-        foreach (KeyValuePair<Node, int> kvp in myDict) {
-            Debug.Log("Key = " + "(" + kvp.Key.getPosition().x + "," + kvp.Key.getPosition().y + ")" + " Value = " + kvp.Value);
+        distFromStart[startNode] = 0;
+        queue.Enqueue(startNode);
+        int iterations = 0;
+        while (queue.Count != 0) {
+            iterations += 1;
+            if (iterations > 100) {
+                return null;
+            }
+            Node currentNode = queue.Dequeue();
+            if (isValidFindConditionFunc(currentNode, startNode)) { //found player node in range
+                return currentNode;
+            }
+            List<Node> nearbyNodes = GetAdjacentNodes(currentNode, nodeDict, FindNodeFunctions.NEARBY_NODE_NO_RESTRICTIONS);
+            foreach (Node childNode in nearbyNodes) {
+                if (isValidChildFunc(childNode, tileManager, visitedNodes)) { //node is not an obstacle, other enemy, and hasn't been visited
+                    int newDist = distFromStart[currentNode] + 1;
+                    if (newDist <= mov) {
+                        distFromStart[childNode] = newDist;
+                        if (!validNodes.Contains(childNode)) {
+                            validNodes.Add(childNode);
+                            queue.Enqueue(childNode);
+                        }
+                    }
+                }
+            }
+            visitedNodes.Add(currentNode);
         }
+        return null;        
     }
-}
 
-        // if (isPlayerTurn) { //check if it's currently the player's turn
-        //     //Debug.Log("Switched to player turn");
-        //     clickedNode = getNodePositionOnClick();
-        //     if (clickedNode != null) { 
-        //         //Debug.Log("Click captured");
-        //         if (clickedNode.isOccupied() && clickedNodePath == null && !clickedNode.getPlayerInfo().getIsEnemy()) { //User clicks on an ally, so we go into the "ally click" state
-        //             Debug.Log("Entered click on ally state");
-        //             clickedNodePath = getViableNodesPaths(clickedNode.getPlayerInfo().getMov(), clickedNode);
-        //             clickedPlayerNode = clickedNode;
-        //             //Debug.Log("Got viable Nodes: " + clickedNodePath.Count);
-        //             foreach (Node node in clickedNodePath) {
-        //                 tileMap.SetColor(node.getPosition(), Color.blue);
-        //             }    
-        //         } else if (clickedNodePath != null && clickedNodePath.Contains(clickedNode)) { //ally state -> move state found path
-        //             Debug.Log("Entered move state");
-        //             string playerId = clickedPlayerNode.getPlayerInfo().getPlayerId();
-        //             Player playerClicked = GameObject.Find(playerId).GetComponent<Player>();
-        //             //move player
-        //             List<Node> pathToTake = getShortestPathNodes(clickedPlayerNode, clickedNode, clickedNodePath, Heuristic.NodeDistanceHeuristic);
-        //             playerClicked.MovePlayerToTile(tileMap, pathToTake);
-        //             //update player information in nodes
-        //             swapNodeInfoOnSpriteMove(pathToTake[0], pathToTake[pathToTake.Count - 1]);
-        //             clickedPlayerNode = pathToTake[pathToTake.Count - 1];
-        //             //reset state after moving 
-        //             foreach (Node node in clickedNodePath) {
-        //                 tileMap.SetColor(node.getPosition(), node.getOriginalColor());
-        //             } 
-        //             //End turn TODO Remove line below once we add more functionality 
-        //             openPlayerBattleMenu();
-        //         } else if (clickedNodePath != null && !clickedNodePath.Contains(clickedNode)) { //invalid node, reset to no click state
-        //             //Debug.Log("Reset state. Bad node");
-        //             //reset state after moving 
-        //             foreach (Node node in clickedNodePath) {
-        //                 tileMap.SetColor(node.getPosition(), node.getOriginalColor());
-        //             } 
-        //             clickedNodePath = null;
-        //             clickedPlayerNode = null;
-        //             clickedNode = null; 
-        //         } else {
-        //             Debug.Log("Unexpected error");
-        //         }
-        //     }
-        //     //auto turn-end if all units are done
-        //     if (!playerTurnEndedDict.ContainsValue(false)) {
-        //         Debug.Log("Player Turn ended");
-        //         toggleIsPlayerTurn();
-        //     }
-        // } else { //enemies turn
-        //     Debug.Log("Switched to enemy turn");
-        //     ProcessEnemyActions();
-        //     //reset playerTurnEndedDict
-        //     resetPlayerTurnEndedDict();
-        //     toggleIsPlayerTurn();
-        // }
+}

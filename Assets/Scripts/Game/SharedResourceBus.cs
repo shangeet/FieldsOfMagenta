@@ -427,4 +427,16 @@ public class SharedResourceBus : MonoBehaviour {
     public void SetUnitMenuOpened(bool isOpen) {
         unitMenuOpened = isOpen;
     }
+
+    public List<PlayerInfo> GetAllAllyPlayers() {
+        List<PlayerInfo> players = new List<PlayerInfo>();
+        foreach (Node node in nodeDict.Values) {
+            if (node.isOccupied()) {
+                if (!node.getPlayerInfo().getIsEnemy()) {
+                    players.Add(node.getPlayerInfo());
+                }
+            }
+        }
+        return players;
+    }
 }

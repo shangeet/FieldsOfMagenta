@@ -131,6 +131,12 @@ public class MasterGameStateController : MonoBehaviour {
         currentSaveFile.saveData.playerGold = Mathf.Max(0, currentSaveFile.saveData.playerGold);
     }
 
+    public void UpdateAndSavePlayerBattleData() {
+        SharedResourceBus sharedResourceBus = GameObject.Find("SharedResourceBus").GetComponent<SharedResourceBus>();
+        List<PlayerInfo> updatedPlayerList = sharedResourceBus.GetAllAllyPlayers();
+        UpdatePlayerInfos(updatedPlayerList);
+    } 
+
     public void SaveInfoBeforeBattle() {
         SaveDataInfo currentSaveData = currentSaveFile.saveData;
         SaveDataInfo storeSaveData = new SaveDataInfo(currentSaveData.playerQuestData, currentSaveData.playerInfoData, currentSaveData.playerInventory, currentSaveData.playerGold);

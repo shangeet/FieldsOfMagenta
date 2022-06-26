@@ -14,6 +14,8 @@ public class GameEndStateProcessor : StateProcessor {
                 if (sharedResourceBus.PlayerVictory()) {
                     GameObject playerVictoryScreen = uiHandler.GetPlayerVictoryScreen();
                     playerVictoryScreen.SetActive(true);
+                    //save data
+                    gameStateInstance.UpdateAndSavePlayerBattleData();
                     gameStateInstance.ClearInfoBeforeBattleData();
                     return true;
                 } else {

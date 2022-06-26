@@ -72,7 +72,8 @@ public class EnemyTurnStateProcessor : StateProcessor {
         Dictionary<Vector3Int, Node> nodeDict = sharedResourceBus.GetNodeDict();
         TileEventManager tileEventManager = sharedResourceBus.GetTileEventManager();
         List<Node> nodeRange = NodeUtils.getViableNodesPaths(enemyNode, nodeDict, tileEventManager);
-        Node candidatePlayerNode = NodeUtils.findPlayerNodeNearEnemy(enemyNode, nodeDict, tileEventManager);
+        //Node candidatePlayerNode = NodeUtils.findPlayerNodeNearEnemy(enemyNode, nodeDict, tileEventManager);
+        Node candidatePlayerNode = NodeUtils.FindNode(enemyNode, nodeDict, tileEventManager, FindNodeFunctions.CONDITION_FOUND_PLAYER_NODE, FindNodeFunctions.CONDITION_VALID_NODE);
         if (candidatePlayerNode != null) {         
             sharedResourceBus.SetClickedPlayerNode(candidatePlayerNode);  
             //check if we have to move
@@ -93,7 +94,8 @@ public class EnemyTurnStateProcessor : StateProcessor {
         PlayerInfo enemy = enemyNode.getPlayerInfo();
         Dictionary<Vector3Int, Node> nodeDict = sharedResourceBus.GetNodeDict();
         TileEventManager tileEventManager = sharedResourceBus.GetTileEventManager();
-        Node candidateEnemyNode = NodeUtils.findPlayerNodeEnemyAlly(enemyNode, nodeDict, tileEventManager);
+        //Node candidateEnemyNode = NodeUtils.findPlayerNodeEnemyAlly(enemyNode, nodeDict, tileEventManager);
+        Node candidateEnemyNode = NodeUtils.FindNode(enemyNode, nodeDict, tileEventManager, FindNodeFunctions.CONDITION_FOUND_ENEMY_NODE, FindNodeFunctions.CONDITION_VALID_NODE);
         if (candidateEnemyNode != null) {
             sharedResourceBus.SetClickedPlayerNode(candidateEnemyNode);
             Node healerNode = getTargetNode(enemyNode, nodeDict, candidateEnemyNode, tileEventManager);
@@ -113,7 +115,8 @@ public class EnemyTurnStateProcessor : StateProcessor {
         PlayerInfo enemy = enemyNode.getPlayerInfo();
         Dictionary<Vector3Int, Node> nodeDict = sharedResourceBus.GetNodeDict();
         TileEventManager tileEventManager = sharedResourceBus.GetTileEventManager();
-        Node candidateEnemyNode = NodeUtils.findPlayerNodeEnemyAlly(enemyNode, nodeDict, tileEventManager);
+        //Node candidateEnemyNode = NodeUtils.findPlayerNodeEnemyAlly(enemyNode, nodeDict, tileEventManager);
+        Node candidateEnemyNode = NodeUtils.FindNode(enemyNode, nodeDict, tileEventManager, FindNodeFunctions.CONDITION_FOUND_ENEMY_NODE, FindNodeFunctions.CONDITION_VALID_NODE);
         if (candidateEnemyNode != null) {
             sharedResourceBus.SetClickedPlayerNode(candidateEnemyNode);
             Node bardNode = getTargetNode(enemyNode, nodeDict, candidateEnemyNode, tileEventManager);
@@ -132,7 +135,7 @@ public class EnemyTurnStateProcessor : StateProcessor {
     Node getTargetNode(Node enemyNode, Dictionary<Vector3Int, Node> nodeDict, Node candidateNode, TileEventManager tileEventManager) {
         PlayerInfo enemy = enemyNode.getPlayerInfo();
         Node targetNode = enemyNode;
-        if (!NodeUtils.getNearbyNodes(enemyNode, nodeDict).Contains(candidateNode)) { //move and act otherwise just act
+        if (!NodeUtils.GetAdjacentNodes(enemyNode, nodeDict, FindNodeFunctions.NEARBY_NODE_NO_RESTRICTIONS).Contains(candidateNode)) { //move and act otherwise just act
             //move and attack
             List<Node> nodeRange = NodeUtils.getViableNodesPaths(enemyNode, nodeDict, tileEventManager);
             List<Node> pathToMove = NodeUtils.getShortestPathNodes(enemyNode, candidateNode, nodeRange, Heuristic.NodeDistanceHeuristic, nodeDict);

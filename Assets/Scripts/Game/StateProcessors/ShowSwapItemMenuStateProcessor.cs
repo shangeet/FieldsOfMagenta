@@ -13,7 +13,7 @@ public class ShowSwapItemMenuStateProcessor : StateProcessor {
             if (!highlightedPossibleSwapPartner) {
                 //Look for valid partners
                 if (clickedNode != null) {
-                    List<Node> nearbyPlayerNodes = NodeUtils.getNearbyPlayerNodes(clickedNode, nodeDict);
+                    List<Node> nearbyPlayerNodes = NodeUtils.GetAdjacentNodes(clickedNode, nodeDict, FindNodeFunctions.NEARBY_PLAYER);
                     if (nearbyPlayerNodes.Count == 0) { //no nodes exist. go back to battle state
                         ChangeState(GameState.ShowBattleMenuState);
                         return true;
@@ -30,7 +30,7 @@ public class ShowSwapItemMenuStateProcessor : StateProcessor {
             } else { //highlighted. open menu if valid node click
                 Node currentClickedNode = sharedResourceBus.GetCurrentClickedNode();
                 if (currentClickedNode != null) {
-                    List<Node> nearbyPlayerNodes = NodeUtils.getNearbyPlayerNodes(clickedNode, nodeDict);
+                    List<Node> nearbyPlayerNodes = NodeUtils.GetAdjacentNodes(clickedNode, nodeDict, FindNodeFunctions.NEARBY_PLAYER);
                     if (NodeUtils.nodeClickedIsPlayer(currentClickedNode) && nearbyPlayerNodes.Contains(currentClickedNode)) {
                         swapItemsMenu.OpenSwapItemMenu(clickedNode.getPlayerInfo(), currentClickedNode.getPlayerInfo());
                     } else { //invalid node. go back to show battle menu state
