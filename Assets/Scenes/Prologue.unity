@@ -167,7 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f44fe3d0f8f243741950cc54b559f176, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  naniNovelScriptName: InBattleTestScript
+  naniNovelScriptName: Prologue
 --- !u!1001 &438847435
 PrefabInstance:
   m_ObjectHideFlags: 0

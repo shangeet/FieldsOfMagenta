@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 997
   m_ShowMode: 4
-  m_Title: Console
+  m_Title: Game
   m_RootView: {fileID: 7}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -47,7 +47,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 200}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 1
-  controlID: 97
+  controlID: 19
 --- !u!114 &3
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -72,7 +72,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 200}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 98
+  controlID: 20
 --- !u!114 &4
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -119,8 +119,8 @@ MonoBehaviour:
     y: 0
     width: 417
     height: 589
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 201, y: 221}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 17}
   m_Panes:
   - {fileID: 17}
@@ -145,8 +145,8 @@ MonoBehaviour:
     y: 589
     width: 1551
     height: 358
-  m_MinSize: {x: 101, y: 121}
-  m_MaxSize: {x: 4001, y: 4021}
+  m_MinSize: {x: 100, y: 100}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 19}
   m_Panes:
   - {fileID: 15}
@@ -248,7 +248,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 200}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 55
+  controlID: 21
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -273,7 +273,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 56
+  controlID: 22
 --- !u!114 &12
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -1251,22 +1251,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scripts/Game
+    - Assets/Scripts/NaniScripts/Prologue
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Scripts/Game
+  - Assets/Scripts/NaniScripts/Prologue
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\Shantanu\Documents\Unity\FieldsOfMagenta
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 7}
-    m_SelectedIDs: 22d80000
-    m_LastClickedID: 55330
-    m_ExpandedIDs: 00000000ccd70000ced70000d0d70000d2d70000
+    m_SelectedIDs: 50f70000
+    m_LastClickedID: 63312
+    m_ExpandedIDs: 00000000d2d70000d4d70000d6d70000d8d700002ce70000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1294,7 +1294,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000ccd70000ced70000d0d70000d2d70000
+    m_ExpandedIDs: 00000000d2d70000d4d70000d6d70000d8d70000dad70000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1319,9 +1319,9 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 
-    m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 0
+    m_SelectedInstanceIDs: a8100100
+    m_LastClickedInstanceID: 69800
+    m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c6230000467500008ce80000627f00009459000008c200000cd60000acc40000f4c2000094ce0000eec200005c7e0000ba430000d8510000d25a0000443b0000d051000034660000c469000000000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -1424,7 +1424,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 16fbffff
+      m_ExpandedIDs: d652ffff20caffff84e1ffff14f8fffffef8ffff66f9ffff16fbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1695,9 +1695,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 1.8687936, y: -0.34980133, z: -0.16077629}
+    m_Target: {x: 528.6077, y: 295.5068, z: 2.0350366}
     speed: 2
-    m_Value: {x: 1.8687936, y: -0.34980133, z: -0.16077629}
+    m_Value: {x: 528.6077, y: 295.5068, z: 2.0350366}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1748,9 +1748,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 9.649943
+    m_Target: 300.51154
     speed: 2
-    m_Value: 9.649943
+    m_Value: 300.51154
   m_Ortho:
     m_Target: 1
     speed: 2

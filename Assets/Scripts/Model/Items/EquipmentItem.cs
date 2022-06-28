@@ -9,6 +9,7 @@ public enum EquipType { HEAD, NECK, BODY, HELD, FEET }
 public class EquipmentItem : ModdableItem {
 
     public EquipType equipType;
+    public List<ItemEffect> itemEffects;
 
     public override void Use() {
         base.Use();
